@@ -111,6 +111,28 @@ class LessonRepositoryTests(unittest.TestCase):
             self.assertTrue(any("unsafe path" in item for item in validate_card(traversal)))
             self.assertTrue(any("unsafe path" in item for item in validate_card(absolute)))
 
+    def test_rejects_unsafe_paths_embedded_in_free_text_without_echoing_them(self):
+        unsafe_values = (
+            r"Evidence at C:\private\full.log",
+            "Evidence at /private/full.log",
+            "path=../private/full.log",
+        )
+        for unsafe_value in unsafe_values:
+            with self.subTest(value=unsafe_value), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                write_repository(root, {}, [])
+                path = root / "cards/data/L000001.yaml"
+                path.parent.mkdir(parents=True)
+                path.write_text(
+                    yaml.safe_dump(canonical_card(raw_evidence_summary=unsafe_value)),
+                    encoding="utf-8",
+                )
+
+                errors = validate_card(path)
+
+                self.assertTrue(any("unsafe path" in item for item in errors), errors)
+                self.assertNotIn(unsafe_value, "\n".join(errors))
+
     def test_block_requires_active_deterministic_reproducible_uncontested_card(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
