@@ -1,7 +1,10 @@
 from contextlib import redirect_stdout
+from copy import deepcopy
 from io import StringIO
+import os
 from pathlib import Path
 import shutil
+import subprocess
 import tempfile
 import unittest
 
@@ -11,6 +14,14 @@ from tools.validate import main, validate_card, validate_repository
 
 
 REPOSITORY_ROOT = Path(__file__).parents[1]
+CANONICAL_CATEGORIES = (
+    "methodology",
+    "data",
+    "metrics",
+    "implementation",
+    "environment",
+    "compute",
+)
 
 
 def canonical_card(**overrides):
@@ -67,9 +78,235 @@ def write_repository(root, cards, entries):
         destination.write_text(yaml.safe_dump(card, sort_keys=False), encoding="utf-8")
 
 
+def write_canonical_empty_repository(root):
+    write_repository(root, {}, [])
+    for category in CANONICAL_CATEGORIES:
+        (root / "cards" / category).mkdir(parents=True, exist_ok=True)
+
+
+def write_symlink_case(base, case):
+    root = base / "repository"
+    outside = base / "outside"
+    root.mkdir()
+    outside.mkdir()
+    write_canonical_empty_repository(root)
+
+    if case == "SCHEMA.yaml":
+        target = outside / "SCHEMA.yaml"
+        shutil.copyfile(REPOSITORY_ROOT / "SCHEMA.yaml", target)
+        link = root / "SCHEMA.yaml"
+        link.unlink()
+        link.symlink_to(target)
+    elif case == "INDEX.yaml":
+        target = outside / "INDEX.yaml"
+        target.write_text("schema_version: 1\nentries: []\n", encoding="utf-8")
+        link = root / "INDEX.yaml"
+        link.unlink()
+        link.symlink_to(target)
+    elif case == "cards":
+        target = outside / "cards"
+        for category in CANONICAL_CATEGORIES:
+            (target / category).mkdir(parents=True, exist_ok=True)
+        link = root / "cards"
+        shutil.rmtree(link)
+        link.symlink_to(target, target_is_directory=True)
+    elif case == "category":
+        target = outside / "data"
+        target.mkdir()
+        link = root / "cards" / "data"
+        link.rmdir()
+        link.symlink_to(target, target_is_directory=True)
+    elif case == "card":
+        card = canonical_card()
+        write_repository(
+            root,
+            {"cards/data/L000001.yaml": card},
+            [index_entry(card)],
+        )
+        target = outside / "L000001.yaml"
+        target.write_text("{}\n", encoding="utf-8")
+        link = root / "cards" / "data" / "L000001.yaml"
+        link.unlink()
+        link.symlink_to(target)
+    else:
+        raise AssertionError(f"unknown symlink case: {case}")
+    return root
+
+
 class LessonRepositoryTests(unittest.TestCase):
     def test_empty_canonical_repository_is_valid(self):
         self.assertEqual(validate_repository(REPOSITORY_ROOT), [])
+
+    def test_schema_metadata_cannot_weaken_canonical_validation(self):
+        canonical_schema = yaml.safe_load(
+            (REPOSITORY_ROOT / "SCHEMA.yaml").read_text(encoding="utf-8")
+        )
+        tamper_cases = (
+            (
+                "raw summary limit",
+                ("card", "text_limits_bytes", "raw_evidence_summary"),
+                999999,
+            ),
+            ("categories", ("card", "categories"), [*CANONICAL_CATEGORIES, "other"]),
+            ("confidence", ("card", "confidence"), ["LOW", "MEDIUM", "HIGH", "CERTAIN"]),
+            ("enforcement", ("card", "enforcement"), ["BLOCK", "WARN", "ALLOW"]),
+            ("status", ("card", "status"), ["ACTIVE", "CONTESTED", "SUPERSEDED", "RETIRED"]),
+            ("card additional_fields", ("card", "additional_fields"), True),
+            ("index additional_fields", ("index", "additional_fields"), True),
+            ("missing categories", ("card", "categories"), None),
+            ("malformed list limits", ("card", "list_limits"), []),
+        )
+
+        for name, key_path, replacement in tamper_cases:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                write_canonical_empty_repository(root)
+                schema = deepcopy(canonical_schema)
+                container = schema
+                for key in key_path[:-1]:
+                    container = container[key]
+                if replacement is None:
+                    del container[key_path[-1]]
+                else:
+                    container[key_path[-1]] = replacement
+                (root / "SCHEMA.yaml").write_text(
+                    yaml.safe_dump(schema, sort_keys=False), encoding="utf-8"
+                )
+
+                errors = validate_repository(root)
+
+                self.assertTrue(errors, name)
+                self.assertTrue(any("SCHEMA.yaml" in item for item in errors), errors)
+
+    def test_rejects_duplicate_yaml_mapping_keys(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            card = canonical_card()
+            write_repository(
+                root,
+                {"cards/data/L000001.yaml": card},
+                [index_entry(card)],
+            )
+            for category in CANONICAL_CATEGORIES:
+                (root / "cards" / category).mkdir(parents=True, exist_ok=True)
+            card_path = root / "cards/data/L000001.yaml"
+            raw_card = card_path.read_text(encoding="utf-8").replace(
+                "enforcement: WARN\n",
+                "enforcement: WARN\nenforcement: WARN\n",
+            )
+            card_path.write_text(raw_card, encoding="utf-8")
+            output = StringIO()
+
+            with redirect_stdout(output):
+                result = main([str(root)])
+
+            self.assertEqual(result, 1)
+            self.assertIn("invalid YAML", output.getvalue())
+            self.assertLess(len(output.getvalue().encode("utf-8")), 2000)
+
+    def test_rejects_recursive_yaml_alias_without_recursion_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_canonical_empty_repository(root)
+            (root / "INDEX.yaml").write_text(
+                "schema_version: 1\nentries: &entries\n  - *entries\n",
+                encoding="utf-8",
+            )
+            output = StringIO()
+
+            try:
+                with redirect_stdout(output):
+                    result = main([str(root)])
+            except RecursionError as error:
+                self.fail(f"recursive alias escaped validation: {type(error).__name__}")
+
+            self.assertEqual(result, 1)
+            self.assertIn("invalid YAML", output.getvalue())
+            self.assertLess(len(output.getvalue().encode("utf-8")), 2000)
+
+    def test_many_index_errors_have_bounded_count_and_cli_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_canonical_empty_repository(root)
+            (root / "INDEX.yaml").write_text(
+                "schema_version: 1\nentries:\n" + "  - \n" * 9000,
+                encoding="utf-8",
+            )
+            errors = validate_repository(root)
+            output = StringIO()
+
+            with redirect_stdout(output):
+                result = main([str(root)])
+
+            rendered = output.getvalue()
+            self.assertTrue(any("remaining errors omitted" in item for item in errors))
+            self.assertLessEqual(len(errors), 101)
+            self.assertEqual(result, 1)
+            self.assertIn("remaining errors omitted", rendered)
+            self.assertLessEqual(len(rendered.encode("utf-8")), 8192)
+            self.assertLessEqual(len(rendered.splitlines()), 101)
+
+    def test_undeclared_card_scan_errors_are_bounded(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_canonical_empty_repository(root)
+            for number in range(300):
+                (root / "cards" / "data" / f"L{number:06d}.yaml").write_text(
+                    "{}\n", encoding="utf-8"
+                )
+
+            errors = validate_repository(root)
+
+            self.assertTrue(any("remaining errors omitted" in item for item in errors))
+            self.assertLessEqual(len(errors), 101)
+
+    def _assert_repository_links_are_rejected(self):
+        for case in ("SCHEMA.yaml", "INDEX.yaml", "cards", "category", "card"):
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
+                try:
+                    root = write_symlink_case(Path(directory), case)
+                except OSError as error:
+                    code = getattr(error, "winerror", None) or error.errno
+                    self.skipTest(f"cannot create symlink/reparse point: {code}")
+
+                errors = validate_repository(root)
+
+                self.assertTrue(any("link or reparse" in item for item in errors), errors)
+                if case == "card":
+                    self.assertFalse(
+                        any("does not match card" in item for item in errors), errors
+                    )
+
+    @unittest.skipIf(os.name == "nt", "POSIX symlink semantics")
+    def test_posix_repository_paths_are_no_follow(self):
+        self._assert_repository_links_are_rejected()
+
+    @unittest.skipUnless(os.name == "nt", "Windows reparse semantics")
+    def test_windows_repository_paths_are_no_follow(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            root = base / "repository"
+            outside = base / "outside-data"
+            root.mkdir()
+            outside.mkdir()
+            write_canonical_empty_repository(root)
+            link = root / "cards" / "data"
+            link.rmdir()
+            creation = subprocess.run(
+                ["cmd", "/c", "mklink", "/J", str(link), str(outside)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if creation.returncode != 0:
+                self.skipTest(f"cannot create junction: {creation.returncode}")
+            try:
+                errors = validate_repository(root)
+
+                self.assertTrue(any("link or reparse" in item for item in errors), errors)
+            finally:
+                if link.exists():
+                    os.rmdir(link)
 
     def test_rejects_oversized_raw_summary_and_sensitive_fields(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -204,7 +441,7 @@ class LessonRepositoryTests(unittest.TestCase):
             write_repository(
                 root,
                 {"cards/data/L000001.yaml": card},
-                [mismatched, mismatched],
+                [mismatched, deepcopy(mismatched)],
             )
 
             errors = validate_repository(root)
