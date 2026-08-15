@@ -19,9 +19,9 @@ MAX_INDEX_ENTRIES = 10000
 LESSON_ID_PATTERN = re.compile(r"L[0-9]{6}\Z")
 GIT_SHA_PATTERN = re.compile(r"[0-9a-f]{40}\Z")
 SOURCE_FINGERPRINT_PATTERN = re.compile(r"sha256:[0-9a-f]{64}\Z")
-WINDOWS_ABSOLUTE_PATTERN = re.compile(r"[A-Za-z]:[\\/]")
-POSIX_ABSOLUTE_PATTERN = re.compile(r"(?:^|[\s=:(\[\"'])/[^\s/]")
-PARENT_TRAVERSAL_PATTERN = re.compile(r"(?:^|[\\/\s=:(\[\"'])\.\.[\\/]")
+WINDOWS_ABSOLUTE_PATTERN = re.compile(r"(?<![A-Za-z0-9])[A-Za-z]:[\\/]")
+POSIX_ABSOLUTE_PATTERN = re.compile(r"(?<![A-Za-z0-9/:])/(?![/\s])")
+PARENT_TRAVERSAL_PATTERN = re.compile(r"(?<![A-Za-z0-9.])\.\.[\\/]")
 UNC_PATH_PATTERN = re.compile(r"\\\\[^\\\s]+[\\/]")
 
 
@@ -74,7 +74,7 @@ def _root_for_card(path: Path) -> Path | None:
 def _unsafe_path_text(value: str) -> bool:
     candidate = value.strip()
     return bool(
-        candidate.startswith(("/", "\\"))
+        candidate.startswith("\\")
         or WINDOWS_ABSOLUTE_PATTERN.search(candidate)
         or POSIX_ABSOLUTE_PATTERN.search(candidate)
         or PARENT_TRAVERSAL_PATTERN.search(candidate)

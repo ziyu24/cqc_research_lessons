@@ -116,6 +116,9 @@ class LessonRepositoryTests(unittest.TestCase):
             r"Evidence at C:\private\full.log",
             "Evidence at /private/full.log",
             "path=../private/full.log",
+            "Evidence,/private/full.log",
+            "Evidence,../private/full.log",
+            "Evidence{/private/full.log}",
         )
         for unsafe_value in unsafe_values:
             with self.subTest(value=unsafe_value), tempfile.TemporaryDirectory() as directory:
@@ -132,6 +135,23 @@ class LessonRepositoryTests(unittest.TestCase):
 
                 self.assertTrue(any("unsafe path" in item for item in errors), errors)
                 self.assertNotIn(unsafe_value, "\n".join(errors))
+
+        for safe_value in (
+            "See https://example.org/spec",
+            "//example.org/spec",
+            "Compare precision and/or recall.",
+        ):
+            with self.subTest(value=safe_value), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                write_repository(root, {}, [])
+                path = root / "cards/data/L000001.yaml"
+                path.parent.mkdir(parents=True)
+                path.write_text(
+                    yaml.safe_dump(canonical_card(raw_evidence_summary=safe_value)),
+                    encoding="utf-8",
+                )
+
+                self.assertEqual(validate_card(path), [])
 
     def test_block_requires_active_deterministic_reproducible_uncontested_card(self):
         with tempfile.TemporaryDirectory() as directory:
