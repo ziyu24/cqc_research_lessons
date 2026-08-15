@@ -19,9 +19,16 @@ MAX_INDEX_ENTRIES = 10000
 LESSON_ID_PATTERN = re.compile(r"L[0-9]{6}\Z")
 GIT_SHA_PATTERN = re.compile(r"[0-9a-f]{40}\Z")
 SOURCE_FINGERPRINT_PATTERN = re.compile(r"sha256:[0-9a-f]{64}\Z")
-WINDOWS_ABSOLUTE_PATTERN = re.compile(r"(?<![A-Za-z0-9])[A-Za-z]:[\\/]")
-POSIX_ABSOLUTE_PATTERN = re.compile(r"(?<![A-Za-z0-9/:])/(?![/\s])")
-PARENT_TRAVERSAL_PATTERN = re.compile(r"(?<![A-Za-z0-9.])\.\.[\\/]")
+SAFE_NETWORK_URL_PATTERN = re.compile(
+    r"(?<!\w)(?:https?://|//)"
+    r"(?:[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?\.[A-Za-z]{2,})"
+    r"(?::[0-9]{1,5})?(?:[/?#][^\s]*)?",
+    re.IGNORECASE,
+)
+FILE_URI_PATTERN = re.compile(r"(?<!\w)file:(?:/{1,3}|\\\\)", re.IGNORECASE)
+WINDOWS_ABSOLUTE_PATTERN = re.compile(r"(?<!\w)[A-Za-z]:[\\/]")
+POSIX_ABSOLUTE_PATTERN = re.compile(r"(?<!\w)/(?![/\s])")
+PARENT_TRAVERSAL_PATTERN = re.compile(r"(?<!\w)\.\.[\\/]")
 UNC_PATH_PATTERN = re.compile(r"\\\\[^\\\s]+[\\/]")
 
 
@@ -73,12 +80,14 @@ def _root_for_card(path: Path) -> Path | None:
 
 def _unsafe_path_text(value: str) -> bool:
     candidate = value.strip()
+    without_network_urls = SAFE_NETWORK_URL_PATTERN.sub("", candidate)
     return bool(
-        candidate.startswith("\\")
-        or WINDOWS_ABSOLUTE_PATTERN.search(candidate)
-        or POSIX_ABSOLUTE_PATTERN.search(candidate)
-        or PARENT_TRAVERSAL_PATTERN.search(candidate)
-        or UNC_PATH_PATTERN.search(candidate)
+        FILE_URI_PATTERN.search(candidate)
+        or without_network_urls.startswith("\\")
+        or WINDOWS_ABSOLUTE_PATTERN.search(without_network_urls)
+        or POSIX_ABSOLUTE_PATTERN.search(without_network_urls)
+        or PARENT_TRAVERSAL_PATTERN.search(without_network_urls)
+        or UNC_PATH_PATTERN.search(without_network_urls)
     )
 
 

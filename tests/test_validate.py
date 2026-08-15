@@ -119,6 +119,8 @@ class LessonRepositoryTests(unittest.TestCase):
             "Evidence,/private/full.log",
             "Evidence,../private/full.log",
             "Evidence{/private/full.log}",
+            "Evidence:/private/full.log",
+            "file:///private/full.log",
         )
         for unsafe_value in unsafe_values:
             with self.subTest(value=unsafe_value), tempfile.TemporaryDirectory() as directory:
@@ -140,6 +142,7 @@ class LessonRepositoryTests(unittest.TestCase):
             "See https://example.org/spec",
             "//example.org/spec",
             "Compare precision and/or recall.",
+            "比较精度/召回率。",
         ):
             with self.subTest(value=safe_value), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
