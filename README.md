@@ -1,26 +1,38 @@
-# Cross-Project Research Lessons
+# CQC 跨项目避坑库
 
-This repository stores concise, sanitized, reusable research pitfall cards. It is
-not a scientific evidence store and must not contain full logs, tables, datasets,
-credentials, connection details, unpublished manuscripts, or project-local
-absolute paths.
+这里保存已经被项目证据否定、纠正或限制适用范围的观点，目的是防止后续 ChatGPT/Codex
+继续受旧结论影响。详细日志、完整结果和代码仍留在来源项目；本仓库只保存可复用的短结论与
+证据定位。
 
-The canonical index is `INDEX.yaml`. Cards are grouped under six categories:
-`methodology`, `data`, `metrics`, `implementation`, `environment`, and `compute`.
-The category directories intentionally contain only guidance until a real lesson
-is separately reviewed and promoted.
+## 每个任务开始时怎么读
 
-Each card must satisfy the closed field set in `SCHEMA.yaml`. A short
-`raw_evidence_summary` may preserve a bounded aggregate or representative
-observation, and `error_excerpt` may preserve at most 20 short lines. Detailed
-source evidence stays in its originating project.
+1. 先确认当前 GitHub 仓库的精确名称。
+2. 若根目录存在同名一级目录，先读其中的 `lessons.md`，再接受聊天交接、历史摘要或旧稿里的
+   科学结论。接手已有聊天时尤其如此。
+3. 跨项目任务只读实际涉及的项目，不扫描全部目录；没有同名文件表示“尚无已登记避坑点”，
+   不表示该项目没有问题，也不阻塞普通任务。
+4. 本库与来源项目冲突时，回到条目列出的来源提交和证据文件复核；更新条目，不把聊天记忆当
+   成证据。
 
-Validate the repository locally with:
+## 目录与条目
+
+- 一个有已验证避坑点的仓库对应一个根级目录：`<GitHub仓库名>/lessons.md`。
+- 同一项目的若干相近小问题合并成一个中等粒度条目；不同失效机制不得塞进一个万能条目。
+- 每个条目固定写：类型、为何失败、避坑、边界、证据。
+- 类型只用于区分含义：`科学证伪`、`协议/实现无效`、`工程失败`、`资产不可用`、
+  `历史结论已推翻`、`范围限制`。它们不是项目状态机。
+- `INDEX.md` 覆盖本次审计的全部 GitHub 仓库。`未发现已验证失败` 不是成功证明，只表示在该
+  审计提交的可读 Git 文档中没有找到足够证据，因此不制造条目。
+
+## 写入规则
+
+新增或修订条目前必须有来源仓库、40 位提交号和相对证据路径。不要记录密码、令牌、私钥、
+主机连接信息、绝对路径、完整日志、数据集、checkpoint 或未公开稿件。工程跑崩、资产缺失和
+科学证伪必须分开；后续证据推翻旧结论时，直接修正文档并保留“原结论为何无效”的说明。
+
+快速校验：
 
 ```text
 python tools/validate.py .
 python -m unittest -v tests.test_validate
 ```
-
-`BLOCK` is reserved for active, deterministic, reproducible, uncontested
-lessons. All other reusable guidance is `WARN`.
