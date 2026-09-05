@@ -17,6 +17,7 @@ class ValidateTests(unittest.TestCase):
     def test_missing_lesson_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+            (root / "lesson").mkdir()
             (root / "INDEX.md").write_text(
                 "| `demo` | `" + "a" * 40 + "` | 已登记 | 1 |\n", encoding="utf-8"
             )
@@ -25,6 +26,7 @@ class ValidateTests(unittest.TestCase):
     def test_zero_entry_needs_no_file(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+            (root / "lesson").mkdir()
             (root / "INDEX.md").write_text(
                 "| `demo` | `" + "a" * 40 + "` | 占位仓库，无可审计证据 | 0 |\n",
                 encoding="utf-8",
@@ -34,10 +36,12 @@ class ValidateTests(unittest.TestCase):
     def test_internal_run_number_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+            lesson = root / "lesson"
+            lesson.mkdir()
             (root / "INDEX.md").write_text(
                 "| `demo` | `" + "a" * 40 + "` | 已登记 | 1 |\n", encoding="utf-8"
             )
-            (root / "demo.lessons.md").write_text(
+            (lesson / "demo.lessons.md").write_text(
                 "## 项目研究什么\n\nx\n\n## 实际采用过的方法\n\nx\n\n"
                 "## 教训一：科学标题\n\n"
                 "- 失败命题：r009 已失败。\n- 失败原因：x\n- 后续做法：x\n- 边界：x\n"
@@ -49,10 +53,12 @@ class ValidateTests(unittest.TestCase):
     def test_each_lesson_needs_source_commit(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+            lesson = root / "lesson"
+            lesson.mkdir()
             (root / "INDEX.md").write_text(
                 "| `demo` | `" + "a" * 40 + "` | 已登记 | 1 |\n", encoding="utf-8"
             )
-            (root / "demo.lessons.md").write_text(
+            (lesson / "demo.lessons.md").write_text(
                 "## 项目研究什么\n\nx\n\n## 实际采用过的方法\n\nx\n\n"
                 "## 教训一：科学标题\n\n"
                 "- 失败命题：x\n- 失败原因：x\n- 后续做法：x\n- 边界：x\n"
@@ -60,6 +66,17 @@ class ValidateTests(unittest.TestCase):
                 encoding="utf-8",
             )
             self.assertTrue(any("缺少 40 位来源提交" in item for item in validate_repository(root)))
+
+    def test_root_level_lesson_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "lesson").mkdir()
+            (root / "INDEX.md").write_text(
+                "| `demo` | `" + "a" * 40 + "` | 占位仓库，无可审计证据 | 0 |\n",
+                encoding="utf-8",
+            )
+            (root / "demo.lessons.md").write_text("legacy\n", encoding="utf-8")
+            self.assertTrue(any("必须位于 lesson/" in item for item in validate_repository(root)))
 
 
 if __name__ == "__main__":

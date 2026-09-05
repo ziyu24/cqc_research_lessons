@@ -30,9 +30,23 @@ def validate_repository(root: Path) -> list[str]:
     if not rows:
         errors.append("INDEX.md 没有仓库行")
 
+    lesson_root = root / "lesson"
+    if not lesson_root.is_dir():
+        errors.append("缺少 lesson/ 目录")
+
+    root_lessons = sorted(root.glob("*.lessons.md"))
+    for path in root_lessons:
+        errors.append(f"{path.name}: 避坑文件必须位于 lesson/")
+
+    nested_lessons = sorted(
+        path for path in lesson_root.rglob("*.lessons.md") if path.parent != lesson_root
+    ) if lesson_root.is_dir() else []
+    for path in nested_lessons:
+        errors.append(f"{path.relative_to(root)}: lesson/ 内不得建立项目子目录")
+
     lesson_files = {
         path.name.removesuffix(".lessons.md"): path
-        for path in root.glob("*.lessons.md")
+        for path in lesson_root.glob("*.lessons.md")
     }
     for name, (status, count) in rows.items():
         path = lesson_files.get(name)
