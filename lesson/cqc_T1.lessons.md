@@ -2,7 +2,7 @@
 
 > 使用边界：教训须结合适用条件与原始证据使用，同条件下的有效反证不能忽略，也不能跨条件自动否决新研究；来源不可访问时须注明“未独立核实”，不得将摘要当作已核实的原始证据。
 
-审计基线：当前主线 `ziyu24/cqc_T1@18df509d3f5e46dedf0f8733c44b6fe5b6716b21`；主线精简前的历史实验以 `ziyu24/cqc_T1@a622277bc62d12cf010a3eb9ab1c8e1bab12a23e` 为只读证据锚点。本文不把内部任务编号、运行过程或项目自造术语当作科学结论。
+审计基线：当前主线 `ziyu24/cqc_T1@a395f8fb2ae20751df9659a22e5f614f107c1ae4`；主线精简前的历史实验以 `ziyu24/cqc_T1@a622277bc62d12cf010a3eb9ab1c8e1bab12a23e` 为只读证据锚点。2026-09-05 补查服务器 Home/tmpfs、实际执行代码并直接复算保存预测；覆盖与补救判断见当前主线 `doc/RESEARCH_AUDIT_20260905.md`。本文不把内部任务编号、运行过程或项目自造术语当作科学结论。
 
 快速阅读路径：先读“项目研究什么”→“教训二、四、七、九”→“方法族停止索引”。
 
@@ -20,9 +20,11 @@ T1 实际研究了三个相互关联、但不能混为一谈的问题：
 
 - **事实**：DOTA-v1.0 的四类检测器都出现跨布局实例状态变化；SODA-A 也有实例级变化，但总体 AP 波动很小。固定上下文的小位移实验在最大步长倍数附近形成低翻转“凹口”，支持下采样相位参与机制，但逐层归因只在一个检测器上完成。
 - **事实**：项目测试的修复路线没有在预设效果、检测能力和成本下闭合。固定候选审计与 GT 贪心定向重裁的收益未达项目门，因而停止当前路线；后者不是所有同预算重裁的最优上界，也不否定分区不稳定现象。
-- **事实**：RTMDet-M 的固定算子整图执行在两个标注口径下做到了逐输出精确并把物理峰值显存降到 5976 MiB；RTMDet-S 只相对同一固定算子参考降低 1.73%，且相对默认执行反而增加显存。它是架构和参考函数受限的工程结果，不是通用整图检测器或论文级证明。
+- **事实**：RTMDet-M 在相同母图的两套标注及各自训练的 checkpoint 下均做到逐输出相等，本进程物理显存采样峰值降到 5976 MiB；这不是瞬时硬预算证明。RTMDet-S 只相对已经 atomized 的参考降低 1.73%，相对默认执行反而增加显存且输出不相等。它是模型与参考函数受限的工程结果，不是通用整图检测器或论文级证明。
 - **推断**：母图实例配对比只报总体 AP 更适合回答“切片布局是否改变同一目标”这一问题；但项目自定义指标尚不能视为领域标准。
 - **未知**：没有仓库证据证明该测量协议已被独立团队复现或被同行共同体接受；也没有第二种检测器完成精确低显存执行，因此方法的跨架构普适性仍未知。
+
+**补救判断**：当前没有“有限修补即可闭合”的顶刊路线。M 与母图测量资产值得保留，但通用执行器、新诊断 benchmark 或新修复机制都需要实质新研究；这是投入判断，不是任何期刊都不能发表或方向永久无效的证明。
 
 相关先验工作：[Manfredi 与 Wang 的目标检测平移等变研究](https://arxiv.org/abs/2008.05787)、[Zhang 的抗混叠下采样](https://proceedings.mlr.press/v97/zhang19a.html)、[Chaman 与 Dokmanić 的 APS](https://openaccess.thecvf.com/content/CVPR2021/html/Chaman_Truly_Shift-Invariant_Convolutional_Neural_Networks_CVPR_2021_paper.html)、[Rojas-Gomez 等人的 LPS](https://proceedings.neurips.cc/paper_files/paper/2022/hash/e87b1e06be8c3594c810e8991e77ea40-Abstract-Conference.html)、[Saha 与 Gokhale 的 TIPS](https://openaccess.thecvf.com/content/WACV2025/html/Saha_Improving_Shift_Invariance_in_Convolutional_Neural_Networks_with_Translation_Invariant_WACV_2025_paper.html)。
 
@@ -77,25 +79,25 @@ T1 实际研究了三个相互关联、但不能混为一谈的问题：
 
 - 失败命题：整图教师或幸运相位特征能事后恢复部分漏检，就说明学生模型能够学会同样的修复。
 - 失败原因：整图教师只覆盖 1895 个布局依赖实例中的 1061 个，真正可恢复的失败为 317/798（39.72%），对全部漏检的覆盖也只有 18.44%；冻结的幸运相位特征替换确实比对照恢复更多样本，但匹配训练后的相位模型没有降低不兼容变化，置信区间下界也不支持改善。事后使用理想信息证明的是局部因果充分性，不是输入中含有足够信息，更不是优化过程能学到它。
-- 后续做法：依次检验教师覆盖率与增量信息、可由部署输入预测的程度、能力匹配下的端到端学习效果；任一环节失败就停止，不把 oracle 上界写成方法结果。
+- 后续做法：依次检验教师覆盖率与增量信息、可由部署输入预测的程度、能力匹配下的端到端学习效果；某环节失败时停止对应外推，条件实质改变则重新评估，不把 oracle 诊断写成方法结果。
 - 边界：冻结替换仍可用于定位瓶颈，整图教师也可作为诊断参照；失败的是从诊断直接外推可学习修复。
 - 证据：`ziyu24/cqc_T1@a622277bc62d12cf010a3eb9ab1c8e1bab12a23e` 的 `reports/dota10_mips_headroom.json`、`reports/dota10_cpet_gate1.json`、`reports/dota10_cpet_phase_gate.json`。
 
-## 教训七：逐输出“精确”等价必须先冻结参考数值函数
+## 教训七：逐输出“精确”等价必须冻结参考数值函数和对照身份
 
 - 失败命题：权重、输入和数学算子相同，默认 CUDA 执行、固定算子计划与重写执行就应逐位相同；若不同就是重写错误。
-- 失败原因：默认 cuDNN 路径与固定算子计划会因内核选择和归约次序产生极小浮点差异；RTMDet-S 有一个候选分数仅高于阈值约 2.25×10⁻⁶，足以改变最终检测。固定计划到 ExactRTM 以及其调度变体可以逐输出一致，但默认执行到固定计划在 458 幅图上全部存在数值差异。
-- 后续做法：在开发前明确定义参考函数，包括算子实现、内核计划、精度、阈值和后处理顺序；分别报告默认到固定计划的数值漂移与固定计划到重写执行的等价，不能在结果后更换参照。
-- 边界：这不表示默认框架输出错误，也不表示任务级近似等价必须逐位相同；只有声称“精确执行改写”时才需要如此严格的参照定义。
-- 证据：`ziyu24/cqc_T1@18df509d3f5e46dedf0f8733c44b6fe5b6716b21` 的 `doc/exactrtm_project_protocol.md`、`src/scripts/audit_rtmdet_s_exactrtm_divergence.py`。
+- 失败原因：源码中的 fixed 和 ExactRTM 都已经将同两个卷积 atomize；二者相对 default 还同时关闭 TF32、改变确定性标志。因此 fixed→ExactRTM 的相等只验证已改写参考上的生命周期变化，不证明默认模型等价恢复。直接复算发现 default→ExactRTM 在 458 图上全部有张量变化，其中 321 图检测数量变化；阈值临界候选可解释数值漂移如何传至检测，但没有单独分离 TF32、内核选择和归约次序的作用。
+- 后续做法：同时保留默认实现、同数值标志但未 atomize 的整张卷积参考、改写执行，分开估计数值策略、算子改写与生命周期收益。记录精度、shape、阈值及后处理；kernel/reduction plan 仅在后端可观测且可固定时验证，否则保持相同输入 shape 或明确改为预注册容差契约，不能仅以 FP32/deterministic 标签冒充计划已冻结。
+- 边界：原“撤销反证”只可指削弱生命周期 bug 归因，不能撤销默认输出不等的事实。fixed→ExactRTM 相等仍成立；原生框架不因此错误，近似任务效用也不因严格相等失败而必然失败。
+- 证据：`ziyu24/cqc_T1@a395f8fb2ae20751df9659a22e5f614f107c1ae4` 的 `doc/RESEARCH_AUDIT_20260905.md`、`doc/exactrtm_project_protocol.md`、`src/scripts/run_exactrtm_s_full_shard.py`、`src/scripts/audit_saved_predictions.py`。
 
 ## 教训八：单模型的显存成功与单算子的失败都不能外推为通用结论
 
 - 失败命题：一个 RTMDet 规格把峰值显存压到预算内，就证明得到通用低显存整图检测方法；反过来，一个直接流式算子太慢，就证明固定显存下的精确整图检测不可能。
-- 失败原因：RTMDet-M 在 DOTA-v1.0/v1.5 的 458 幅相同母图上把物理峰值从约 9 GiB 降到 5976 MiB，端到端延迟增加约 5%–6%，但两者只是不同标注口径且没有第二检测器；RTMDet-S 相对固定计划仅降 1.73%，相对默认执行反而多用 25.08% 显存。另一方面，直接固定核和 FP64 分块路线的失败只约束各自的原语、复杂度和实现，不能形成不可能性定理。
-- 后续做法：把结论限定到模型规格、参考计划和已改写算子；完整方法至少要同时通过输出等价、物理峰值、端到端延迟、统一切片基线和第二架构验证。失败路线只陈述被排除的实现族与成本边界。
+- 失败原因：M 的两组标注/checkpoint 共享 458 母图，两个卷积特化后采样峰值为 5976 MiB、记录 E2E 增加约 5%–6%；DOTA10 的 native/compiled 还使用不同版本 runner 和准入顺序，不能当作已闭合的强基线性能比较。S 的 1.73% 仅是已 atomized 参考上的生命周期收益，相对 default 反而多用 25.08% 显存；缺少同数值标志的未改写对照，不能从中推断整个分块技术只有该收益。直接固定核或 FP64 实现的失败同样不能形成不可能性定理。
+- 后续做法：联合核对参考身份、同输入顺序、输出等价和完整重复计时，区分 allocator、采样物理峰值与硬预算保证；按主张范围补强切片/offload 基线及跨架构证据，而不是凑够模型数便称通用方法。失败只约束被测实现与成本边界。
 - 边界：RTMDet-M 的结果是可复核的工程成功，不应被 RTMDet-S 的失败抹掉；但在跨架构证据缺失前，也不能提升为通用科学方法或发表完成。
-- 证据：`ziyu24/cqc_T1@18df509d3f5e46dedf0f8733c44b6fe5b6716b21` 的 `doc/exact_dense_obb_final_report.md`、`doc/exactrtm_project_protocol.md`、`lab/result.md`；`ziyu24/cqc_T1@a622277bc62d12cf010a3eb9ab1c8e1bab12a23e` 的 `reports/dota10_pnee_p0b2_closure.json`。
+- 证据：`ziyu24/cqc_T1@a395f8fb2ae20751df9659a22e5f614f107c1ae4` 的 `doc/RESEARCH_AUDIT_20260905.md`、`doc/exact_dense_obb_final_report.md`、`doc/exactrtm_project_protocol.md`；`ziyu24/cqc_T1@a622277bc62d12cf010a3eb9ab1c8e1bab12a23e` 的 `reports/dota10_pnee_p0b2_closure.json`。
 
 ## 教训九：状态能贯穿检测器，不等于全链路状态等变且成本可接受
 
@@ -107,7 +109,7 @@ T1 实际研究了三个相互关联、但不能混为一谈的问题：
 
 ## 方法族停止索引
 
-下表只索引当前主线 `ziyu24/cqc_T1@18df509d3f5e46dedf0f8733c44b6fe5b6716b21` 中仍可回读的总结、报告和实现入口；“停止范围”均为有限否定，不是对整个研究方向的不可能性宣判。
+下表只索引当前主线 `ziyu24/cqc_T1@a395f8fb2ae20751df9659a22e5f614f107c1ae4` 中仍可回读的总结、报告和实现入口；“停止范围”均为有限否定，不是对整个研究方向的不可能性宣判。
 
 | 方法族 | 最强负证据 | 停止范围 | 当前 main 证据路径 |
 | --- | --- | --- | --- |
@@ -119,4 +121,4 @@ T1 实际研究了三个相互关联、但不能混为一谈的问题：
 | LatticeDet | 全链路共同坐标最大误差 `81.434`；所需全相位强基线至少 `112.402G / 1.580×` Conv MAC，超过 `1.25×` 成本门 | 停止当前 selector、全相位物化、训练和跨检测器/数据集扩展；不否定所有 lattice/polyphase 理论 | `lab/result.md`；`lab/failed_methods.md`；`src/lattice_det/audit.py`；`src/lattice_det/p0_contract.py` |
 | APS-D | 单母图的 306 个 GT×shift 配对总翻转 `3→3`；`75/81` 稠密分支/位移不能整数余类对齐，剩余最大误差 `54.846214` | 停止当前冻结 RTMDet 的 coset 扩展；严格等变有反例，总体改善率未知 | `doc/coset_equiv_p0_result.md`；`lab/result.md`；`lab/failed_methods.md`；`src/coset_equiv/aps.py` |
 | Oracle / recrop | 同布局固定候选 Recall 审计仅 `+0.4852` 点；15% GT 贪心定向重裁仅 `+0.1816` AP、crossing Recall `+0.7108` 点 | 项目停止当前 set-decoder/recrop 主线；贪心结果不是所有同预算重裁策略的上界 | `doc/physical_instance_oracle_p0a_result.md`；`doc/physical_instance_oracle_p0b_result.md`；`lab/discussion.md`；`lab/failed_methods.md` |
-| ExactRTM | RTMDet-S 相对固定计划只降 `1.7286%` 峰值显存，低于 `20%` 目标；相对默认执行反而多用 `25.08%` | 停止当前 S 型 liveness/cache 微调及通用/发表主张；不推翻 RTMDet-M 的 exact、5976 MiB 工程结果 | `doc/exactrtm_project_protocol.md`；`doc/exact_dense_obb_final_report.md`；`lab/result.md`；`lab/failed_methods.md` |
+| ExactRTM | S 相对已 atomized 参考仅降 `1.7286%` 采样峰值；相对 default 多用 `25.08%` 且 321/458 图检测数变化。缺同数值标志未改写对照 | 停止当前 S 型微调及通用/发表主张；不否定所有 atom 改写，不推翻 M 的相等与采样显存正结果 | `doc/RESEARCH_AUDIT_20260905.md`；`doc/exactrtm_project_protocol.md`；`doc/exact_dense_obb_final_report.md`；`src/scripts/audit_saved_predictions.py` |

@@ -2,7 +2,7 @@
 
 > 使用边界：教训须结合适用条件与原始证据使用，同条件下的有效反证不能忽略，也不能跨条件自动否决新研究；来源不可访问时须注明“未独立核实”，不得将摘要当作已核实的原始证据。
 
-审计基线：当前主线 `ziyu24/cqc_T2@2a5998027fd06309a345beb08820194bea26a98e`。全部历史执行分支均已确认是该主线祖先；本文以当前主线中的最终决策和机器可读结果为准，不把较早的阶段性 GO、运行状态或内部任务编号当成最终科学结论。
+审计基线：当前主线 `ziyu24/cqc_T2@617bec5bf258ec4657f763bab8a25fb7fcc2596b`。全部历史执行分支均为主线祖先；2026-09-05 补查服务器 Home/tmpfs、fork/评估/执行源码及原始 endpoint，覆盖与补救判断见当前主线 `doc/RESEARCH_AUDIT_20260905.md`。不把阶段性 GO、STOP 标签或内部任务编号当成最终科学结论。
 
 快速阅读路径：先读“项目研究什么”→“教训一、四、六、七、九”→“方法族停止索引”。
 
@@ -17,11 +17,13 @@ T2 实际包含两个独立的高风险问题，不能用一条“训练与推�
 
 按损失、难度或不确定性动态选择训练样本并不是 T2 首次提出，已有 online batch selection、Active Bias 和 data-driven curriculum 等工作。精确 tile/out-of-core 推理与 DNN tile compiler 也已有公开研究。T2 可能有区分度的对象，分别是“在旋转检测训练状态上用成对反事实 replay 估计 action 的 baseline-relative utility”，以及“把旋转检测候选、RoI、top-k、NMS 等全局集合运算纳入 canonical final-set equality 契约”；仓库没有证据证明这两种表述已经获得同行共同体认可。
 
-- **事实**：早期开发轨迹存在动作差异和可预测 headroom，但历史状态模型未达到绝对决策门槛；最终冻结的独立轨迹上，开发期最优 action 由正转负，等墙钟结果也没有形成跨阶段、双 replay 的稳定正收益，动态控制路线最终停止。
+- **事实**：早期开发轨迹存在动作差异和 headroom，但历史状态模型未达到绝对决策门槛；唯一冻结确认训练轨迹上，开发期最优 action 由正转负，等墙钟没有稳定正收益。六个阶段×重放不是六条独立轨迹；开发/确认 probe 还共享 28 幅母图、11 对坐标重叠 tile，不能称场景独立验证或把原 CI 外推到训练轨迹总体。
 - **事实**：局部算子和合成 FPN 子图通过了精确性测试，但当时没有真实检测器的分区运行。补齐 RTMDet 的四个全局 ChannelAttention barrier 后，首个已记录失配出现在 FPN 输出，最终候选与检测集合仍不相等；shape-dependent FP32 convolution 路径差异是当前最强解释，但 C3/C4/C5 的最终 materialized feature 未被独立比较，首错节点尚未闭合。
-- **事实**：最终 RTMDet 分区执行把 P1854 峰值显存从 6.674 GiB 降到约 1.8 GiB，但在 decode/NMS 前已至少慢 6.08 倍，且没有满足严格输出等价；这不是有效的精确低显存 compiler 结果。
+- **事实**：最终 RTMDet 分区执行把 P1854 的 PyTorch allocated peak 从 6.674 GiB 降到约 1.8 GiB，不是物理显存测量；带正确性审计的单次实现在 decode/NMS 前观察到约 6.08× 耗时，不是优化后方法成本下界。严格输出等价仍失败，尚无有效精确低显存 compiler 结果。
 - **推断**：T2 最有复用价值的是把开发选择、独立确认、等墙钟因果效用和多级执行等价分开的审计框架，而不是已经闭合的方法贡献。
 - **未知**：动态 action 家族没有进入完整 DOTA validation，因为没有候选通过预注册触发门；分区 compiler 没有在第二检测器或外部数据集上形成可执行结果。若放宽为容差等价或近似离线推理，收益边界尚未被本项目系统研究。
+
+**补救判断**：纠正验证设计、定位实现首错和移除审计开销都有技术意义，但本身不构成新颖机制或已证实收益；当前没有足以支持有限补救后具备顶刊潜力的证据。停止本次旧路线救援，不把证据不足写成方向永久无效。
 
 相关先验工作：[Online Batch Selection](https://arxiv.org/abs/1511.06343)、[Active Bias](https://proceedings.neurips.cc/paper/2017/hash/2f37d10131f2a483a8dd005b3d14b0d9-Abstract.html)、[MentorNet](https://proceedings.mlr.press/v80/jiang18c.html)、[NIST Exact Tile-Based Segmentation Inference](https://www.nist.gov/publications/exact-tile-based-segmentation-inference-images-larger-gpu-memory)、[Welder](https://www.usenix.org/conference/osdi23/presentation/shi)。
 
@@ -31,7 +33,7 @@ T2 实际包含两个独立的高风险问题，不能用一条“训练与推�
 - **状态与控制器估计**：用瞬时 loss、正样本数、梯度/参数更新、训练进度和多尺度历史特征训练 Ridge、Logistic 与 RandomForest 预测器，评价 leave-one-trajectory regret、排序反转准确率和 headroom capture。
 - **冻结因果确认**：开发只使用两条轨迹并做 replay cross-fitting；第三条轨迹冻结 action 后，以 canonical fork state、成对 Control/Treatment、双 replay、等步数和端到端等墙钟重新估计 baseline-relative utility。
 - **分区语义与规划**：定义母图坐标、halo/stride phase、Add/Concat 对齐、全局候选屏障和 L1–L4 等价层级；实现局部算子、合成 toy-FPN、legality-first planner 及普通独立切片敏感性基线。
-- **真实检测器门控**：冻结 RTMDet native reference，先诊断全局 ChannelAttention，再实现 full-feature native global barrier 并接回 regional backbone、PAFPN、head、decode 与 NMS，联合测等价、物理显存和延迟。
+- **真实检测器门控**：冻结 RTMDet native reference，先诊断全局 ChannelAttention，再实现 full-feature native global barrier 并接回 regional backbone、PAFPN、head、decode 与 NMS，记录等价、PyTorch 分配显存与带审计耗时。
 
 ## 教训一：动作之间有差异，不等于动态控制相对正常训练有正收益
 
@@ -60,10 +62,10 @@ T2 实际包含两个独立的高风险问题，不能用一条“训练与推�
 ## 教训四：开发期 headroom 必须通过冻结新轨迹和等墙钟因果确认
 
 - 失败命题：开发轨迹上的最佳 action 或 cross-fitted dynamic headroom 为正，就可以继续设计 controller 或直接做完整验证。
-- 失败原因：开发期 `high_loss_1024` 的平均 baseline-relative utility 为 `+0.029207` mAP，但动态 headroom 仅 `+0.005633`，95% CI `[-0.005033,+0.016985]` 已跨零；冻结到第三条轨迹后，`high_loss_1024` 变为 `-0.028984`，95% CI `[-0.051767,-0.002603]`。端到端等墙钟下三个冻结 action 的总体均值也均不为稳定正值，没有任何 action×stage 同时通过双 replay probe 与双 replay wall-clock 门。
-- 后续做法：开发阶段只用于冻结 action、终点和模型选择；最终判断只看未参与选择的新轨迹、成对 Control 和包含选择开销的等墙钟效用。触发门失败时不再用局部正 stage 或更长 horizon 重启路线。
-- 边界：完整 DOTA validation 因无合格候选而未运行，所以结论是停止当前 action/controller 家族，不是宣称任何数据集、模型和训练预算上的动态课程都无效。历史 checkpoint 缺少原 RNG/AMP/sampler 状态，canonical fork 支持分支内公平比较，但不是原历史轨迹的逐状态重建。
-- 证据：`ziyu24/cqc_T2@2a5998027fd06309a345beb08820194bea26a98e` 的 `work_dirs/oracle_v3/ORACLE_V3_DECISION.md`、`work_dirs/oracle_v3/oracle_v3_summary.json`、`work_dirs/oracle_v3/equalwall_summary.json`、`work_dirs/oracle_v3/state_restore_audit.json`。
+- 失败原因：开发 `high_loss_1024` 平均 utility `+0.029207`，dynamic headroom 仅 `+0.005633`、原区间跨零；唯一确认轨迹上的 action 均值为 `-0.028984`，且无冻结 action×stage 同时通过双 replay probe/等墙钟门。756 行 utility 与 1,512 次原始 endpoint 回对一致，未发现汇总错误。但 test 区间 `[-0.051767,-0.002603]` 抽样的是六个相关阶段×重放，不能视为跨轨迹总体置信区间；两个 probe 虽无同名切片，却共享 28 母图、11 对坐标重叠切片。
+- 后续做法：先定义泛化单位，再按母图/场景划分 probe、以训练轨迹为推断单位并保持阶段可比；重放用于控制分支噪声，不能增加独立轨迹数。开发只冻结 action/终点，确认使用新轨迹、正常 Control 和包含选择及匹配保存开销的重复等墙钟比较，不能事后挑局部正 stage。
+- 边界：重叠出现在 validation 内的开发/确认 probe，未证明训练/验证泄漏；seed、probe 和部分进度同时改变也妨碍唯一归因。现有证据支持当前策略未复现和停止投入，不是家族负效应证明；修正这些缺陷不自动产生正收益。Canonical fork 支持成对比较，不恢复缺失的历史 RNG/AMP/sampler。
+- 证据：`ziyu24/cqc_T2@617bec5bf258ec4657f763bab8a25fb7fcc2596b` 的 `doc/RESEARCH_AUDIT_20260905.md`、`src/audit_saved_evidence.py`、`src/oracle_v3_decide.py`、`work_dirs/oracle_v3/validation_split_manifest.json`、`work_dirs/oracle_v3/ORACLE_V3_DECISION.md`。
 
 ## 教训五：局部算子和合成子图精确不能推出真实检测器精确
 
@@ -92,10 +94,10 @@ T2 实际包含两个独立的高风险问题，不能用一条“训练与推�
 ## 教训八：显存、语义正确性和延迟必须在同一执行上同时成立
 
 - 失败命题：分区执行把峰值显存降低约 73%，就足以证明 compiler 或 runtime 成功。
-- 失败原因：P1854 的峰值确实从 native `6.674 GiB` 降到 `1.779–1.796 GiB`，但 L3/L4 均失败；并且在 decode/NMS 之前单次已耗时至少 `9.005 s`，是 native `1.481517 s` 的 `6.08×`。节省显存的执行既没有保持目标语义，也没有达到实用延迟。
-- 后续做法：为同一个冻结执行联合设置 L1–L4、物理峰值和端到端延迟接受域；正确性失败时不把资源数字单独宣传为方法收益，性能测量也必须包括完整后处理和重复运行。
-- 边界：在允许近似、极端内存受限且可接受慢速的离线场景，这一折中可能有工程价值；但必须改变“精确且高效”的主张并重新定义误差预算。
-- 证据：`ziyu24/cqc_T2@2a5998027fd06309a345beb08820194bea26a98e` 的 `work_dirs/rtmdet_full_global_barrier/FULL_GLOBAL_BARRIER_DECISION.md`、`lab/result.md`。
+- 失败原因：P1854 的 `6.674→1.779–1.796 GiB` 来自 `torch.cuda.max_memory_allocated`，不能冒充物理峰值；L3/L4 均失败。记录的最低单次 `9.005 s`（native `1.481517 s` 的 `6.08×`）还包含逐层比较、复制到 CPU 及误差定位。它证明当前带审计实现慢，不证明移除审计或优化后的运行下界；此前将该比值直接解释为方法成本过高也过强。
+- 后续做法：分别运行正确性审计和关闭 instrumentation 的匹配性能测量，对同一参考/执行联合报告 L1–L4、allocator、物理采样峰值及包含后处理的重复端到端延迟。原始资源数值可以保留，但既不能单独证明方法成功，也不能冒充硬预算或成本下界。
+- 边界：当前缺精确执行结果，仍不能报告有效 compiler；优化后延迟、物理预算和容差任务效用均未知。允许近似的离线场景可能有工程价值，但须明确改变科学契约并预注册误差预算。
+- 证据：`ziyu24/cqc_T2@617bec5bf258ec4657f763bab8a25fb7fcc2596b` 的 `doc/RESEARCH_AUDIT_20260905.md`、`tools/run_phased_rtmdet_backbone.py`、`src/partition_runtime/full_global_barrier.py`、`src/partition_transparency/freeze_rtmdet_native_reference.py`、`work_dirs/rtmdet_full_global_barrier/FULL_GLOBAL_BARRIER_DECISION.md`。
 
 ## 教训九：不可追溯结果和不可执行计划都不能进入科学结论
 
@@ -107,19 +109,19 @@ T2 实际包含两个独立的高风险问题，不能用一条“训练与推�
 
 ## 方法族停止索引
 
-下表只索引当前主线 `ziyu24/cqc_T2@2a5998027fd06309a345beb08820194bea26a98e` 中可回读的最终决策、机器结果和实现入口。较早的阶段性 GO 若与后续冻结确认冲突，以后者为准。
+下表只索引当前主线 `ziyu24/cqc_T2@617bec5bf258ec4657f763bab8a25fb7fcc2596b` 中可回读的决定、机器结果和实现入口；历史报告中的过强归因按 `doc/RESEARCH_AUDIT_20260905.md` 勘误阅读，不能仅按 GO/STOP 标签裁决。
 
-**统一重开条件**：动态控制只有在更换核心 action/state 可观测量，并预注册新的独立轨迹、正常 Control 和端到端等墙钟正收益门后才能重开。分区执行必须先完成上述逐层首错审计；若后端可观测且可稳定固定 kernel/reduction plan，则记录并验证同一计划；否则保持完整输入 shape，或明确改为容差集合等价并预注册误差、任务效用、显存与延迟预算。仅更换 halo、阈值、重试次数或结论措辞不构成新路线。
+**重新评估条件**：具体新机制，或指出原适用条件/验证设计错误的证据，都可以构成重新评估理由，不强制为重开而更换方法名。动态控制应明确独立训练轨迹与场景、正常 Control、阶段匹配和等墙钟估计；分区执行先审计首错，kernel/reduction plan 仅在可观测且可固定时验证，否则保持完整输入 shape 或预注册容差、任务效用及资源预算。发现旧证据有局限不等于已经值得救援，仅换 halo、阈值或措辞也不构成正向依据。
 
 | 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
 | --- | --- | --- | --- |
 | Oracle Gain / Oracle V2 | 动作差异与开发 headroom 存在，但短/长 horizon 排序中位相关仅 `0.619`、跨阶段仅 `0.381`，且没有证明相对正常 Control 的稳定正收益 | 停止把相对 action 排序直接解释为在线 controller；保留为开发期异质性证据 | `work_dirs/oracle_gain_test/ORACLE_DECISION.md`；`work_dirs/oracle_gain_test_v2/ORACLE_V2_DECISION.md`；`work_dirs/oracle_gain_test_v2/horizon_rank_agreement.csv` |
 | Controller V1 | history 模型 regret `0.008992>0.004350`，稳定反转准确率 `0.239<0.25` 随机联合基线 | 停止当前离线 history controller 进入第三轨迹或在线部署 | `work_dirs/oracle_controller_v1/CONTROLLER_V1_DECISION.md`；`work_dirs/oracle_controller_v1/reversal_prediction.csv` |
 | State V2 | 最终 regret `0.018276`，劣于瞬时基线 `0.014294`；capture `-0.067`，反转准确率 `0.417<0.60` | 停止继续堆叠当前高频/长窗口状态特征；不否定其它状态定义 | `work_dirs/controller_state_v2/STATE_V2_DECISION.md`；`work_dirs/controller_state_v2/state_v2_metrics.csv` |
-| Oracle V3 | 开发最优 action `+0.029207`，冻结第三轨迹变为 `-0.028984`；等墙钟无稳定正 action，完整验证候选为空 | `STOP DYNAMIC CONTROL`：停止当前 action、状态估计和 controller 设计，不外推到所有动态课程 | `work_dirs/oracle_v3/ORACLE_V3_DECISION.md`；`work_dirs/oracle_v3/oracle_v3_summary.json`；`work_dirs/oracle_v3/equalwall_summary.json` |
+| Oracle V3 | 开发最优 `+0.029207`，唯一确认轨迹 `-0.028984`；无合格全量验证候选。但阶段/replay 非独立轨迹，probe 母图重叠 | 停止当前投入和稳定正收益主张，不把原 bootstrap 区间外推为家族负效应证明 | `doc/RESEARCH_AUDIT_20260905.md`；`src/audit_saved_evidence.py`；`work_dirs/oracle_v3/ORACLE_V3_DECISION.md`；`work_dirs/oracle_v3/equalwall_summary.json` |
 | independent-tile baseline | 两个检测器的 6 个真实条件 final set 全部不等于 native；RTMDet P0897 的 retained-set rate 随布局为 `0.9324–0.9461` | 只作为分区敏感性动机；停止把普通切片+合并当作 transparent compiler 结果 | `work_dirs/partition_transparent_closure/PARTITION_SENSITIVITY_REPORT.md`；`work_dirs/partition_transparent_closure/PARTITION_SENSITIVITY_BENCHMARK.csv` |
 | regional operators / toy-FPN | 局部测试 18/18、语义单测 7 个通过，但真实两类 detector 的 L1–L4 均未执行 | 停止从单元/合成子图外推端到端 compiler；保留已闭合局部语义 | `work_dirs/partition_transparent_closure/OPERATOR_EQUIVALENCE_REPORT.md`；`work_dirs/partition_transparent_closure/END_TO_END_EQUIVALENCE.csv` |
 | legality-first planner | 只有未绑定 DAG 的 synthetic 预测；实测峰值/延迟为空，所有强基线均不可用 | 停止自动预算满足、优于手工或 offload 的性能主张 | `work_dirs/partition_transparent_closure/PLANNER_EVALUATION.csv`；`work_dirs/partition_transparent_closure/planner_plan.json` |
 | RTMDet halo-only exact gate | 四个全局 ChannelAttention 未支持，8 个计划均执行前拒绝，合法 L4 样本为零 | 停止当前 halo-only executor；只证明需 global-reduction lowering，不是八次等价失败 | `doc/rtmdet_exact_gate/RTMDET_EXACT_GATE_DECISION.md`；`doc/rtmdet_exact_gate/EXACT_GATE_RESULTS.csv`；`doc/rtmdet_exact_gate/runtime_legality.json` |
-| Full Global Barrier | attention 全部 exact 后，首个已记录失配在 FPN 输出；C3/C4/C5 final materialization 未独立比较。8/8 L3/L4 不等，虽降显存 73%，decode/NMS 前已慢 `6.08×` | `STOP_PARTITION_TRANSPARENT_PROJECT`：停止当前严格 bit-exact regional runtime、planner 和跨模型扩展；首错位置保持未知 | `work_dirs/rtmdet_full_global_barrier/EXACT_GATE_MATRIX.csv`；`src/partition_runtime/backbone_global_executor.py`；`src/partition_runtime/neck_head_regional_executor.py` |
+| Full Global Barrier | attention exact，最终 C3/C4/C5 未独立比较，8/8 L3/L4 不等；73% 是 allocated 降幅，`6.08×` 是带审计单次耗时而非成本下界 | 停止当前严格精确/通用 compiler 主张；保留 barrier，首错、纯部署性能及容差效用未知 | `doc/RESEARCH_AUDIT_20260905.md`；`work_dirs/rtmdet_full_global_barrier/EXACT_GATE_MATRIX.csv`；`src/partition_runtime/backbone_global_executor.py`；`tools/run_phased_rtmdet_backbone.py` |
 | legacy alleged exact runtime | `1734/1734`、`180/180` 无提交、命令或 provenance，全面搜索后仍不可追溯 | 禁止引用为结果或用新运行补写旧 provenance；状态保持 UNVERIFIED | `doc/rtmdet_exact_gate/EVIDENCE_RECONCILIATION.md`；`doc/rtmdet_exact_gate/native_reference_manifest.json` |
