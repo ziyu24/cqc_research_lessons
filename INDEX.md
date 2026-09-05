@@ -27,7 +27,7 @@
 | `cqc_P3` | `main@01ec74edab116e6d4a6f44093deb0e7a95436e13；secondary@8b59dd647a37fbd862cac3181e8e9c4956f450f6` | 已登记 | 7 |
 | `cqc_P4` | `main@0719847bfbc1b49f4e4d5254685bf0e6b318fb2c；secondary@ca6a7615605025196f46c39b22bb80c321456133` | 已登记 | 5 |
 | `cqc_P5` | `main@1093b8b57a9a8dc13a8e520376caa9b826a9fb33；secondary@8fc035ddb9827c21f56fefd9c3b3bdae2f93602c` | 已登记 | 6 |
-| `cqc_P6` | `99efec0a427a00160c7424963eaf62431871955f` | 已登记 | 6 |
+| `cqc_P6` | `dc6ba44eed7f07283fcb1f8d5aadd19e27d50ce5` | 已登记 | 8 |
 | `cqc_P7` | `6451a708401384a52fd95a0edaf7dcf92e7a9378` | 已登记 | 1 |
 | `cqc_P8` | `f15635f7a79386b5bf3628d2fead559bc19b7892` | 已登记 | 3 |
 | `cqc_P9` | `743f6e5644b452bea02ec303dd2bebd1a6ab5e94` | 已登记 | 7 |
