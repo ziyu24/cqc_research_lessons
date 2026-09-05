@@ -23,7 +23,7 @@
 | `conformal-mmrotate` | `b55f7a4873d6d57130b8ba98083893a131971419` | 工具计划占位，无可审计证据 | 0 |
 | `cqc_factory` | `3311c8fdf8572d9c9906e6f1f538d6933d26c8c6` | 基础设施，非科研对象 | 0 |
 | `cqc_P1` | `main@d20df6a67a2708de90b7d6e9e3ce1eed53621573；secondary@8a9389f9d07c66937fb8af2a1da06754248afda2` | 科研孵化，尚无验证结论 | 0 |
-| `cqc_P10` | `56af03cdfa40eb4b66b9853241163a0add4bf77f` | 已登记 | 9 |
+| `cqc_P10` | `e9f447125091748fae53ae0387c1ce4a0e8b9cfe` | 已登记 | 11 |
 | `cqc_P11` | `8e1d04e6dd397ffba78b7689a0f57f13da7bd80b` | 已登记 | 6 |
 | `cqc_P2` | `487006fd7a3ce35b5cb497c24cb39c74a90ddacb` | 已登记 | 4 |
 | `cqc_P3` | `main@01ec74edab116e6d4a6f44093deb0e7a95436e13；secondary@8b59dd647a37fbd862cac3181e8e9c4956f450f6` | 已登记 | 7 |
