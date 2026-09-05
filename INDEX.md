@@ -63,7 +63,7 @@
 | `lspassign` | `636dc6b809366db901d09412fa2e7aec8e72cce0` | 占位仓库，无可审计证据 | 0 |
 | `mobiusobb` | `438a6ff190942824fc3116f3f6cf20a0d7995ef0` | 占位仓库，无可审计证据 | 0 |
 | `obb-input-aligned-distill` | `1d12ca7b9f953d18b5c07cd31e565929f168c366` | 占位仓库，无可审计证据 | 0 |
-| `orientbench` | `70daa8109bc04889dc00260e7654089fb1562da2` | 已登记 | 8 |
+| `orientbench` | `cb62dbb6031bfd5d772d479ec0921dec6fe4fce4` | 已登记 | 8 |
 | `OrientDA` | `b7ce79c6a11411763935b2da243e65132ec16266` | 已登记 | 8 |
 | `oriented-detection-risk-control` | `db85aa22742f7afebbd748af80465700106397a7` | 占位仓库，无可审计证据 | 0 |
 | `OVShape-OBB` | `6cc6b8f31ae4d12600ac855dce271d65419f9f6a` | 占位仓库，无可审计证据 | 0 |
