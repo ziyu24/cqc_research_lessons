@@ -16,7 +16,7 @@ T2 实际包含两个独立的高风险问题，不能用一条“训练与推�
 按损失、难度或不确定性动态选择训练样本并不是 T2 首次提出，已有 online batch selection、Active Bias 和 data-driven curriculum 等工作。精确 tile/out-of-core 推理与 DNN tile compiler 也已有公开研究。T2 可能有区分度的对象，分别是“在旋转检测训练状态上用成对反事实 replay 估计 action 的 baseline-relative utility”，以及“把旋转检测候选、RoI、top-k、NMS 等全局集合运算纳入 canonical final-set equality 契约”；仓库没有证据证明这两种表述已经获得同行共同体认可。
 
 - **事实**：早期开发轨迹存在动作差异和可预测 headroom，但历史状态模型未达到绝对决策门槛；最终冻结的独立轨迹上，开发期最优 action 由正转负，等墙钟结果也没有形成跨阶段、双 replay 的稳定正收益，动态控制路线最终停止。
-- **事实**：局部算子和合成 FPN 子图通过了精确性测试，但当时没有真实检测器的分区运行。补齐 RTMDet 的四个全局 ChannelAttention barrier 后，区域 neck 的 shape-dependent FP32 convolution 首先失配，最终候选与检测集合仍不相等。
+- **事实**：局部算子和合成 FPN 子图通过了精确性测试，但当时没有真实检测器的分区运行。补齐 RTMDet 的四个全局 ChannelAttention barrier 后，首个已记录失配出现在 FPN 输出，最终候选与检测集合仍不相等；shape-dependent FP32 convolution 路径差异是当前最强解释，但 C3/C4/C5 的最终 materialized feature 未被独立比较，首错节点尚未闭合。
 - **事实**：最终 RTMDet 分区执行把 P1854 峰值显存从 6.674 GiB 降到约 1.8 GiB，但在 decode/NMS 前已至少慢 6.08 倍，且没有满足严格输出等价；这不是有效的精确低显存 compiler 结果。
 - **推断**：T2 最有复用价值的是把开发选择、独立确认、等墙钟因果效用和多级执行等价分开的审计框架，而不是已经闭合的方法贡献。
 - **未知**：动态 action 家族没有进入完整 DOTA validation，因为没有候选通过预注册触发门；分区 compiler 没有在第二检测器或外部数据集上形成可执行结果。若放宽为容差等价或近似离线推理，收益边界尚未被本项目系统研究。
@@ -79,13 +79,13 @@ T2 实际包含两个独立的高风险问题，不能用一条“训练与推�
 - 边界：普通有限 halo 确实不能直接替代全局平均；但这只要求显式全局归约，不代表加入 barrier 后的整个检测器会自动精确。
 - 证据：`ziyu24/cqc_T2@2a5998027fd06309a345beb08820194bea26a98e` 的 `doc/rtmdet_exact_gate/RTMDET_EXACT_GATE_DECISION.md`、`doc/rtmdet_exact_gate/EXACT_GATE_RESULTS.csv`、`work_dirs/rtmdet_full_global_barrier/FULL_GLOBAL_BARRIER_DECISION.md`。
 
-## 教训七：数学算子相同也可能因执行形状改变而失去 FP32 逐位等价
+## 教训七：首个已观测失配不等于首错节点已经定位
 
-- 失败命题：全局 attention 已精确、halo 和母图坐标也正确，区域 PAFPN 中相同权重的 convolution 就应与整图执行逐位相同。
-- 失败原因：四个 attention barrier 接回 regional backbone 后仍精确，但区域 CSPNeXtPAFPN 首先失配：P0897/P1854 最大差分别为 `6.002×10⁻⁵` 和 `7.558×10⁻⁵`。全尺寸 native neck+head control 可以精确，说明根因不是 attention、坐标、decode 或 NMS，而是输入形状变化触发的 FP32 convolution reduction 路径差异；随后 8/8 的候选与最终集合都不相等。
-- 后续做法：声称 bit-exact 时必须把算子实现、输入形状、kernel/reduction plan 和归约顺序纳入参考函数；从首个失配张量定位，不以“数学卷积相同”跳过数值执行审计。
-- 边界：该结果否定当前 regional PAFPN 在严格逐位契约下的透明性，不说明误差必然影响所有任务指标，也不否定预先冻结数值计划或采用容差契约的其它方案。
-- 证据：`ziyu24/cqc_T2@2a5998027fd06309a345beb08820194bea26a98e` 的 `work_dirs/rtmdet_full_global_barrier/FULL_GLOBAL_BARRIER_DECISION.md`、`lab/result.md`、`src/partition_runtime/neck_head_regional_executor.py`。
+- 失败命题：四个 attention barrier 已精确，而首个记录到的差异在 FPN 输出，因此可以断言区域 neck 的 shape-dependent FP32 convolution 是首错根因。
+- 失败原因：当前 instrumentation 逐位比较了各 stage 的 attention 输入和输出，但没有在随后分区执行的 `final_conv` 之后分别比较 materialized C3、C4、C5；下一组对照已经是 FPN 输出，其 P0897/P1854 最大差分别为 `6.002×10⁻⁵` 和 `7.558×10⁻⁵`。所以事实只到“首个已观测失配在 FPN 输出”，shape-dependent FP32 convolution 路径差异是最强解释，不能排除数值差异更早出现在 backbone stage 边界。
+- 后续做法：做首错节点审计时，按 native/regional 成对记录 C3、C4、C5，并继续记录 neck 的 reduce、top-down、bottom-up 和 out-conv；每层同时冻结输入 shape、kernel/reduction plan 与归约顺序，从最后一个精确节点定位第一个失配节点。
+- 边界：该修正不改变 8/8 的 L3/L4 不等或当前项目停止结论，只撤回尚未被逐层证据支持的 neck 根因定位；严格 bit-exact 失败也不等于容差集合等价必然失败。
+- 证据：`ziyu24/cqc_T2@2a5998027fd06309a345beb08820194bea26a98e` 的 `work_dirs/rtmdet_full_global_barrier/EXACT_GATE_MATRIX.csv`、`src/partition_runtime/backbone_global_executor.py`、`src/partition_runtime/neck_head_regional_executor.py`。
 
 ## 教训八：显存、语义正确性和延迟必须在同一执行上同时成立
 
@@ -107,6 +107,8 @@ T2 实际包含两个独立的高风险问题，不能用一条“训练与推�
 
 下表只索引当前主线 `ziyu24/cqc_T2@2a5998027fd06309a345beb08820194bea26a98e` 中可回读的最终决策、机器结果和实现入口。较早的阶段性 GO 若与后续冻结确认冲突，以后者为准。
 
+**统一重开条件**：动态控制只有在更换核心 action/state 可观测量，并预注册新的独立轨迹、正常 Control 和端到端等墙钟正收益门后才能重开。分区执行只有在完成上述逐层首错审计并冻结相同输入 shape/kernel 计划，或明确改为容差集合等价且预注册误差、任务效用、显存与延迟预算后才能重开；仅更换 halo、阈值、重试次数或结论措辞不构成新路线。
+
 | 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
 | --- | --- | --- | --- |
 | Oracle Gain / Oracle V2 | 动作差异与开发 headroom 存在，但短/长 horizon 排序中位相关仅 `0.619`、跨阶段仅 `0.381`，且没有证明相对正常 Control 的稳定正收益 | 停止把相对 action 排序直接解释为在线 controller；保留为开发期异质性证据 | `work_dirs/oracle_gain_test/ORACLE_DECISION.md`；`work_dirs/oracle_gain_test_v2/ORACLE_V2_DECISION.md`；`work_dirs/oracle_gain_test_v2/horizon_rank_agreement.csv` |
@@ -117,5 +119,5 @@ T2 实际包含两个独立的高风险问题，不能用一条“训练与推�
 | regional operators / toy-FPN | 局部测试 18/18、语义单测 7 个通过，但真实两类 detector 的 L1–L4 均未执行 | 停止从单元/合成子图外推端到端 compiler；保留已闭合局部语义 | `work_dirs/partition_transparent_closure/OPERATOR_EQUIVALENCE_REPORT.md`；`work_dirs/partition_transparent_closure/END_TO_END_EQUIVALENCE.csv` |
 | legality-first planner | 只有未绑定 DAG 的 synthetic 预测；实测峰值/延迟为空，所有强基线均不可用 | 停止自动预算满足、优于手工或 offload 的性能主张 | `work_dirs/partition_transparent_closure/PLANNER_EVALUATION.csv`；`work_dirs/partition_transparent_closure/planner_plan.json` |
 | RTMDet halo-only exact gate | 四个全局 ChannelAttention 未支持，8 个计划均执行前拒绝，合法 L4 样本为零 | 停止当前 halo-only executor；只证明需 global-reduction lowering，不是八次等价失败 | `doc/rtmdet_exact_gate/RTMDET_EXACT_GATE_DECISION.md`；`doc/rtmdet_exact_gate/EXACT_GATE_RESULTS.csv`；`doc/rtmdet_exact_gate/runtime_legality.json` |
-| Full Global Barrier | attention 全部 exact 后 regional PAFPN 首先失配，8/8 L3/L4 不等；虽降显存 73%，decode/NMS 前已慢 `6.08×` | `STOP_PARTITION_TRANSPARENT_PROJECT`：停止当前严格 bit-exact regional runtime、planner 和跨模型扩展 | `work_dirs/rtmdet_full_global_barrier/FULL_GLOBAL_BARRIER_DECISION.md`；`lab/result.md`；`src/partition_runtime/full_global_barrier.py` |
+| Full Global Barrier | attention 全部 exact 后，首个已记录失配在 FPN 输出；C3/C4/C5 final materialization 未独立比较。8/8 L3/L4 不等，虽降显存 73%，decode/NMS 前已慢 `6.08×` | `STOP_PARTITION_TRANSPARENT_PROJECT`：停止当前严格 bit-exact regional runtime、planner 和跨模型扩展；首错位置保持未知 | `work_dirs/rtmdet_full_global_barrier/EXACT_GATE_MATRIX.csv`；`src/partition_runtime/backbone_global_executor.py`；`src/partition_runtime/neck_head_regional_executor.py` |
 | legacy alleged exact runtime | `1734/1734`、`180/180` 无提交、命令或 provenance，全面搜索后仍不可追溯 | 禁止引用为结果或用新运行补写旧 provenance；状态保持 UNVERIFIED | `doc/rtmdet_exact_gate/EVIDENCE_RECONCILIATION.md`；`doc/rtmdet_exact_gate/native_reference_manifest.json` |
