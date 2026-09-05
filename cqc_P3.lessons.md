@@ -1,10 +1,19 @@
 # cqc_P3 科学问题与失败教训
 
-审计基线：`ziyu24/cqc_P3@01ec74edab116e6d4a6f44093deb0e7a95436e13`
+审计基线：当前主线 `ziyu24/cqc_P3@01ec74edab116e6d4a6f44093deb0e7a95436e13`；另比较了比主线多 1 个提交的 `cc/CC0005-response` 分支 `ziyu24/cqc_P3@8b59dd647a37fbd862cac3181e8e9c4956f450f6`。后者新增 GROC 空间重叠审计，是本轮必须保留的较新科学证据；其余主线结论仍以 main 为准。
+
+快速阅读路径：先读“项目研究什么”→“教训一、五、六、七”→“方法族停止索引”。
 
 ## 项目研究什么
 
 项目系统寻找遥感目标检测中可发表的新科学问题，审查上下文依赖、数据泄漏、方向歧义、采集条件、无标签风险估计和灾害决策等候选命题是否新颖且可识别。
+
+## 领域位置与当前结论
+
+- **事实**：该仓库主要是研究问题审计而非模型实验；14 个候选方向因直接文献碰撞、数据字段不足、不可识别或资源不成立而停止或要求重构。
+- **事实**：较新次线把 GROC 的“精确文件名交集为零”结论推翻为更严格的空间证据：全数据存在 4,764 个跨 split 正面积重叠对，76/76 空间组跨 split，抽查的 benchmark tiles 中 118/200 与训练地面范围重叠。
+- **推断**：P3 的有效贡献是把“问题是否可研究”拆成新颖性、可识别性、数据资格与决策效用四类门，而不是从大量候选名称中挑一个继续包装。
+- **未知**：仓库尚无通过这些门并完成确认实验的主线方法；停止候选不等于相应领域问题一般不成立。
 
 ## 实际采用过的方法
 
@@ -57,3 +66,23 @@
 - 后续做法：先给出可证伪的识别假设和事件级真值，明确行动成本与效用；若只能得到部分识别集，就报告界而非点估计。
 - 边界：在条件独立、误差率已标定等强假设有外部证据时，可以估计受限风险，但结论依赖这些假设。
 - 证据：`ziyu24/cqc_P3@01ec74edab116e6d4a6f44093deb0e7a95436e13` 的 `research/failures/F0010.md`、`research/failures/F0011.md`、`research/failures/F0012.md`。
+
+## 教训七：文件名不重复不能证明地理独立
+
+- 失败命题：train/test 精确 stem 交集为零，或只在同前缀小范围内找到有限重叠，就足以宣布遥感 benchmark 空间独立。
+- 失败原因：同一地面区域可以被不同切片名、尺度和裁剪窗口表示。较新分支把受限前缀检查扩展到官方元数据与全数据几何相交后，发现 4,764 个跨 split 正面积重叠对、76/76 空间组跨 split，且 59% 的抽查 benchmark tiles 与训练地面范围相交；原来的 80 对只是严重低计。
+- 后续做法：用官方坐标、footprint polygon 和空间连通分量审计地理独立；报告面积重叠率、组级交叉和母图/地点有效样本量，不能只 join 文件名。
+- 边界：这些数字说明当前 GROC 划分存在显著空间依赖，不自动量化性能膨胀，也不代表所有遥感 benchmark 都泄漏。
+- 证据：`ziyu24/cqc_P3@8b59dd647a37fbd862cac3181e8e9c4956f450f6` 的 `coordination/cc/CC0005/response.md`、`coordination/cc/CC0005/artifacts/external-verification-log.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前证据路径 |
+| --- | --- | --- | --- |
+| context / tiny-OBB / multimodal fusion | 与已有上下文反事实、缺失模态融合等方向直接碰撞 | 停止仅换遥感场景或组合热门组件的立项 | main：`research/failures/F0001.md`、`research/failures/F0002.md`、`research/failures/F0003.md` |
+| GeoFM / benchmark leakage | 仅同源或缺元数据不能识别泄漏 | 停止无连接键的肯定或否定结论 | main：`research/failures/F0004.md`、`research/failures/F0005.md` |
+| class symmetry / orientation truth | 类别对称性不提供实例级合法方向 | 停止用类别标签直接折叠实例方向 | main：`research/failures/F0006.md` |
+| altitude / reference age / preprocessing | 缺少同对象、同地点、同处理祖先的配对反事实 | 停止因果措辞，只保留相关描述 | main：`research/failures/F0007.md`、`research/failures/F0013.md`、`research/failures/F0014.md` |
+| xView3 / derived gold | AIS、人工合并或模型派生产品不是独立完整金标准 | 停止完整漏检率和流行率点识别 | main：`research/failures/F0008.md` |
+| unlabeled shift / disaster utility | 相同预测可对应不同真值；无真实成本时效用退化为普通排序指标 | 停止无标签完整风险与伪行动贡献 | main：`research/failures/F0010.md`、`research/failures/F0011.md`、`research/failures/F0012.md` |
+| GROC exact-ID audit | stem 交集为零但全空间审计发现 4,764 个跨 split 重叠对 | 停止以文件 ID 非重叠证明空间独立 | 较新次线：`coordination/cc/CC0005/response.md` |

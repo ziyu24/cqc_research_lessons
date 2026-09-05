@@ -1,14 +1,25 @@
 # orientbench 科学问题与失败教训
 
-审计基线：`ziyu24/orientbench@ea337b2d6df813c5460f1a3db844ce2802b8ba09`
+审计基线：当前主线 `ziyu24/orientbench@288f05be66e4f9b78b8e51306caf533251c2b676`。主线已超过此前接受的“资产不可用”节点，并完成一次从冻结初始化开始的 RarePlanes 六训练与 calibration-only 审计；该审计因功效不足保持不确定。
+
+快速阅读路径：先读“项目研究什么”→“教训一、二、四、六、八”→“方法族停止索引”。
 
 ## 项目研究什么
 
 项目研究旋转检测的“方向可靠性”是否被常用框指标掩盖，以及几何方向误差能否预测独立的下游应用风险并支持校准、选择或融合。
 
+## 领域位置与当前结论
+
+- **事实**：AP50 对强角度扰动不敏感的测量结论成立，但几何异常尚未在独立应用效用上形成稳定增量。
+- **事实**：COI 八个主要操作都未把预设中介 `J_eff/M15` 推动超过 `0.20`，只能判协议/操纵有效性不足，不能判机制死亡。
+- **事实**：SAR 路线因本地没有合格 RSDD-SAR/SAR-Aircraft 资产停止，这是资产不可用，不是科学负结果。
+- **事实**：RarePlanes 的旧“仅 83 components”结论被修复为 102；一轮后续证据因 split 被改、lineage 弱、实现非独立和六个训练只完成两个而不具确认资格。最新独立重做已完成六个训练，但 calibration-only 的六格 simultaneous upper 均未排除 2pp，最小功效远低于 0.80。
+- **推断**：该项目当前最大的风险不是缺想法，而是把执行、数据、操纵检查失败误写成科学结论。
+- **未知**：RarePlanes 角度干预是否达到 2pp 最小效应仍未知；最新结果是低功效不确定，不是正向或负向裁决。
+
 ## 实际采用过的方法
 
-项目做受控角度扰动、AP50/AP75 与角误差对照，使用图像级 LTT 选择覆盖率，并在 HRSC 等条件上测试应用迁移、风险 selector、融合、CMR、GR-EQS 和有效方向干预。
+项目做受控角度扰动、AP50/AP75 与角误差对照，使用图像级 LTT 选择覆盖率，并在 HRSC 等条件上测试应用迁移、风险 selector、融合、CMR、GR-EQS 和有效方向干预；RarePlanes 路线还用 ResNet-50/ViT-B、三种子配对训练与同步 bootstrap 审计 calibration component。
 
 ## 教训一：AP50 可以掩盖严重方向错误
 
@@ -41,3 +52,48 @@
 - 后续做法：先验证干预确实大幅、定向地改变中介而尽量保持其他因素，再观察结果响应；操纵检查是因果解释的前提。
 - 边界：重复、强而特异的有效干预若仍无响应，才可对该机制形成负证据。
 - 证据：`ziyu24/orientbench@ea337b2d6df813c5460f1a3db844ce2802b8ba09` 的 `lab/failed_methods.md`、`lab/result.md`。
+
+## 教训五：资产缺失、协议不合格和训练未完成都不是科学负结果
+
+- 失败命题：找不到 SAR 数据、某些位移样本保留率不足，或训练只完成一部分，都可汇总为“方向机制失败”。
+- 失败原因：这些事件分别对应资产不可用、执行资格不满足和证据矩阵不完整；它们没有在合格协议下比较方法与基线。把三者合并会制造不存在的负证据。
+- 后续做法：状态只用三类：`ASSET_UNAVAILABLE`、`EXECUTION_INVALID/INCOMPLETE`、`SCIENTIFIC_RESULT`；前两类不得进入方法成败汇总。
+- 边界：它们仍能停止当前任务并约束资源，但停止执行不等于停止科学方向。
+- 证据：`ziyu24/orientbench@1ca37ddd26341ab01824c7d70745c33afad0d4ad` 的 `lab/result.md`、`lab/failed_methods.md`。
+
+## 教训六：自洽的新流水线不能替代冻结 provenance
+
+- 失败命题：修复数据后新拆分内部自洽、指标也可复算，就足以继承旧确认协议。
+- 失败原因：RarePlanes 中 26 个科学计数法 category id 的确可以借 image id 与 GeoJSON 修复，但后续运行把 lexical split 改成 numeric rerandomization，初始化 lineage 弱，footprint 实现也不独立；自洽只是“同一错误可重复”。
+- 后续做法：冻结原始 split key、初始化 hash、数据修复映射和独立实现；任何变更都先判断是否改变估计对象，再决定重跑而不是拼接。
+- 边界：修复后的 102 components 是有效数据事实；被否定的是用不一致 provenance 继承确认性比较。
+- 证据：`ziyu24/orientbench@1ca37ddd26341ab01824c7d70745c33afad0d4ad` 的 `lab/result.md`、`lab/failed_methods.md`。
+
+## 教训七：确认性矩阵未完成时不能拼接部分训练
+
+- 失败命题：六个预注册训练中完成两个 R50 后，可以先汇总并在之后补 ViT 或用新机器续接成为确认结果。
+- 失败原因：模型族、初始化和训练完成状态是冻结矩阵的一部分；只完成 2/6，且 calibration/test 尚未打开，不能估计架构异质性或使用预注册决策门。
+- 后续做法：确认性比较必须从冻结初始化完成全部 cell，再一次性打开 calibration/test；部分结果只作运行记录，不做科学聚合。
+- 边界：探索阶段可以查看部分训练用于排错，但一旦查看结果并改变计划，后续必须重新定义为新的确认实验；后来完整重做六个训练，只修复了完整性，不会追认旧 2/6 证据。
+- 证据：`ziyu24/orientbench@288f05be66e4f9b78b8e51306caf533251c2b676` 的 `lab/result.md`。
+
+## 教训八：有效实现加完整训练也不能把低功效结果硬判成科学阴性
+
+- 失败命题：只要六个预注册训练全部完成、实现与独立验证一致，就可以根据小点估计或未过阈值给方向机制下结论。
+- 失败原因：最新六格效应点估计为约 `-1.58pp` 至 `2.10pp`，但 simultaneous upper 全部高于 2pp，功效仅约 `0.07–0.59`；实现正确和 clean utility 通过并不能补足统计分辨率，既不能排除最小效应，也不能把单格正点估计包装为成立。
+- 后续做法：确认实验同时预注册最小效应、联合区间和功效门；结果区间跨越最小效应时只记不确定，下一步须改变信息量或研究问题，不能追加种子追显著性。
+- 边界：该结论只限制当前 calibration-only 设计对 2pp 效应的辨识能力，不否定方向信息、模型架构或下游 test utility。
+- 证据：`ziyu24/orientbench@288f05be66e4f9b78b8e51306caf533251c2b676` 的 `lab/result.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| AP50-only orientation audit | 角度破坏下 AP50近稳而 AP75下降 `0.176–0.398` | 停止 AP50 单指标验收方向质量 | `lab/result.md` |
+| geometry-to-utility transfer | 独立应用区间为负或跨零 | 停止当前应用/信号的因果增量主张 | `lab/result.md`；`lab/failed_methods.md` |
+| LTT selector | 最优规则恒保留全部样本 | 停止把平凡全选写成选择性证书 | `lab/result.md` |
+| COI interventions | 8 个操作均未把中介推动超过 `0.20` | 判操纵失败；机制保持未知 | `lab/result.md`；`lab/failed_methods.md` |
+| TAL shift-to-angle | 部分 y 轴位移保留率仅 `88.49%–89.68%`，未过 90% 资格门 | 判执行有效性不足，不作科学裁决 | `lab/result.md` |
+| SAR carrier | 无合格本地资产 | 状态仅为资产不可用 | `lab/result.md` |
+| RarePlanes legacy evidence | component 计数已修正；split、lineage、独立实现与训练完整性均有问题 | 停止旧证据，不与后续重做拼接 | `lab/result.md`；`lab/failed_methods.md` |
+| RarePlanes calibration-only audit | 六训练与独立复算通过，但 simultaneous upper 未排除 2pp，功效仅 `0.07–0.59` | 只判低功效不确定；不得开启后续机制主张或写成科学阴性 | `lab/result.md` |

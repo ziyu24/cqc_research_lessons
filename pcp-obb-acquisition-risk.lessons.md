@@ -2,9 +2,20 @@
 
 审计基线：`ziyu24/pcp-obb-acquisition-risk@5d6768e0ee4f75c353e37bed7b543984c42af77f`
 
+快速阅读路径：先读“项目研究什么”→“教训一、三、四”→“方法族停止索引”。
+
 ## 项目研究什么
 
 项目研究遥感采集批次层级的旋转检测风险控制，试图在少标签或无标签条件下，利用多帧、多检测器或采集元数据判断一次飞行是否安全可用。
+
+## 领域位置与当前结论
+
+- **事实**：项目只完成零训练的新颖性、可识别性与资源审计，没有 GPU 实验。
+- **事实**：把完整 acquisition 当独立原子后，RCPS/LTT/CRC 可直接处理任意组内依赖；用帧数增加有效样本则必须引入已有 hierarchical/trajectory 假设。
+- **事实**：无标签多检测器风险在 arbitrary common miss/bias 下不可识别；自适应、post-selection 和 structured-output 候选又分别归约到已有工作。
+- **事实**：FlightShift 需要多次采集、约万级穷尽 OBB 与双人 QA，和单研究者、零标注预算直接冲突。
+- **推断**：该仓库的价值是及时停止伪新颖或不可执行的问题，而不是一个失败算法。
+- **未知**：未来资源变化或提出 CSP/CRC 不能表达的新 estimand 时可重新审计，但不得继承旧新颖性主张。
 
 ## 实际采用过的方法
 
@@ -41,3 +52,13 @@
 - 后续做法：在立项时列出最小样本、标注者、许可、传感器和质控成本，无法满足就缩小 estimand 或选择现有数据能回答的问题。
 - 边界：这是项目可行性否决，不是 FlightShift 科学假设的负证据；获得资源后可以重新评估。
 - 证据：`ziyu24/pcp-obb-acquisition-risk@5d6768e0ee4f75c353e37bed7b543984c42af77f` 的 `lab/failed_methods.md`、`lab/result.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| acquisition-level RCPS/LTT | 完整 acquisition 作为 IID 原子后为现有定理直接应用 | 停止 theorem novelty；可保留应用验证 | `doc/reports/T0_NOVELTY_REVIEW.md` |
+| acquisition-aware evaluation | temporal/spatial leakage、cluster bootstrap 与排序敏感性已有直接近邻 | 停止只换 OBB/采集名称的贡献 | `doc/reports/PIVOT_T0_ACQUISITION_AUDIT_REVIEW.md` |
+| unlabeled multi-detector risk | 共同漏检、共同偏差与 unknown linkage 导致不可识别 | 停止完整风险点估计 | `doc/reports/T0_UNLABELED_MULTI_DETECTOR_RISK_REVIEW.md` |
+| adaptive / post-selection / structured output | 分别归约为 adaptive conformal、selective/weighted control 与 CSP | 停止现有组合路线 | `doc/reports/T0_ADAPTIVE_MODEL_AND_STRUCTURED_OUTPUT_REVIEW.md`；`doc/reports/T0_POST_SELECTION_STRUCTURED_DISCOVERY_REVIEW.md` |
+| FlightShift | 采集与双重标注规模和现有资源不相容 | 判当前资源 NO-GO，不裁决科学假设 | `doc/reports/T1_FLIGHTSHIFT_RESOURCE_REVIEW.md` |

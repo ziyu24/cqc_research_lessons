@@ -1,6 +1,6 @@
 # GitHub 仓库科学审计索引
 
-本索引覆盖 2026-09-04 从 GitHub 账户 `ziyu24` 枚举到的全部 75 个仓库，其中 61 个为私有仓库、14 个为公开仓库。审计以表中提交为边界，逐库读取已提交的研究问题、方法、结果、失败记录和总结；停止维护的旧项目同样进行了只读审计，并且没有进入、修改或运行其内容。
+本索引覆盖 2026-09-04 从 GitHub 账户 `ziyu24` 枚举到的全部 75 个仓库，其中 61 个为私有仓库、14 个为公开仓库。审计抓取了每库全部远端分支，以 `main`/`master` 为主要分支，并比较提交时间更新的次要分支；`cqc_P1`、`cqc_P3`、`cqc_P4`、`cqc_P5` 和 `cqc_research` 的次要分支较新，表中同时记录比较边界。停止维护的旧项目同样只读审计，没有修改或运行其内容。
 
 本轮确认 26 个仓库具有可归纳的实质科研证据，每个对应根目录 `<仓库名>.lessons.md`。其余仓库明确区分为科研孵化、占位、空项目、基础设施、非论文项目或上游/学习仓库；不因文件为空而编造失败教训。审计不包含未提交工作区、Git LFS 大文件正文或仓库外资产，因此表中的“无可审计证据”不是成功证明。
 
@@ -13,38 +13,38 @@
 | `BlenderProc` | `76bd8b82ee19489843578ff045298642197bf883` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `Censored-OBB-Base` | `07ec912fa7a730c9ec5eacab1f4e95988fa4b7c6` | 占位仓库，无可审计证据 | 0 |
 | `CensoredTile-OBB` | `2f22a527b303042024f883f6d0e9be97becd4225` | 占位仓库，无可审计证据 | 0 |
-| `cerq` | `d223bfe8428c2230d64b91d584cc3dce52b22967` | 已登记 | 2 |
+| `cerq` | `d223bfe8428c2230d64b91d584cc3dce52b22967` | 已登记 | 3 |
 | `claude-code-sourcemap` | `a8a678cb6244e6770e1e421767ff0987a1d95549` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `cocoapi` | `8c9bcc3cf640524c4c20a9c40e89cb6a2f2fa0e9` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `CodingInterviewChinese2` | `2d6eb6d9127d1ad728ba60bb25bc5a5e91e519ac` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `cods-obb` | `3298ac026dee6a94819bb7ab5752627b1fa23370` | 占位仓库，无可审计证据 | 0 |
 | `conformal-mmrotate` | `b55f7a4873d6d57130b8ba98083893a131971419` | 工具仓库，无独立科学结论 | 0 |
-| `cqc_factory` | `3ace6d0a5c56544eb649f0d9c53c0dc28f2cf9ce` | 基础设施，非科研对象 | 0 |
-| `cqc_P1` | `d20df6a67a2708de90b7d6e9e3ce1eed53621573` | 科研孵化，尚无验证结论 | 0 |
-| `cqc_P10` | `3c92d3ef13a40c2838ea8ccbd7826807106c06ec` | 已登记 | 5 |
-| `cqc_P11` | `1d9a77ed6a048a03a6a3855cf8848f1f10f1d79c` | CHAT 空项目 | 0 |
-| `cqc_P2` | `487006fd7a3ce35b5cb497c24cb39c74a90ddacb` | 已登记 | 3 |
-| `cqc_P3` | `01ec74edab116e6d4a6f44093deb0e7a95436e13` | 已登记 | 6 |
-| `cqc_P4` | `0719847bfbc1b49f4e4d5254685bf0e6b318fb2c` | 已登记 | 4 |
-| `cqc_P5` | `1093b8b57a9a8dc13a8e520376caa9b826a9fb33` | 已登记 | 4 |
-| `cqc_P6` | `dcd648484879418bd094cea71184d81a8e724fd6` | 已登记 | 5 |
+| `cqc_factory` | `6ae2bf36c49e68c4fff943366c7f83a9f6c5ded9` | 基础设施，非科研对象 | 0 |
+| `cqc_P1` | `main@d20df6a67a2708de90b7d6e9e3ce1eed53621573；secondary@8a9389f9d07c66937fb8af2a1da06754248afda2` | 科研孵化，尚无验证结论 | 0 |
+| `cqc_P10` | `9f2572cd8f877c267af96c9b78890564565bf1e1` | 已登记 | 9 |
+| `cqc_P11` | `8e1d04e6dd397ffba78b7689a0f57f13da7bd80b` | 数据盘点阶段，尚无验证结论 | 0 |
+| `cqc_P2` | `487006fd7a3ce35b5cb497c24cb39c74a90ddacb` | 已登记 | 4 |
+| `cqc_P3` | `main@01ec74edab116e6d4a6f44093deb0e7a95436e13；secondary@8b59dd647a37fbd862cac3181e8e9c4956f450f6` | 已登记 | 7 |
+| `cqc_P4` | `main@0719847bfbc1b49f4e4d5254685bf0e6b318fb2c；secondary@ca6a7615605025196f46c39b22bb80c321456133` | 已登记 | 5 |
+| `cqc_P5` | `main@1093b8b57a9a8dc13a8e520376caa9b826a9fb33；secondary@8fc035ddb9827c21f56fefd9c3b3bdae2f93602c` | 已登记 | 6 |
+| `cqc_P6` | `99efec0a427a00160c7424963eaf62431871955f` | 已登记 | 6 |
 | `cqc_P7` | `6451a708401384a52fd95a0edaf7dcf92e7a9378` | 已登记 | 1 |
 | `cqc_P8` | `f15635f7a79386b5bf3628d2fead559bc19b7892` | 已登记 | 3 |
-| `cqc_P9` | `ab53c8bebe9849796d7e34e7b6afb21a4513dc1a` | 已登记 | 3 |
-| `cqc_research` | `69f1184fb79016fe45cf32df5fbbaf23885f6bb6` | 知识库，非单一科研对象 | 0 |
-| `cqc_research_lessons` | `c03de554a25e1a888883d4df1c0e62d2ece37a7d` | 基础设施，非科研对象 | 0 |
+| `cqc_P9` | `743f6e5644b452bea02ec303dd2bebd1a6ab5e94` | 已登记 | 7 |
+| `cqc_research` | `main@69f1184fb79016fe45cf32df5fbbaf23885f6bb6；secondary@c9e58d4d3786619eb9afb49cab145ba5982f016e` | 知识库，非单一科研对象 | 0 |
+| `cqc_research_lessons` | `50544811718d9c3aefdc12f51488713dea529fc2` | 基础设施，非科研对象；本轮写入前基线 | 0 |
 | `cqc_T1` | `18df509d3f5e46dedf0f8733c44b6fe5b6716b21` | 已登记 | 9 |
 | `cqc_T2` | `2a5998027fd06309a345beb08820194bea26a98e` | 已登记 | 9 |
 | `cqc_xyl` | `b247062e25e50891ba1660123183e58b18970a00` | 非论文项目 | 0 |
 | `cqc-P1` | `3259108256af0949f17e699991a32a9c63a05704` | 占位仓库，无可审计证据 | 0 |
 | `D17_FragmentStitch-OBB` | `73d025241602a7a280652b003c2959c000ad8390` | 占位仓库，无可审计证据 | 0 |
 | `D17_TileBoundary-OBB-Benchmark` | `0964c97735d115d44aa90243002c9f3e09f0da59` | 占位仓库，无可审计证据 | 0 |
-| `D7_pcp_obb_foundation` | `84da96973a464562cd965fbb0c9759a25bae5a58` | 已登记 | 5 |
+| `D7_pcp_obb_foundation` | `1f4092fd5ebb8ea0f4479b5e1e01a28f27aacece` | 已登记 | 8 |
 | `deep_learning_object_detection` | `98fab8b40848a5dd8e72d72f78bae705ffad82c2` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `Deformable-DETR` | `11169a60c33333af00a4849f1808023eba96a931` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `DenseOBB-B1C3` | `9566c7fa1b6184a5ffbe8b9924aadef82a4c6786` | 占位仓库，无可审计证据 | 0 |
 | `DG-OBB` | `fe6edfa2c47aa5a94d8a0cb33ea4cf59016936e1` | 已登记 | 3 |
-| `dgobb-synthprobe` | `5deedb7da5665fde50cbc5a7c2a55fc8b3ee52ed` | 已登记 | 5 |
+| `dgobb-synthprobe` | `5deedb7da5665fde50cbc5a7c2a55fc8b3ee52ed` | 已登记 | 8 |
 | `faster-rcnn.pytorch` | `f9d984d27b48a067b29792932bcb5321a39c1f09` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `first` | `ff1f8ea34c1ef62ef5f933eb2f3a2500bbd56069` | 非论文项目 | 0 |
 | `frozen-query-obb` | `c248ec3c00f159a1f71d8b85ae82c47ec5c9c7d6` | 占位仓库，无可审计证据 | 0 |
@@ -61,12 +61,12 @@
 | `lspassign` | `636dc6b809366db901d09412fa2e7aec8e72cce0` | 占位仓库，无可审计证据 | 0 |
 | `mobiusobb` | `438a6ff190942824fc3116f3f6cf20a0d7995ef0` | 占位仓库，无可审计证据 | 0 |
 | `obb-input-aligned-distill` | `1d12ca7b9f953d18b5c07cd31e565929f168c366` | 占位仓库，无可审计证据 | 0 |
-| `orientbench` | `ea337b2d6df813c5460f1a3db844ce2802b8ba09` | 已登记 | 4 |
-| `OrientDA` | `793d2fce0d7d4a7f70998b06a5569bdd9a768b92` | 已登记 | 6 |
+| `orientbench` | `288f05be66e4f9b78b8e51306caf533251c2b676` | 已登记 | 8 |
+| `OrientDA` | `b7ce79c6a11411763935b2da243e65132ec16266` | 已登记 | 8 |
 | `oriented-detection-risk-control` | `db85aa22742f7afebbd748af80465700106397a7` | 占位仓库，无可审计证据 | 0 |
 | `OVShape-OBB` | `6cc6b8f31ae4d12600ac855dce271d65419f9f6a` | 占位仓库，无可审计证据 | 0 |
 | `pcb-obb` | `8ac7244fe52e771042b7605c2606a1989b39fbe5` | 计划占位，无验证结论 | 0 |
-| `pcp-obb` | `f9a241f0b4c77f47b92b5559e10aef705e397175` | 已登记 | 2 |
+| `pcp-obb` | `f9a241f0b4c77f47b92b5559e10aef705e397175` | 已登记 | 4 |
 | `pcp-obb-acquisition-risk` | `5d6768e0ee4f75c353e37bed7b543984c42af77f` | 已登记 | 4 |
 | `pcp-obb-beyond` | `439e415ce3ded5fd1336bc2703160f7fa40c09c9` | 已登记 | 3 |
 | `pcp-obb-score-study` | `0df97a23936c0893704f8cf03c652625522060f9` | 已登记 | 2 |
@@ -79,5 +79,5 @@
 | `SuppressionRank-OBB` | `4cd3ebc41faffc33b5df28f6a467af1d27d33b4c` | 占位仓库，无可审计证据 | 0 |
 | `symq-obb` | `9ccf306deb645bf4859327380cb166e42d97af55` | 占位仓库，无可审计证据 | 0 |
 | `SynDOTAForge` | `79976ce1773fbdf9ae1c909d4f7e48347e9c1703` | 已登记 | 4 |
-| `TAOS` | `0c3bded0220758584723f1bf8747ef2eb13a0d5c` | 已登记 | 4 |
+| `TAOS` | `0c3bded0220758584723f1bf8747ef2eb13a0d5c` | 已登记 | 5 |
 | `travel_strategy` | `2691a5b459e627a31027905aff0709b4d871c251` | 非论文项目 | 0 |

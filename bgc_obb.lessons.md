@@ -2,9 +2,18 @@
 
 审计基线：`ziyu24/bgc_obb@ebfa89e77c7d831bf521cad48d652fa1de123bf5`
 
+快速阅读路径：先读“项目研究什么”→“教训一、二、三”→“方法族停止索引”。
+
 ## 项目研究什么
 
 项目研究弱监督旋转检测中，中心与形状参数块之间的几何梯度冲突能否预测定位错误，并据此对实例重加权。
+
+## 领域位置与当前结论
+
+- **事实**：vanilla mAP 约 `0.4515`，Frobenius、Log-Euclidean、Bures 分别约 `0.4206/0.4449/0.4302`，均未形成收益。
+- **事实**：被动 Log-Euclidean 信号与目标误差的 Spearman 仅约 `0.023`；选择最强约 9% 子集后也只有约 `0.107<0.15`。
+- **推断**：失败先发生在 observable 的预测信息，而非仅发生在训练重加权器；更换 SPD 度量不能救活共同的弱信号。
+- **未知**：PCGrad 路线受 DDP/非确定性异常污染，不能用其结果裁决梯度投影方法本身。
 
 ## 实际采用过的方法
 
@@ -33,3 +42,12 @@
 - 后续做法：依次验证定义、数值和外部预测效度，不用前两项替代第三项；高成本度量需证明增量价值。
 - 边界：本结论否定这些冲突分数作为当前风险代理，不否定 SPD 几何在其他估计目标中的用途。
 - 证据：`ziyu24/bgc_obb@ebfa89e77c7d831bf521cad48d652fa1de123bf5` 的 `decisions/A1_BGC_final_failure_summary_2026-05-12.md`、`decisions/D-2A-failure-2026-05-12.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| BGC observable | 被动相关仅约 `0.023`，精选子集约 `0.107<0.15` | 停止将块梯度冲突作为当前定位风险代理 | `results/E2_passive_bgc.md`；`decisions/A1_BGC_final_failure_summary_2026-05-12.md` |
+| SPD metric variants | Frob/LE/Bures 均低于 vanilla，且共享弱相关 | 停止仅换几何度量的挽救 | `decisions/A1_BGC_final_failure_summary_2026-05-12.md` |
+| instance reweighting | 被动信号先失败，训练也下降 | 停止当前权重机制；区分 signal 与 intervention | `decisions/A1_BGC_final_failure_summary_2026-05-12.md` |
+| PCGrad | DDP/非确定性异常破坏比较 | 只判运行无效，不裁决 PCGrad 一般效果 | `decisions/D-2A-failure-2026-05-12.md` |

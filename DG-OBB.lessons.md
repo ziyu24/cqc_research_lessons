@@ -2,9 +2,18 @@
 
 审计基线：`ziyu24/DG-OBB@fe6edfa2c47aa5a94d8a0cb33ea4cf59016936e1`
 
+快速阅读路径：先读“项目研究什么”→“教训一、二、三”→“方法族停止索引”。
+
 ## 项目研究什么
 
 项目研究旋转目标检测的跨域泛化，尤其是多尺度训练能否缓解不同遥感数据集、目标尺度和细长形状带来的域差，并尝试比简单缩放更复杂的域泛化模块。
+
+## 领域位置与当前结论
+
+- **事实**：A2 四尺度 RandomChoiceResize 在 Oriented R-CNN 的 DIOR↔DOTA 两方向 AP75 分别约 `+3.64/+3.55` 点，HRSC AP50 约 `+35.5` 点；RTMDet-M 的同类复核却约 `-1.52` 点。
+- **事实**：FIFG 出现 NaN，GCG 未胜过简单 resize；早期评价映射错误曾把 `0.6543` 级结果误写成 `0.0036`。
+- **推断**：可保留架构受限的输入尺度策略，不得维持架构通用或复杂模块优越性主张。
+- **未知**：停止维护后不再补实验；这些有限结论不能外推到新架构。
 
 ## 实际采用过的方法
 
@@ -33,3 +42,12 @@
 - 后续做法：始终保留强而简单的输入变换基线，先验证模块在等预算下的增量，再研究复杂机制。
 - 边界：失败针对现有实现和数据，不排除具有新观测或更强约束的域泛化方法。
 - 证据：`ziyu24/DG-OBB@fe6edfa2c47aa5a94d8a0cb33ea4cf59016936e1` 的 `lab/failed_methods.md`、`doc/legacy/p3_triple_prime_v2_finitesafe_max5_go_nogo_report.md`、`doc/legacy/p3_quad_prime_gcg_go_nogo_report.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| evaluator mapping | 修复后指标由约 `0.0036` 变为 `0.6543` | 停止引用错误映射产生的域差 | `lab/failed_methods.md`；`doc/legacy/final_discussion_report.md` |
+| A2 multi-scale resize | ORCNN 双向/HRSC 正，但 RTMDet-M 约 `-1.52` 点 | 保留架构条件策略；停止 universal claim | `lab/result.md`；`doc/legacy/p5_4_failure_boundary_report.md` |
+| FIFG | 数值 NaN 且无有效增量 | 停止当前频率模块 | `lab/failed_methods.md` |
+| GCG | 弱于简单 RandomChoiceResize | 停止当前几何条件模块 | `lab/failed_methods.md` |

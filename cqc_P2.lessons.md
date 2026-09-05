@@ -2,9 +2,18 @@
 
 审计基线：`ziyu24/cqc_P2@487006fd7a3ce35b5cb497c24cb39c74a90ddacb`
 
+快速阅读路径：先读“项目研究什么”→“教训一、二、四”→“方法族停止索引”。
+
 ## 项目研究什么
 
 项目审查旋转目标检测基准是否真的测到了所宣称的能力，重点包括角度定义、样本分配、排行榜可比性和证据可获得性。它是测量有效性研究，不是提出一个新检测器。
+
+## 领域位置与当前结论
+
+- **事实**：原先约 `4.0/6.97` 点的“角度定义差”同时混入 HBB/OBB assignment；固定几何后 KFIoU 定义 spread 约 `0.17` 点，普通基线约 `1.37` 点。
+- **事实**：仓库没有完成训练 campaign；当前成果是比较协议与测量对象的审计，不是新 detector 的实验负结果。
+- **推断**：排行榜中约 `0.35` 点的跨论文增益与上述同条件 spread 不是同一 population，不能直接比较大小。
+- **未知**：一个对角度表示更敏感、同时非退化且具有专家效用的替代 benchmark 尚未被实现验证。
 
 ## 实际采用过的方法
 
@@ -33,3 +42,20 @@
 - 后续做法：用多组同义词、引用链和权威索引交叉核验；仍不可得时明确写“未核实”，不要写“不存在”。
 - 边界：经系统综述协议完成的检索可以支持限定范围内的“未发现”，仍不能证明绝对不存在。
 - 证据：`ziyu24/cqc_P2@487006fd7a3ce35b5cb497c24cb39c74a90ddacb` 的 `coordination/workstreams/W0001/evidence.md`。
+
+## 教训四：稳定性指标必须先排除常数与退化解
+
+- 失败命题：一个指标在参数化、编码或重复评估下非常稳定，就说明它更有效。
+- 失败原因：常数指标也可以完全稳定；若不要求区分真实角度错误、连接专家判断和保持跨数据集排序，稳定性只奖励不敏感。
+- 后续做法：替代测量必须同时通过非退化构造样本、共同预测/匹配集、真实标签 lineage、第二 benchmark 与专家效用检查。
+- 边界：稳定性仍是可靠性的一部分，但只能在指标已证明有辨别力之后评价。
+- 证据：`ziyu24/cqc_P2@487006fd7a3ce35b5cb497c24cb39c74a90ddacb` 的 `research/problems/problem-space-survey.md`、`coordination/workstreams/W0001/evidence.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| angle-definition comparison | 原大差异混入 HBB/OBB assignment；固定后 spread 大幅收缩 | 停止原因果归因 | `coordination/workstreams/W0001/evidence.md` |
+| leaderboard stagnation | 可见性和协议变化不是性能时间序列 | 停止由网页稀疏推断科学停滞 | `research/problems/problem-space-survey.md` |
+| unavailable checkpoint/paper | 检索缺失只构成未知 | 停止用不可得性证明不存在或失败 | `coordination/workstreams/W0001/evidence.md` |
+| alternative metric | 尚未通过非退化、共同 population、第二数据与专家效用 | 保持候选状态，无实验结论 | `research/problems/problem-space-survey.md` |

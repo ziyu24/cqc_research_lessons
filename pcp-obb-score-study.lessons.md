@@ -2,9 +2,18 @@
 
 审计基线：`ziyu24/pcp-obb-score-study@0df97a23936c0893704f8cf03c652625522060f9`
 
+快速阅读路径：先读“项目研究什么”→“教训一、二”→“方法族停止索引”。
+
 ## 项目研究什么
 
 项目研究训练损失使用的旋转框几何是否也适合作为共形 nonconformity score，目标是同时获得合法覆盖、短角度弧和较好的最差条件覆盖。
+
+## 领域位置与当前结论
+
+- **事实**：在 12 配置×5 seed 的 angle-only 协议中，四类协方差 score 的 Mean Arc 相对 `s_π` 全部更大，范围约 `+75%` 至 `+1378%`；Frobenius/Bures/Wasserstein 最差分桶 coverage 又低约 20–29 点。
+- **事实**：KL 的 WSC 与 `s_π` 没有显著差异，但弧仍约大 `256%`；三个构造性修正也无一在任何配对中更紧，最好混合仍约松 `63%`。
+- **推断**：训练时需要的平滑梯度与校准时需要的分位数效率是不同目标；本结果不能外推到 angle-shape 联合集合。
+- **未知**：在联合预测完整框几何、形状已知或其它应用域时，协方差 score 是否有优势仍未知。
 
 ## 实际采用过的方法
 
@@ -25,3 +34,12 @@
 - 后续做法：与最简单周期分数在同一校准划分上比较，并把集合长度、最差条件覆盖和计算代价作为联合目标。
 - 边界：更松集合在极端安全优先应用中可能可接受，但需通过明确效用函数证明其价值。
 - 证据：`ziyu24/pcp-obb-score-study@0df97a23936c0893704f8cf03c652625522060f9` 的 `lab/failed_methods.md`、`lab/result.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| Frobenius / Bures / W2 | 角度弧系统变松，近方形分桶 coverage 明显失衡 | 停止直接作为 angle-only conformity score | `doc/paper/paper_zh_v5.md`；`lab/result.md` |
+| KL score | WSC 近似但 Mean Arc 约 `+256%` | 停止以条件覆盖例外宣称整体改进 | `doc/paper/paper_zh_v5.md` |
+| normalized / regularized covariance | 60 个配对中无一击败 `s_π` | 停止简单尺度修正路线 | `doc/paper/paper_zh_v5.md`；`lab/failed_methods.md` |
+| r-aware fixed mixing | 最好构造仍约 `+63%` 更松 | 停止当前固定混合；联合 angle-shape 问题不在此范围 | `doc/paper/paper_zh_v5.md` |

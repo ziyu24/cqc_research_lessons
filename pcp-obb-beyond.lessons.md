@@ -2,9 +2,19 @@
 
 审计基线：`ziyu24/pcp-obb-beyond@439e415ce3ded5fd1336bc2703160f7fa40c09c9`
 
+快速阅读路径：先读“项目研究什么”→“教训一、二、三”→“方法族停止索引”。
+
 ## 项目研究什么
 
 项目研究切片相关性和 NMS 阈值变化下的旋转框共形覆盖：标准交换性被图像切片与后处理依赖破坏时，能否得到稳健覆盖或校准修正。
+
+## 领域位置与当前结论
+
+- **事实**：5 数据集×9 切片协议和 6 配置×7 NMS 阈值共 435 个 calibration cells 的覆盖漂移分别不超过约 2.2/1.6 点，属于观测范围内的经验稳定性。
+- **事实**：早期 IoU 密度上界假设被数据否定，后改用从同一批数据拟合的两参数指数 path X；最小 `R²=0.9111`，样本内 envelope 435/435 通过。
+- **事实**：多类 raw+re-NMS 与旧 V7 pipeline 仍有约 `±2.6–3.3` 点差异；LSKNet 还曾因 image id 顺序错位使匹配数由 21/93 修复到 17722/30380。
+- **推断**：现有 path X 是有用的经验包络和算法稳定性假说，但“样本内全覆盖”不能升级为 distribution-free 定理或未知部署保证。
+- **未知**：独立确认集、预冻结函数族和严格有限样本选择后保证尚未完成；项目已停止维护。
 
 ## 实际采用过的方法
 
@@ -33,3 +43,13 @@
 - 后续做法：明确保证是对母图、瓦片还是对象成立，按同一单位划分校准/测试并报告簇大小和有效样本数。
 - 边界：簇级方法可以正确处理依赖，但不能沿用逐瓦片保证的表述与样本量。
 - 证据：`ziyu24/pcp-obb-beyond@439e415ce3ded5fd1336bc2703160f7fa40c09c9` 的 `lab/result.md`、`doc/notes/decision_log.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| IoU-density bound | 原假设不满足真实 marginal/NMS-conditional 密度 | 停止原 A2 路线 | `lab/failed_methods.md`；`doc/notes/decision_log.md` |
+| path-X exponential envelope | 函数与参数在同一网格拟合并验证，虽 435/435 cover、最小 R² `0.9111` | 仅作经验 envelope；停止 distribution-free 外推 | `doc/proofs/bound_report_v5_X.md`；`lab/result.md` |
+| raw + re-NMS | 多类基线相对旧 pipeline 漂移约 `±2.6–3.3` 点 | 只支持同一 pipeline 横向阈值趋势 | `doc/notes/decision_log.md` |
+| LSKNet alignment | image id 顺序错位曾使 matched pairs 几乎清空 | 停止任何未冻结 ID 映射的比较 | `doc/notes/decision_log.md` |
+| tile clustering | 独立单位从 tile 改为母图 | 允许簇级保证；停止沿用 tile 样本量和措辞 | `doc/collaborator_handoff/01_research_question.md` |

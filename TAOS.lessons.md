@@ -2,9 +2,19 @@
 
 审计基线：`ziyu24/TAOS@0c3bded0220758584723f1bf8747ef2eb13a0d5c`
 
+快速阅读路径：先读“项目研究什么”→“教训一、二、四、五”→“方法族停止索引”。
+
 ## 项目研究什么
 
 项目研究切片遥感图像中边界截断目标的旋转检测，试图用截断感知辅助监督、分位数/阈值头、动态分配与融合，在不伤害完整目标的前提下提高截断目标定位。
+
+## 领域位置与当前结论
+
+- **事实**：低权重 coupled QC head 在 RTMDet 上对截断 ship AP50 有强正信号，在 LSKNet 上中等，在 Oriented R-CNN 上仅边际；无截断 DIOR-R 两架构均为负，说明效果具有数据与架构条件。
+- **事实**：高 IoU 定位仍很弱；量化头 36 epoch 后 true visible ratio 与预测的 Spearman 为 `-0.2419`，AP75_trunc 增量仅 `0.0033`，并使 complete mAP 下降约 1.13 点。
+- **事实**：降低损失权重改善 RTMDet/LSKNet，Oriented R-CNN 仍只约 `+0.14` 点；不能声称 candidate recall 与增益严格单调。
+- **推断**：当前工程价值更接近“截断监督的架构条件正则”，不是已校准的可见比例/分位数估计器。
+- **未知**：更高 IoU 几何恢复与真实完整物体边界重建仍未解决。
 
 ## 实际采用过的方法
 
@@ -41,3 +51,21 @@
 - 后续做法：预注册架构、截断率和切片协议的异质性分析，在统一预算下复现后再限定适用范围。
 - 边界：RTMDet 特定设置的正信号仍成立，但不能升级为通用旋转检测机制。
 - 证据：`ziyu24/TAOS@0c3bded0220758584723f1bf8747ef2eb13a0d5c` 的 `diagnostics/FINAL_MULTI_BASELINE_CROSS_DATASET_EVIDENCE.md`、`diagnostics/EVIDENCE_AUDIT_FOR_WRITING.md`。
+
+## 教训五：训练变久且 AP 恢复，不能掩盖概率语义反向
+
+- 失败命题：36 epoch 后总体 mAP 恢复到参考附近，说明 quantile/visible-ratio head 已经学会目标语义。
+- 失败原因：训练量混杂消除后，Spearman 反而从约 `-0.0879` 变成 `-0.2419`；AP75_trunc 增量 `0.0033<0.005`，complete mAP 又下降 `1.13` 点。模型学到的是 anti-calibrated 表示，而非仅“训练不够”。
+- 后续做法：概率或分位数头必须单独通过 rank calibration、coverage、单调性和高 IoU 门；总体 AP 只能评价 detector，不替代 head 语义。
+- 边界：该 head 仍可能作为无概率解释的辅助正则使用，但必须撤回校准/分位数主张。
+- 证据：`ziyu24/TAOS@0c3bded0220758584723f1bf8747ef2eb13a0d5c` 的 `diagnostics/POC_V3_36EP_FINAL_VERDICT.md`、`diagnostics/FINAL_MULTI_BASELINE_CROSS_DATASET_EVIDENCE.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| quantile / visible-ratio semantics | 36 epoch Spearman `-0.2419`，高 IoU门失败 | 停止校准语义；可降级为辅助正则 | `diagnostics/POC_V3_36EP_FINAL_VERDICT.md` |
+| high-IoU truncation recovery | AP50 可大涨但 AP75_trunc 仍近零 | 停止“精确几何恢复”主张 | `diagnostics/POC_V3_36EP_FINAL_VERDICT.md` |
+| SWA / dynamic-K / fusion | 没有稳定截断收益且伤害完整目标 | 停止当前分配与融合路线 | `pth_data/phase2_step21_22_mve_FAILED_20260514_195413/phase2_mve_results/phase2_mve_final_report_20260514_184000.md` |
+| coupled QC at `λ_q=0.05` | LSKNet/ORCNN 有明显 trade-off；高权重过正则 | 停止固定默认值的普适主张 | `diagnostics/FINAL_MULTI_BASELINE_CROSS_DATASET_EVIDENCE.md` |
+| coupled QC at `λ_q=0.025` | RTMDet 强、LSKNet 中等、ORCNN 仅 `+0.14` 点；DIOR-R 无截断为负 | 保留架构/截断条件结果；停止 universal mechanism | `reports/wp7a_rtmdet_lambdaq0025_eval_20260520_170431.md`；`reports/wp7b_orcnn_lambdaq0025_eval_20260521_011036.md` |

@@ -2,9 +2,19 @@
 
 审计基线：`ziyu24/SynDOTAForge@79976ce1773fbdf9ae1c909d4f7e48347e9c1703`
 
+快速阅读路径：先读“项目研究什么”→“教训一、二、三、四”→“方法族停止索引”。
+
 ## 项目研究什么
 
 项目研究能否生成具有可控旋转框、俯视几何和真实遥感外观的合成 DOTA 数据，用于低数据检测训练与机制分析。
+
+## 领域位置与当前结论
+
+- **事实**：旧内部资产上的 synthetic pretrain→real finetune 在低数据条件有正信号，并呈真实数据量×检测器能力交互；直接 mix 常更差。
+- **事实**：程序化 v3/v4/v5 和 R4 多次未过人工真实感门；B-v2 inpainting 虽改善背景保护与尺度控制，直升机仍为斜视，飞机/储罐仍有语义伪影。
+- **事实**：mask-PCA、OBB canonicalization 和 32/32 测试只闭合几何/导出链；当前不得声称新资产高质量、训练有效或可发布。
+- **推断**：旧训练协议的正结果与新资产质量是两条独立证据链，不能用前者给后者背书。
+- **未知**：任何通过人工门的新资产是否能复现旧训练收益尚未测试；项目已停止维护，不自动重开。
 
 ## 实际采用过的方法
 
@@ -41,3 +51,13 @@
 - 后续做法：预设真实数据量乘检测器强度的二维消融，分别比较预训练、混合与纯真实训练，并先通过人工视觉资格审查。
 - 边界：这不否定合成数据在低数据域的价值，只否定无条件普适收益。
 - 证据：`ziyu24/SynDOTAForge@79976ce1773fbdf9ae1c909d4f7e48347e9c1703` 的 `lab/failed_methods.md`、`lab/discussion.md`、`lab/result.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| material-only procedural | 同 seed 图像变化极小或仍显玩具感，多轮人工门失败 | 停止作为真实感主线；仅保留几何诊断 | `doc/server26-stage/reports/syndotaforge_stage_report_041_cn.md`；`lab/failed_methods.md` |
+| mask-PCA / OBB chain | 主轴与框边修正、测试通过，但不评价图像真实性 | 只支持标注几何，不支持数据集质量 | `lab/result.md`；`doc/server26-stage/PROJECT_EXECUTION_REPORT.md` |
+| prompt+mask inpainting | 直升机非 nadir，飞机/tank 仍有结构语义错误 | 停止无显式视角/形状控制的扩量 | `doc/server26-stage/reports/syndotaforge_stage_report_041_cn.md` |
+| synthetic mix | 充足真实数据下常不如 pretrain→finetune | 停止把直接混训作为默认协议 | `doc/server26-stage/PROJECT_EXECUTION_REPORT.md` |
+| low-data pretraining | 旧资产下正信号随数据量和检测器能力变化 | 保留条件性历史结论；不得外推到未过门新资产 | `doc/server26-stage/PROJECT_EXECUTION_REPORT.md`；`lab/result.md` |

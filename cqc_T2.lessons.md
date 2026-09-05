@@ -83,7 +83,7 @@ T2 实际包含两个独立的高风险问题，不能用一条“训练与推�
 
 - 失败命题：四个 attention barrier 已精确，而首个记录到的差异在 FPN 输出，因此可以断言区域 neck 的 shape-dependent FP32 convolution 是首错根因。
 - 失败原因：当前 instrumentation 逐位比较了各 stage 的 attention 输入和输出，但没有在随后分区执行的 `final_conv` 之后分别比较 materialized C3、C4、C5；下一组对照已经是 FPN 输出，其 P0897/P1854 最大差分别为 `6.002×10⁻⁵` 和 `7.558×10⁻⁵`。所以事实只到“首个已观测失配在 FPN 输出”，shape-dependent FP32 convolution 路径差异是最强解释，不能排除数值差异更早出现在 backbone stage 边界。
-- 后续做法：做首错节点审计时，按 native/regional 成对记录 C3、C4、C5，并继续记录 neck 的 reduce、top-down、bottom-up 和 out-conv；每层同时冻结输入 shape、kernel/reduction plan 与归约顺序，从最后一个精确节点定位第一个失配节点。
+- 后续做法：做首错节点审计时，按 native/regional 成对记录 C3、C4、C5，并继续记录 neck 的 reduce、top-down、bottom-up 和 out-conv；每层记录输入 shape，kernel/reduction plan 只在后端可观测且可稳定固定时记录并验证，从最后一个精确节点定位第一个失配节点。
 - 边界：该修正不改变 8/8 的 L3/L4 不等或当前项目停止结论，只撤回尚未被逐层证据支持的 neck 根因定位；严格 bit-exact 失败也不等于容差集合等价必然失败。
 - 证据：`ziyu24/cqc_T2@2a5998027fd06309a345beb08820194bea26a98e` 的 `work_dirs/rtmdet_full_global_barrier/EXACT_GATE_MATRIX.csv`、`src/partition_runtime/backbone_global_executor.py`、`src/partition_runtime/neck_head_regional_executor.py`。
 
@@ -107,7 +107,7 @@ T2 实际包含两个独立的高风险问题，不能用一条“训练与推�
 
 下表只索引当前主线 `ziyu24/cqc_T2@2a5998027fd06309a345beb08820194bea26a98e` 中可回读的最终决策、机器结果和实现入口。较早的阶段性 GO 若与后续冻结确认冲突，以后者为准。
 
-**统一重开条件**：动态控制只有在更换核心 action/state 可观测量，并预注册新的独立轨迹、正常 Control 和端到端等墙钟正收益门后才能重开。分区执行只有在完成上述逐层首错审计并冻结相同输入 shape/kernel 计划，或明确改为容差集合等价且预注册误差、任务效用、显存与延迟预算后才能重开；仅更换 halo、阈值、重试次数或结论措辞不构成新路线。
+**统一重开条件**：动态控制只有在更换核心 action/state 可观测量，并预注册新的独立轨迹、正常 Control 和端到端等墙钟正收益门后才能重开。分区执行必须先完成上述逐层首错审计；若后端可观测且可稳定固定 kernel/reduction plan，则记录并验证同一计划；否则保持完整输入 shape，或明确改为容差集合等价并预注册误差、任务效用、显存与延迟预算。仅更换 halo、阈值、重试次数或结论措辞不构成新路线。
 
 | 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
 | --- | --- | --- | --- |

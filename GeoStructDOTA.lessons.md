@@ -2,9 +2,19 @@
 
 审计基线：`ziyu24/GeoStructDOTA@7b9a5f846d99ca5a8cdd0c59d29315983b51526e`
 
+快速阅读路径：先读“项目研究什么”→“教训一、二、三、四”→“方法族停止索引”。
+
 ## 项目研究什么
 
 项目研究地图、DSM 和语义分割等地理结构先验能否为旋转检测提供弱监督，包括从地图后验生成旋转框、用不平衡最优传输做部分匹配，以及建立屋顶足迹数据证据。
+
+## 领域位置与当前结论
+
+- **事实**：地图后验 pure/adaptive/Gaussian 的主差约为 `-0.000919/+0.001146/-0.007191`，没有达到 0.01 门。
+- **事实**：双 dustbin UOT 相对 forced Hungarian 的 AP50:95 约 `-0.044845`，匹配覆盖仅 `0.008958`。
+- **事实**：9/9 旧 panel 因来源身份和独立 gold 不成立而退役；DFC2019/US3D 现有产品也未闭合实例屋顶身份。
+- **推断**：当前失败既有方法负结果，也有数据不可识别；二者必须分开，不把资产缺口解释为 H0。
+- **未知**：Extended US3D 的完整官方实例资产是否存在仍未被穷尽证实，只能保持 unresolved。
 
 ## 实际采用过的方法
 
@@ -41,3 +51,13 @@
 - 后续做法：结果绑定提交、输入清单和独立标注；数据资格采用官方目录、许可和样本回读，无法确认时标为未知。
 - 边界：这属于科学证据有效性边界，不表示相关方法一定失败，也不表示 Extended US3D 等资产一定可用。
 - 证据：`ziyu24/GeoStructDOTA@7b9a5f846d99ca5a8cdd0c59d29315983b51526e` 的 `doc/legacy/paper_notes/paper_assets_v6/10_claims_audit.md`、`doc/legacy/ops/project_status_034.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| map posterior RBox | 三种构造均无稳定且过门的增益 | 停止当前直接伪框路线 | `lab/result.md`；`lab/failed_methods.md` |
+| double-dustbin UOT | AP50:95 `-0.044845`，coverage `0.008958` | 停止当前解耦存在性/几何代价 | `lab/result.md` |
+| image-only legacy run | 协议非标准且不能连接到主评价 | 判运行无效，不作方法裁决 | `lab/failed_methods.md` |
+| legacy 9-panel | 来源身份与独立 gold 不成立 | 全部退役，不引用 headline | `doc/legacy/paper_notes/paper_assets_v6/10_claims_audit.md` |
+| DFC2019 / US3D carrier | 缺稳定实例 ID、精确屋顶足迹或同时间配准 | 停止当前数据主张；资产状态保持 unresolved | `lab/failed_methods.md`；`doc/legacy/ops/project_status_034.md` |

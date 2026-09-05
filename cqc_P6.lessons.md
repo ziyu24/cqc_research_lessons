@@ -1,10 +1,20 @@
 # cqc_P6 科学问题与失败教训
 
-审计基线：`ziyu24/cqc_P6@dcd648484879418bd094cea71184d81a8e724fd6`
+审计基线：当前主线 `ziyu24/cqc_P6@99efec0a427a00160c7424963eaf62431871955f`。该提交已吸收旧执行分支并归纳 CrossKD 对照；新增的顶刊潜力审查只提出“蒸馏可迁移性诊断”候选，尚无新实验结果。
+
+快速阅读路径：先读“项目研究什么”→“教训二、三、四、六”→“方法族停止索引”。
 
 ## 项目研究什么
 
 项目研究旋转检测器能否按任务条件进行容量专门化，以及尺度、方向等局部扰动是否揭示可利用的组件机制；后续还研究教师—学生响应能否比普通蒸馏提供更直接的监督。
+
+## 领域位置与当前结论
+
+- **事实**：任务专门化相对通用缩减的综合差为负，尺度交互低于预设最小效应，方向交互近零且反号；对应路线已停止。
+- **事实**：无裁剪全画布旋转把旧约 9 个点的 AP75 脆弱性缩小到约 -0.49 至 +0.18 个点，说明旧大效应主要是协议伪影。
+- **事实**：教师响应确有额外信息，但直接 localization、consistency 与 response 蒸馏坍塌；忠实静态 CrossKD 的 AP75 又比监督学生低约 0.93 个点。
+- **推断**：瓶颈不是“教师没有信号”，而是信号到学生目标的传递路径、分配和视图对齐。
+- **未知**：跨头 response 分支尚未真实运行；新提出的跨数据集、跨架构“蒸馏可迁移性诊断”也未验证，因此都不能从静态 CrossKD 负结果中外推成败。
 
 ## 实际采用过的方法
 
@@ -48,4 +58,23 @@
 - 失败原因：该实现没有复现文献方法的特征路径、头部隔离与损失定义，比较对象的身份不成立。
 - 后续做法：复现前列出论文组件到代码路径的逐项映射，用作者配置或最小等价测试确认身份；不忠实实现只标为当前实现失败。
 - 边界：身份核验后仍需独立复现性能；实现忠实也不保证方法有效。
-- 证据：`ziyu24/cqc_P6@dcd648484879418bd094cea71184d81a8e724fd6` 的 `lab/failed_methods.md`、`lab/result.md`。
+- 证据：`ziyu24/cqc_P6@f39bf87f03fd9dcdd18714362abf71518dedbc90` 的 `lab/failed_methods.md`、`lab/result.md`。
+
+## 教训六：忠实静态基线失败时，只停止被真正执行的分支
+
+- 失败命题：修正为忠实 CrossKD 后静态版本未过门，因此所有 cross-head response 蒸馏都已被否定。
+- 失败原因：独立审计后的静态 CrossKD AP75 为 `0.686487`，监督学生为 `0.695786`，差 `-0.009299`，确实没有达到预设正增益；但 cross-response 配置没有形成对应运行结果。执行过的静态分支与未执行的响应分支不能合并裁决。
+- 后续做法：结论按“实现身份×实际执行臂”登记；未执行臂保持未知，若重开必须先证明相对普通蒸馏新增的目标和对齐机制。
+- 边界：当前最强结论是 `NO_CROSSKD_SIGNAL` 于忠实静态设置，不是 CrossKD 文献或所有 cross-head response 的一般否定。
+- 证据：`ziyu24/cqc_P6@f39bf87f03fd9dcdd18714362abf71518dedbc90` 的 `lab/result.md`、`lab/failed_methods.md`、`configs/research/RD0016_CROSS_STATIC.py`、`configs/research/RD0016_CROSS_RESPONSE.py`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| task-conditioned capacity | 综合差约 `-0.00479`；通用策略差约 `+0.00564` | 停止当前专门化剪裁与结构解释 | `lab/result.md`；`lab/failed_methods.md` |
+| scale / direction locality | 尺度交互约 `+0.00266<0.005`，方向约 `-0.00016` 且反号 | 停止当前组件局部性主张 | `lab/result.md`；`lab/failed_methods.md` |
+| rotation fragility | 无裁剪配对复测仅约 `-0.0049` 至 `+0.0018` | 停止旧大效应及其机制叙事 | `lab/result.md` |
+| direct response distillation | 教师优势存在，但 localization、consistency、response 学生近乎坍塌 | 停止当前直接响应目标；不否定普通蒸馏 | `lab/result.md`；`configs/research/RD0015_RESPONSE.py` |
+| approximate CrossKD | 随机投影+整头 raw MSE 不忠实 | 停止用该实现裁决 CrossKD | `lab/failed_methods.md` |
+| faithful static CrossKD | AP75 比监督学生低 `0.009299`，未过 `+0.005` 门 | 停止静态分支；cross-response 未运行，保持未知 | `lab/result.md`；`configs/research/RD0016_CROSS_STATIC.py` |

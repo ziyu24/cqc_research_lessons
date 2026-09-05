@@ -2,9 +2,20 @@
 
 审计基线：`ziyu24/dgobb-synthprobe@5deedb7da5665fde50cbc5a7c2a55fc8b3ee52ed`
 
+快速阅读路径：先读“项目研究什么”→“教训一、五、六、八”→“方法族停止索引”。
+
 ## 项目研究什么
 
-项目寻找无需大规模重新训练的跨域旋转检测新路线，涵盖单图伪标签适配、旋转轨道一致性、物理采集探针、合成数字探针以及无标签多视图风险估计。
+项目先研究跨域旋转检测中“源域与目标域尺度关系能否决定多尺度训练方向”，形成了 bounded scale-axis 证据；随后寻找无需大规模重训的新路线，包括单图伪标签适配、旋转轨道一致性、物理/数字探针、分布形状处方和无标签多视图风险估计。
+
+## 领域位置与当前结论
+
+- **事实**：固定干预在若干域对上显示 directed scale policy 可优于 uniform，但 label-free V5 方向估计只命中 2/4 可用 pair，band-response 也只命中 4/5 directed pair 并在边界失效。
+- **事实**：SCM 的三种子 oracle 矩阵结果混合；DIOR-R→FAIR1M 的 SCM-global 相对 uniform 三个 paired delta 全负，不能升级为普适处方。
+- **事实**：normalized factor response 的 scale/angle 原始幅度约 14.67×，但 angle 缺 matched-lineage 位移，跨因素比较门失败，原“15×机制”已撤回。
+- **事实**：单图适配、无新观测的融合以及多个物理/数字载体在性能、直接归约、可识别性或数据资格上停止。
+- **推断**：项目能保留的是“尺度轴存在条件性可控响应”的有限诊断，不是无标签预测方向的自动 DG 方法。
+- **未知**：在新载体和独立物理观测下是否存在可识别风险路线未被一般否定；项目已停止维护，不自动重开。
 
 ## 实际采用过的方法
 
@@ -49,3 +60,39 @@
 - 后续做法：报告部分识别界，或引入概率抽样人工标注和异质传感器；若使用独立性假设，必须给出外部证据和敏感性分析。
 - 边界：无标签一致性可发现明确矛盾或给出风险下界，不能证明系统安全。
 - 证据：`ziyu24/dgobb-synthprobe@5deedb7da5665fde50cbc5a7c2a55fc8b3ee52ed` 的 `lab/failed_methods.md`。
+
+## 教训六：有方向的训练干预有效，不等于方向可由无标签 proxy 决定
+
+- 失败命题：既然某些域对上 directed scale policy 优于 uniform，就能从目标预测分布自动选出正确方向。
+- 失败原因：固定干预回答“若方向已知会怎样”，无标签选择器回答“方向能否识别”，是两个问题。V5 top-K 估计只命中 2/4 可用 pair并漏掉 FAIR1M-source 反转；band-response 也有关键错判。
+- 后续做法：把 oracle intervention 与 direction estimator 分开报告；部署方法必须在未参与设计的域对上先选方向，再一次性验证结果。
+- 边界：有监督或元数据明确给出尺度关系时，oracle 干预仍可作为条件策略。
+- 证据：`ziyu24/dgobb-synthprobe@5deedb7da5665fde50cbc5a7c2a55fc8b3ee52ed` 的 `doc/legacy/audits/final_claim_consistency_099.md`、`doc/legacy/audits/label_free_sign_final_decision_101.md`。
+
+## 教训七：跨因素“倍率”必须有共同位移单位和 matched lineage
+
+- 失败命题：scale probe 幅度约为 angle 的 14.67 倍，因此尺度是约 15 倍更强的因果机制。
+- 失败原因：scale 位移可在有效 log-sqrt-area 单位追踪，angle 却没有 matched-lineage 的目标位移；分子响应和分母干预强度不可比，倍率没有统一物理含义。
+- 后续做法：比较因素前冻结同一响应、可追溯干预位移和匹配数据 lineage；任一因素缺项就只报告各自响应，不排序机制强弱。
+- 边界：原始响应幅度仍可说明当前 probe 中 scale 变化更大，但不能解释为机制倍率。
+- 证据：`ziyu24/dgobb-synthprobe@5deedb7da5665fde50cbc5a7c2a55fc8b3ee52ed` 的 `doc/legacy/audits/normalized_factor_response_decision_098.md`。
+
+## 教训八：oracle 分布处方结果混合时不能替换更窄但稳健的结论
+
+- 失败命题：SCM 根据尺度分布形状给出若干正结果，因此可以升级为跨域普适 prescription，并取代 bounded scale-axis 诊断。
+- 失败原因：三种子矩阵不是全局支配；DIOR-R→FAIR1M 的 SCM-global 相对 uniform 三个 paired delta 均为负，另有 pair 的符号混合。选择正 cell 会忽略明确反例。
+- 后续做法：报告 pair-level 矩阵和反例，把 SCM 定位为 oracle stress test；只有预注册跨域成功率与最坏情况门均通过才升级处方。
+- 边界：SCM 在若干 pair 上可能有效，负结论针对 universal upgrade，不抹去条件正结果。
+- 证据：`ziyu24/dgobb-synthprobe@5deedb7da5665fde50cbc5a7c2a55fc8b3ee52ed` 的 `doc/legacy/audits/scm/scm_final_decision.md`、`doc/legacy/audits/final_claim_consistency_099.md`。
+
+## 方法族停止索引
+
+| 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| single-image adaptation | 明显低于 four-view TTA，quotient-ST 区间为负 | 停止当前伪标签一步适配与阈值微调 | `lab/failed_methods.md` |
+| orbit-consensus / RIVE | 无新增观测，只是 TTA/pullback/WBF 重组 | 停止方法新颖性主张 | `lab/failed_methods.md` |
+| RayLift / Spin2 / FiberID / DPIRT | 直接组合、90° 歧义、载体不闭合或数字到物理风险不可识别 | 停止当前物理/数字探针路线 | `lab/failed_methods.md` |
+| MV-Risk | 相同预测联合分布兼容相反真值风险 | 停止无标签完整风险点估计 | `lab/failed_methods.md` |
+| label-free scale direction | V5 仅 2/4，band probe 关键 pair 失败 | 停止自动方向选择主张 | `doc/legacy/audits/final_claim_consistency_099.md` |
+| normalized factor ranking | angle 缺 matched-lineage 位移 | 撤回“约 15×机制倍率” | `doc/legacy/audits/normalized_factor_response_decision_098.md` |
+| SCM prescription | 三种子 oracle 结果混合且有全负反例 | 停止普适处方升级；保留 bounded 诊断 | `doc/legacy/audits/scm/scm_final_decision.md` |
