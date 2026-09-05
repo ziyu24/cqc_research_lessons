@@ -26,7 +26,7 @@ T1 实际研究了三个相互关联、但不能混为一谈的问题：
 
 - **跨布局测量**：在固定切片尺寸和重叠下改变网格原点，用母图 GT 身份配对候选与最终检测，统计总体 AP、实例状态翻转、召回上界及跨布局互补。
 - **输入和输出侧修复**：随机偏移训练、相位扰动、七布局推理与 NMS、同布局候选恢复、GT 定向重裁、固定边界重裁和增加重叠。
-- **相位和表示侧修复**：局部相位对齐、已发表的 APS-D、TIPS、学习式相位选择、步长自由提案支路，以及使用整图或幸运相位特征的教师/替换实验。
+- **相位和表示侧修复**：局部相位对齐、状态化 LatticeDet、已发表的 APS-D、TIPS、学习式相位选择、步长自由提案支路，以及使用整图或幸运相位特征的教师/替换实验。
 - **整图执行改写**：整图原生参考、FP64 流式/分块算子、局部残差与逐元素重算、直接固定核执行，以及只改写 RTMDet 固定算子族的 ExactRTM 宏执行器。
 
 ## 教训一：不要把已有的“平移敏感”包装成新的科学问题
@@ -92,3 +92,27 @@ T1 实际研究了三个相互关联、但不能混为一谈的问题：
 - 后续做法：把结论限定到模型规格、参考计划和已改写算子；完整方法至少要同时通过输出等价、物理峰值、端到端延迟、统一切片基线和第二架构验证。失败路线只陈述被排除的实现族与成本边界。
 - 边界：RTMDet-M 的结果是可复核的工程成功，不应被 RTMDet-S 的失败抹掉；但在跨架构证据缺失前，也不能提升为通用科学方法或发表完成。
 - 证据：`ziyu24/cqc_T1@18df509d3f5e46dedf0f8733c44b6fe5b6716b21` 的 `doc/exact_dense_obb_final_report.md`、`doc/exactrtm_project_protocol.md`、`lab/result.md`；`ziyu24/cqc_T1@a622277bc62d12cf010a3eb9ab1c8e1bab12a23e` 的 `reports/dota10_pnee_p0b2_closure.json`。
+
+## 教训九：状态能贯穿检测器，不等于全链路状态等变且成本可接受
+
+- 失败命题：在所有 stride-2 位点保留 lattice state，并把它传过 FPN、point prior 和 OBB decode，就足以得到可训练的分区等变检测器。
+- 失败原因：LatticeDet 的权重加载和全链路 state propagation smoke 均通过，只证明状态可以传递；在共同物理 dense chart 上，确定性 selector 的 `dx=32` 最大绝对误差仍为 `81.434`，移除 channel attention 后分类误差仍为 `35.898`、距离回归误差为 `5996.686`，所需交换关系并不成立。与此同时，全层 APS/LPS/SPD/GES/phase-bank 强基线的固定算术下界至少为 `112.402G` Conv MAC，即原图的 `1.580×`，已超过 `1.25×` 成本上限，训练无法补救机制门与成本门的同时失败。
+- 后续做法：训练前先在统一物理坐标中逐段验证“输入平移—状态变换—FPN 重索引—检测读出”的交换关系，并预先计算所有相位分支的不可规避算术下界；状态传递、模型可运行和 checkpoint 可加载均不能替代这两项验证。
+- 边界：该证据停止的是当前确定性 selector、全相位物化基线及其后续训练/跨数据集扩展；它不否定所有 lattice 或 polyphase 构造，也不把训练前机制失败外推成一般不可能性定理。
+- 证据：`ziyu24/cqc_T1@18df509d3f5e46dedf0f8733c44b6fe5b6716b21` 的 `lab/result.md`、`lab/failed_methods.md`、`src/lattice_det/audit.py`、`src/lattice_det/state.py`。
+
+## 方法族停止索引
+
+下表只索引当前主线 `ziyu24/cqc_T1@18df509d3f5e46dedf0f8733c44b6fe5b6716b21` 中仍可回读的总结、报告和实现入口；“停止范围”均为有限否定，不是对整个研究方向的不可能性宣判。
+
+| 方法族 | 最强负证据 | 停止范围 | 当前 main 证据路径 |
+| --- | --- | --- | --- |
+| WAVE | `256→256` radius-1 固定核最快 `26.832 s`，已是完整检测时限 `14.990019 s` 的 `1.790×`，且尚未包含其余检测链路 | 停止 direct convolution、row-group、stripe/wavefront traversal、cuDNN bit-exact imitation 与该 executor 调优；不否定 6 GiB 整图检测本身 | `lab/result.md`；`lab/failed_methods.md`；`src/scripts/run_wave_det_radius_one_p2_lower_bound.py` |
+| LIVE / EBS | LIVE 的两个 full-residency residual operand 需 `7018.250 MiB`；EBS 的 Add-only 虽可 exact，却不能覆盖 finite-radius convolution | 分别停止 full-residency residual 与 Add-only 实现族；不外推到其它生命周期或卷积执行原语 | `lab/discussion.md`；`lab/failed_methods.md`；`src/scripts/audit_live_det_p0_residual_barrier.py`；`src/scripts/audit_ebs_det_p0_barriers.py` |
+| PNEE / DPE | PNEE 的 exact 路径成本过高或 GPU 输出不 exact；DPE 仅 trunk 即达 `9965.9 MiB` | 停止当前 FP64/分块 exact backbone 与 streaming dense-head 实现族；不是精确分块计算的一般否定 | `lab/failed_methods.md`；`src/scripts/run_dota10_pnee_p0b2_large_latency.py`；`src/scripts/audit_dota10_dpe_prereg_cost.py` |
+| SPEAR | 翻转虽可降到零，但敏感实例 proposal `R@0.3` 仅 `0.737%`，属于表示坍塌 | 停止当前触发器、stride-free proposal 和 sidecar；不否定能力匹配的新提案模型 | `lab/failed_methods.md`；`src/scripts/run_spear_stage_a_eval.py`；`src/scripts/audit_spear_semantic_trigger_headroom.py` |
+| merge / MOPR | learned merge 的全 GT 严格 Recall 上限仅 `+0.513` 点；MOPR 使 AP/Recall 分别下降 `0.559/0.274` 点 | 停止当前候选合并与局部相位修正主线；不否定输入或估计对象发生实质变化的新方法 | `lab/failed_methods.md`；`src/scripts/merge_dota10_premerge_recovery.py`；`src/scripts/summarize_dota10_mopr_gate1.py` |
+| LatticeDet | 全链路共同坐标最大误差 `81.434`；所需全相位强基线至少 `112.402G / 1.580×` Conv MAC，超过 `1.25×` 成本门 | 停止当前 selector、全相位物化、训练和跨检测器/数据集扩展；不否定所有 lattice/polyphase 理论 | `lab/result.md`；`lab/failed_methods.md`；`src/lattice_det/audit.py`；`src/lattice_det/p0_contract.py` |
+| APS-D | 最终翻转 `3/306→3/306`，没有降低；`75/81` 稠密分支/位移不能整数余类对齐，剩余最大误差 `54.846214` | 停止在当前冻结 RTMDet 上构建 detector-level coset 方法或新 phase 模块；不否定 APS-D 原始定理 | `doc/coset_equiv_p0_result.md`；`lab/result.md`；`lab/failed_methods.md`；`src/coset_equiv/aps.py` |
+| Oracle / recrop | 同布局候选 Recall 上限仅 `+0.4852` 点；15% 定向重裁仅 `+0.1816` AP、crossing Recall `+0.7108` 点，增加 overlap 反而 `-0.1005` AP | 停止 set decoder、support acquisition 和当前 partition 修补路线；不否定改变核心输入/任务后的新问题 | `doc/physical_instance_oracle_p0a_result.md`；`doc/physical_instance_oracle_p0b_result.md`；`lab/discussion.md`；`lab/failed_methods.md` |
+| ExactRTM | RTMDet-S 相对固定计划只降 `1.7286%` 峰值显存，低于 `20%` 目标；相对默认执行反而多用 `25.08%` | 停止当前 S 型 liveness/cache 微调及通用/发表主张；不推翻 RTMDet-M 的 exact、5976 MiB 工程结果 | `doc/exactrtm_project_protocol.md`；`doc/exact_dense_obb_final_report.md`；`lab/result.md`；`lab/failed_methods.md` |
