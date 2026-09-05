@@ -74,7 +74,9 @@ def validate_repository(root: Path) -> list[str]:
                     errors.append(f"{name}: 条目缺少 {field}")
             if not SHA_RE.search(section):
                 errors.append(f"{name}: 条目缺少 40 位来源提交")
-            if re.search(r"\br\d{3,}\b", section, re.IGNORECASE):
+            # Keep exact evidence paths; reject run-number storytelling in prose.
+            prose = re.sub(r"`[^`\n]*[/\\][^`\n]+`", "", section)
+            if re.search(r"\br\d{3,}\b", prose, re.IGNORECASE):
                 errors.append(f"{name}: 条目含项目内部任务号")
 
     for name in sorted(set(lesson_files) - set(rows)):

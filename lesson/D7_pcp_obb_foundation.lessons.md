@@ -1,6 +1,6 @@
 # D7_pcp_obb_foundation 科学问题与失败教训
 
-审计基线：当前主线 `ziyu24/D7_pcp_obb_foundation@1f4092fd5ebb8ea0f4479b5e1e01a28f27aacece`。旧归档稿不能覆盖当前已重开的物理表示与数值支持审计；最新任务仍在执行，本文不预判其结果。
+审计基线：当前主线 `ziyu24/D7_pcp_obb_foundation@fb71ec02c97a48d16e66710d8caec83d0646e457`。最新提交只修改数值实现，尚无新增已提交结果；不凭任务单推断实时运行状态，也不让旧归档稿覆盖已重开的物理表示审计。
 
 快速阅读路径：先读“项目研究什么”→“教训一、二、三、八”→“方法族停止索引”。
 
@@ -40,18 +40,18 @@
 ## 教训三：对象级样本数会夸大多对象图像的有效证据
 
 - 失败命题：把同一图像中的所有匹配对象当作独立校准样本，可以直接使用对象级置信区间。
-- 失败原因：共享场景、传感器和模型状态造成簇内相关；项目的图像不交叉复核显示，独立性近似可使区间乐观约 2.4 至 2.6 倍，覆盖也下降约一至两个百分点。
+- 失败原因：图像聚类 bootstrap 与对象 iid bootstrap 的区间宽度比在两个多对象配置中约为 `2.42`、`2.55`，而 HRSC 配置约为 `0.95`，不是所有条件都膨胀。图像不交叉重划分后的覆盖有升有降，不能概括成统一下降一至两个百分点；核心问题是对象 iid 推断缺少交换性依据。
 - 后续做法：以图像或采集事件作为交换单元，使用簇级校准、留图验证或层次模型，并报告对象级与簇级结果差异。
 - 边界：每图只有一个对象或能证明条件独立时，对象级处理可接近合理。
-- 证据：`ziyu24/D7_pcp_obb_foundation@84da96973a464562cd965fbb0c9759a25bae5a58` 的 `lab/result.md`、`doc/reports/FINAL_PROJECT_REPORT.md`。
+- 证据：`ziyu24/D7_pcp_obb_foundation@84da96973a464562cd965fbb0c9759a25bae5a58` 的 `doc/reports/B0_image_cluster_exchangeability_audit.md`、`doc/reports/FINAL_PROJECT_REPORT.md`。
 
-## 教训四：几何上合法的协方差分数未必适合角度区间
+## 教训四：继承的分数负结果也要核对集合与表示定义
 
-- 失败命题：完整旋转框协方差距离既尊重几何结构，也会给出更高效的角度不确定区间。
-- 失败原因：分数混合中心、尺度和角度变化；当目标接近方形时方向本来弱可识别，角度弧明显膨胀且最差条件覆盖下降。
-- 后续做法：让 nonconformity score 与最终决策量一致；若目标是角度，就隔离角度误差，并单独处理近方形的不可识别性。
-- 边界：协方差分数可能更适合完整框几何风险，而不是纯角度预测。
-- 证据：`ziyu24/D7_pcp_obb_foundation@84da96973a464562cd965fbb0c9759a25bae5a58` 的 `lab/failed_methods.md`、`lab/result.md`。
+- 失败命题：旧 score-study 的大弧长与低分桶 coverage 足以证明所有协方差角度集合效率差，或物理近方形方向完全不可识别。
+- 失败原因：追溯上游代码发现，coverage 使用真实形状，弧长反演使用预测形状，评价的不是同一集合。这里的零均值协方差分数混合尺度与角度，并不包含中心；方形协方差的连续旋转不变性也是有损表示性质，不能等同于真实正方形的离散旋转对称性。
+- 后续做法：先核对集合 membership、长度和部署信息是否一致，再继承负结果；严格区分物理表示与高斯近似，不从有损表示退化推出物理不可能性。
+- 边界：撤回旧表支撑的同覆盖效率裁决，不据此宣称协方差更优。该限制不影响独立成立的周期分数单调等价结论；当前物理表示比较仍未知。
+- 证据：`ziyu24/D7_pcp_obb_foundation@fb71ec02c97a48d16e66710d8caec83d0646e457` 的 `lab/result.md`；上游 `ziyu24/pcp-obb-score-study@0df97a23936c0893704f8cf03c652625522060f9` 的 `src/scripts/run_score_comparison.py`、`src/scripts/s1_constructive_solution.py`、`src/pcbobb_score/scores/_common.py`。
 
 ## 教训五：形状诊断、局部校准和拒绝策略不能被包装成普适规律
 
@@ -82,7 +82,7 @@
 - 失败命题：方向离散、Sobol 候选或 hull 边界误差超过阈值，说明物理表示方法本身无效。
 - 失败原因：早期 rejection 平均只接受约 2.60–3.55 个候选/图，面积变化达约 2.73%–6.02% 且命中边界，数值支撑不合法；改用直接支持和解析乘积后 synthetic truth 通过，但 256 方向的 inner/outer gap 仍约 `1.199%–1.557%`，只表明误差证书尚未闭合，物理比较根本没有运行。
 - 后续做法：先通过冻结的数值误差与边界门，再比较表示效率；不得靠删难例、只报 aggregate 或把方向数增加本身写成方法改进。
-- 边界：当前活动任务正在检验更高方向数和保守区间端点；结果未出前，方法效果保持未知。
+- 边界：最新任务单要求检验更高方向数和保守区间端点，但尚无已提交结果；按冻结误差标准增加数值分辨率是合法修复，不是规避门槛。方法效果保持未知。
 - 证据：`ziyu24/D7_pcp_obb_foundation@1f4092fd5ebb8ea0f4479b5e1e01a28f27aacece` 的 `lab/result.md`、`lab/failed_methods.md`、`lab/sug.md`。
 
 ## 方法族停止索引
@@ -91,8 +91,9 @@
 | --- | --- | --- | --- |
 | linear / π-quotient / wrapped-π | π-quotient 与 wrapped-π 在有效域单调等价 | 停止把二者包装为独立方法 | `lab/result.md`；`doc/reports/S_score_geometry_report.md` |
 | matched-pair CP | 不覆盖漏检、误检、分类和匹配失败 | 只允许“条件于成功匹配”的主张 | `doc/reports/FINAL_PROJECT_REPORT.md` |
-| object-level exchangeability | 对象独立近似使区间乐观约 `2.4–2.6×` | 停止用对象数替代图像/采集单位 | `doc/reports/B0_image_cluster_exchangeability_audit.md` |
-| covariance / localized / abstention | 角度任务中形状耦合、局部路线同构、拒绝有覆盖代价 | 停止无代价普适改进主张 | `lab/failed_methods.md`；`lab/result.md` |
+| object-level exchangeability | 两配置聚类区间约 `2.42/2.55×`，HRSC 约 `0.95×`；不能统一外推 | 停止无依据的对象 iid 推断 | `doc/reports/B0_image_cluster_exchangeability_audit.md` |
+| covariance | 上游 coverage 与长度集合不一致，旧效率排序未获合法比较支持 | 撤回继承的普适负结论；先修集合定义 | `lab/result.md`；上游 score-study 的 `src/scripts/run_score_comparison.py` |
+| localized / abstention | 现有局部路线未显稳定优势；拒绝牺牲保留率 | 停止无代价普适改进主张 | `lab/failed_methods.md`；`lab/result.md` |
 | phase capture | 目标中介与 discordance 交集仅 30，事件总数不足 | 停止当前 phase-capture 检验；机制保持未知 | `lab/result.md`；`lab/failed_methods.md` |
 | threshold post-selection | 2/3 架构没有共同非退化阈值集 | 停止当前 benchmark，不产生 coverage 结论 | `lab/result.md` |
 | no-pose strong baseline | 协议要求的 adapter 不存在 | 判协议无效，不裁决方法 | `lab/failed_methods.md` |

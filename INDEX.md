@@ -1,8 +1,10 @@
 # GitHub 仓库科学审计索引
 
-本索引覆盖 2026-09-04 从 GitHub 账户 `ziyu24` 枚举到的全部 75 个仓库，其中 61 个为私有仓库、14 个为公开仓库。审计抓取了每库全部远端分支，以 `main`/`master` 为主要分支，并比较提交时间更新的次要分支；`cqc_P1`、`cqc_P3`、`cqc_P4`、`cqc_P5` 和 `cqc_research` 的次要分支较新，表中同时记录比较边界。停止维护的旧项目同样只读审计，没有修改或运行其内容。
+本索引覆盖 2026-09-04–05 从 GitHub 账户 `ziyu24` 枚举并重新核对的全部 75 个仓库，其中 60 个为私有仓库、15 个为公开仓库。审计抓取了每库全部远端分支，以 `main`/`master` 为主要分支，并比较提交时间更新的次要分支；`cqc_P1`、`cqc_P3`、`cqc_P4`、`cqc_P5` 和 `cqc_research` 的次要分支较新，表中同时记录比较边界。停止维护的旧项目同样只读审计，没有修改或运行其内容。
 
-本轮确认 27 个仓库具有可归纳的实质科研证据，每个对应 `lesson/<仓库名>.lessons.md`。其余仓库明确区分为科研孵化、占位、空项目、基础设施、非论文项目或上游/学习仓库；不因文件为空而编造失败教训。审计不包含未提交工作区、Git LFS 大文件正文或仓库外资产，因此表中的“无可审计证据”不是成功证明。
+本轮对 27 份项目总结逐项回查研究问题、实际方法及支撑结论的代码、配置和报告，每个对应 `lesson/<仓库名>.lessons.md`；不是重新运行 27 个项目，也不是对全部历史文件作穷尽证明。其余仓库核对目录与现有研究材料，明确区分为科研孵化、占位、空项目、基础设施、非论文项目或上游/学习仓库；不因文件为空而编造失败教训。审计不包含未提交工作区、Git LFS 大文件正文或仓库外资产，因此表中的“无可审计证据”不是成功证明。
+
+复核保留 `cqc_T2`、`cqc_P2`、`cqc_P4`、`cqc_P6`，并纳入、回查 OrientBench 项目同期发布的新修订；其余 22 份纠正具体错误或收窄越界结论。重点区分数学反例、有效实验负证据、未达到收益门槛、实现/输入无效和未知，保留真实正向结果。更换审计模型不是修改或否定结论的理由；只以可定位的新证据或推理纠错为依据。
 
 | 仓库 | 审计提交 | 状态 | 教训数 |
 | --- | --- | --- | ---: |
@@ -18,10 +20,10 @@
 | `cocoapi` | `8c9bcc3cf640524c4c20a9c40e89cb6a2f2fa0e9` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `CodingInterviewChinese2` | `2d6eb6d9127d1ad728ba60bb25bc5a5e91e519ac` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `cods-obb` | `3298ac026dee6a94819bb7ab5752627b1fa23370` | 占位仓库，无可审计证据 | 0 |
-| `conformal-mmrotate` | `b55f7a4873d6d57130b8ba98083893a131971419` | 工具仓库，无独立科学结论 | 0 |
-| `cqc_factory` | `6ae2bf36c49e68c4fff943366c7f83a9f6c5ded9` | 基础设施，非科研对象 | 0 |
+| `conformal-mmrotate` | `b55f7a4873d6d57130b8ba98083893a131971419` | 工具计划占位，无可审计证据 | 0 |
+| `cqc_factory` | `3311c8fdf8572d9c9906e6f1f538d6933d26c8c6` | 基础设施，非科研对象 | 0 |
 | `cqc_P1` | `main@d20df6a67a2708de90b7d6e9e3ce1eed53621573；secondary@8a9389f9d07c66937fb8af2a1da06754248afda2` | 科研孵化，尚无验证结论 | 0 |
-| `cqc_P10` | `9f2572cd8f877c267af96c9b78890564565bf1e1` | 已登记 | 9 |
+| `cqc_P10` | `56af03cdfa40eb4b66b9853241163a0add4bf77f` | 已登记 | 9 |
 | `cqc_P11` | `8e1d04e6dd397ffba78b7689a0f57f13da7bd80b` | 已登记 | 6 |
 | `cqc_P2` | `487006fd7a3ce35b5cb497c24cb39c74a90ddacb` | 已登记 | 4 |
 | `cqc_P3` | `main@01ec74edab116e6d4a6f44093deb0e7a95436e13；secondary@8b59dd647a37fbd862cac3181e8e9c4956f450f6` | 已登记 | 7 |
@@ -30,16 +32,16 @@
 | `cqc_P6` | `dc6ba44eed7f07283fcb1f8d5aadd19e27d50ce5` | 已登记 | 8 |
 | `cqc_P7` | `6451a708401384a52fd95a0edaf7dcf92e7a9378` | 已登记 | 1 |
 | `cqc_P8` | `f15635f7a79386b5bf3628d2fead559bc19b7892` | 已登记 | 3 |
-| `cqc_P9` | `743f6e5644b452bea02ec303dd2bebd1a6ab5e94` | 已登记 | 7 |
+| `cqc_P9` | `27f5f0918ed3f48938140df40ae152fae7f0bab3` | 已登记 | 8 |
 | `cqc_research` | `main@69f1184fb79016fe45cf32df5fbbaf23885f6bb6；secondary@c9e58d4d3786619eb9afb49cab145ba5982f016e` | 知识库，非单一科研对象 | 0 |
-| `cqc_research_lessons` | `50544811718d9c3aefdc12f51488713dea529fc2` | 基础设施，非科研对象；本轮写入前基线 | 0 |
+| `cqc_research_lessons` | `c81a1774d39882ee8e31871e486ddb0efb412014` | 基础设施，非科研对象；本轮发布前基线 | 0 |
 | `cqc_T1` | `18df509d3f5e46dedf0f8733c44b6fe5b6716b21` | 已登记 | 9 |
 | `cqc_T2` | `2a5998027fd06309a345beb08820194bea26a98e` | 已登记 | 9 |
 | `cqc_xyl` | `b247062e25e50891ba1660123183e58b18970a00` | 非论文项目 | 0 |
 | `cqc-P1` | `3259108256af0949f17e699991a32a9c63a05704` | 占位仓库，无可审计证据 | 0 |
 | `D17_FragmentStitch-OBB` | `73d025241602a7a280652b003c2959c000ad8390` | 占位仓库，无可审计证据 | 0 |
 | `D17_TileBoundary-OBB-Benchmark` | `0964c97735d115d44aa90243002c9f3e09f0da59` | 占位仓库，无可审计证据 | 0 |
-| `D7_pcp_obb_foundation` | `1f4092fd5ebb8ea0f4479b5e1e01a28f27aacece` | 已登记 | 8 |
+| `D7_pcp_obb_foundation` | `fb71ec02c97a48d16e66710d8caec83d0646e457` | 已登记 | 8 |
 | `deep_learning_object_detection` | `98fab8b40848a5dd8e72d72f78bae705ffad82c2` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `Deformable-DETR` | `11169a60c33333af00a4849f1808023eba96a931` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `DenseOBB-B1C3` | `9566c7fa1b6184a5ffbe8b9924aadef82a4c6786` | 占位仓库，无可审计证据 | 0 |
@@ -69,7 +71,7 @@
 | `pcp-obb` | `f9a241f0b4c77f47b92b5559e10aef705e397175` | 已登记 | 4 |
 | `pcp-obb-acquisition-risk` | `5d6768e0ee4f75c353e37bed7b543984c42af77f` | 已登记 | 4 |
 | `pcp-obb-beyond` | `439e415ce3ded5fd1336bc2703160f7fa40c09c9` | 已登记 | 3 |
-| `pcp-obb-score-study` | `0df97a23936c0893704f8cf03c652625522060f9` | 已登记 | 2 |
+| `pcp-obb-score-study` | `0df97a23936c0893704f8cf03c652625522060f9` | 已登记 | 3 |
 | `Phase-Tiny-OBB` | `0ce606acbdddda3564b783ba0bb1cb69fb29d813` | 占位仓库，无可审计证据 | 0 |
 | `Python` | `c1d29ba459648bf8111e19e32988cb36ee8a94b0` | 上游/学习仓库，不纳入科学审计 | 0 |
 | `pytorch-image-models` | `3eb784a6dc05fe10fe084c0ca18d8d7702cc2c40` | 上游/学习仓库，不纳入科学审计 | 0 |

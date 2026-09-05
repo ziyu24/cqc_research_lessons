@@ -67,6 +67,26 @@ class ValidateTests(unittest.TestCase):
             )
             self.assertTrue(any("缺少 40 位来源提交" in item for item in validate_repository(root)))
 
+    def test_run_number_in_evidence_path_is_allowed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "lesson").mkdir()
+            (root / "INDEX.md").write_text(
+                "| `demo` | `" + "a" * 40 + "` | 已登记 | 1 |\n", encoding="utf-8"
+            )
+            path = root / "lesson" / "demo.lessons.md"
+            text = (
+                "## 项目研究什么\n\nx\n\n## 实际采用过的方法\n\nx\n\n"
+                "## 教训一：科学标题\n\n"
+                "- 失败命题：x\n- 失败原因：x\n- 后续做法：x\n- 边界：x\n"
+                "- 证据：`ziyu24/demo@" + "a" * 40
+                + "` 的 `configs/r024-audit.yaml`、`runs/r009/result.json`。\n"
+            )
+            path.write_text(text, encoding="utf-8")
+            self.assertEqual(validate_repository(root), [])
+            path.write_text(text.replace("失败命题：x", "失败命题：`r009` 已失败"), encoding="utf-8")
+            self.assertTrue(any("内部任务号" in item for item in validate_repository(root)))
+
     def test_root_level_lesson_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

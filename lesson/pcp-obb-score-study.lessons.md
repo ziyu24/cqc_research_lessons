@@ -2,7 +2,7 @@
 
 审计基线：`ziyu24/pcp-obb-score-study@0df97a23936c0893704f8cf03c652625522060f9`
 
-快速阅读路径：先读“项目研究什么”→“教训一、二”→“方法族停止索引”。
+快速阅读路径：先读“项目研究什么”→“教训一、二”→“方法族停止索引”。本次复核修正的是比较协议与外推，不把旧表格换成新的方法胜负。
 
 ## 项目研究什么
 
@@ -10,36 +10,45 @@
 
 ## 领域位置与当前结论
 
-- **事实**：在 12 配置×5 seed 的 angle-only 协议中，四类协方差 score 的 Mean Arc 相对 `s_π` 全部更大，范围约 `+75%` 至 `+1378%`；Frobenius/Bures/Wasserstein 最差分桶 coverage 又低约 20–29 点。
-- **事实**：KL 的 WSC 与 `s_π` 没有显著差异，但弧仍约大 `256%`；三个构造性修正也无一在任何配对中更紧，最好混合仍约松 `63%`。
-- **推断**：训练时需要的平滑梯度与校准时需要的分位数效率是不同目标；本结果不能外推到 angle-shape 联合集合。
-- **未知**：在联合预测完整框几何、形状已知或其它应用域时，协方差 score 是否有优势仍未知。
+- **事实**：旧表报告四类协方差分数的 Mean Arc 比 `s_π` 大约 `75%–1378%`，KL 约大 `256%`，最佳固定混合约大 `63%`。这些是原程序输出，不等于已验证的同覆盖效率比较。
+- **事实**：主比较与构造性修正代码用真实宽高计算 calibration/validation score，却用预测宽高固定两侧来计算角度弧；所报 coverage 与 Mean Arc 不是同一个集合的两个指标。形状分桶只作事后 coverage 诊断，主程序并非逐桶校准。
+- **推断**：此前据此停止所有 angle-only 协方差路线的表述过强；当前首先失效的是集合定义与评价的一致性。
+- **未知**：统一可部署集合、校准和覆盖事件后，各分数的实际效率排序未知；原数字不能裁决完整 angle-shape 集合。
 
 ## 实际采用过的方法
 
 项目比较周期角度分数、协方差距离、KL 类分数，以及尺度归一化、回归混合和按形状调整的构造，评估平均弧长与近方形目标的条件覆盖。
 
-## 教训一：训练几何不自动转化为高效校准分数
+## 教训一：coverage 与长度必须评价同一个预测集合
 
-- 失败命题：在框回归中合理的协方差或 KL 几何，也会自然给出紧致的角度共形集合。
-- 失败原因：协方差类分数虽尊重 π 周期，角度弧却膨胀约 75% 至 1378%，近方形最差覆盖下降约 20 至 29 个百分点；KL 版本也出现约 256% 的弧长代价。
-- 后续做法：按最终决策量设计 score，分别优化覆盖合法性、集合效率和条件稳定性，不从训练损失的成功外推校准效率。
-- 边界：这些几何可能适合完整框风险或作为训练损失，失败的是纯角度不确定性目标。
-- 证据：`ziyu24/pcp-obb-score-study@0df97a23936c0893704f8cf03c652625522060f9` 的 `lab/failed_methods.md`、`lab/result.md`。
+- 失败命题：对真实框 score 做共形校准，再固定预测形状反演角度弧，就自动得到了具有同一覆盖保证的 angle-only 集合。
+- 失败原因：校准和 coverage 含真实形状误差，弧的 membership 却去掉该误差。可直接用源码复算：Frobenius 分数在预测 `(w,h,θ)=(2,1,0)`、真值 `(3,1,0)`、阈值 `q=1` 时为 `5>q`，被 coverage 计为未覆盖；同一真值角在所报弧中分数为 `0≤q`，却被包含。因而 coverage 与弧长不能配对解释；后续三种修正沿用这一问题。
+- 后续做法：先写出只依赖部署可用输入的集合 `C(x)`，再以 `真值∈C(x)` 计算覆盖并以同一 `C(x)` 计算长度。可以研究联合框集合及其角度投影，也可以定义真正的 angle-only score，但不能在校准和反演间悄悄替换未知形状。
+- 边界：此反例否定指标对应关系，不是重跑后的排序结论。用真实形状构造的 oracle 只能诊断形状混杂，不能替代部署保证；旧表暂不能支持“同覆盖下某类分数必然更差”。
+- 证据：`ziyu24/pcp-obb-score-study@0df97a23936c0893704f8cf03c652625522060f9` 的 `src/scripts/run_score_comparison.py`、`src/scripts/s1_constructive_solution.py`、`src/scripts/p1_1_oracle_12cfg.py`、`src/pcbobb_score/scores/sigma_frobenius.py`。
 
-## 教训二：新分数更复杂但集合更松不构成改进
+## 教训二：协方差表示的退化不等于物理方向完全不可识别
 
-- 失败命题：尺度归一化、回归混合或按形状加权只要满足覆盖，就可作为更好的新分数。
-- 失败原因：所有构造的预测集合都更松，按形状固定混合仍使弧长增加约 63%；合法性没有转化为效率优势。
-- 后续做法：与最简单周期分数在同一校准划分上比较，并把集合长度、最差条件覆盖和计算代价作为联合目标。
-- 边界：更松集合在极端安全优先应用中可能可接受，但需通过明确效用函数证明其价值。
-- 证据：`ziyu24/pcp-obb-score-study@0df97a23936c0893704f8cf03c652625522060f9` 的 `lab/failed_methods.md`、`lab/result.md`。
+- 失败命题：近方形的协方差角度敏感度退化，足以证明物理方框的所有角度都无区别；名称含 Bures 的实现也自然等同于 Bures/W2 距离。
+- 失败原因：`Σ=R diag(w²,h²) Rᵀ` 在 `w=h` 时对任意旋转不变，但真实正方形只对 90° 整数倍旋转等价，45° 通常改变其占据区域。丢失的是该表示的信息，不能直接上升为物理不可识别定理。此外源码 `sigma_bures` 实际计算平方根矩阵的 Frobenius 距离，一般不等于另行实现的 Bures/W2 距离。
+- 后续做法：区分标注参数对称性、真实几何对称性与有损表示不变性；以公式和构造样本核对方法身份，再讨论分数对角度、尺度的耦合。
+- 边界：近方形方向敏感度弱仍是有用诊断，但其物理、统计含义取决于目标定义和观测噪声；不据此否定所有协方差方法。
+- 证据：`ziyu24/pcp-obb-score-study@0df97a23936c0893704f8cf03c652625522060f9` 的 `src/pcbobb_score/scores/_common.py`、`src/pcbobb_score/scores/sigma_bures.py`、`src/pcbobb_score/scores/sigma_frobenius.py`。
+
+## 教训三：重复划分、分桶诊断与不显著差异不能扩大保证
+
+- 失败命题：12 配置×5 seed、形状分桶和未显著不同的 WSC，足以分别证明独立复现、条件覆盖保证及两方法等效。
+- 失败原因：这里的 seed 主要重划分固定预测文件，不是独立训练；配置共享数据或检测器，也不能当作完全独立重复。主程序用全局分位数后按形状报最差桶，未提供每桶的校准保证；KL 的差异不显著更不等于通过等效检验。
+- 后续做法：明确重复来自训练、数据采集还是划分，按相应单位配对；条件覆盖另行定义和验证；等效性须预先给容差及相应区间。首先修复教训一，再比较简单周期分数与复杂构造的覆盖、长度和代价。
+- 边界：多配置和重复划分仍能描述当前固定资产上的稳定性；旧表可以作为需复核的线索，不能当作修复后方法的负证据。
+- 证据：`ziyu24/pcp-obb-score-study@0df97a23936c0893704f8cf03c652625522060f9` 的 `src/scripts/run_score_comparison.py`、`src/scripts/s1_constructive_solution.py`、`doc/paper/paper_zh_v5.md`。
 
 ## 方法族停止索引
 
 | 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
 | --- | --- | --- | --- |
-| Frobenius / Bures / W2 | 角度弧系统变松，近方形分桶 coverage 明显失衡 | 停止直接作为 angle-only conformity score | `doc/paper/paper_zh_v5.md`；`lab/result.md` |
-| KL score | WSC 近似但 Mean Arc 约 `+256%` | 停止以条件覆盖例外宣称整体改进 | `doc/paper/paper_zh_v5.md` |
-| normalized / regularized covariance | 60 个配对中无一击败 `s_π` | 停止简单尺度修正路线 | `doc/paper/paper_zh_v5.md`；`lab/failed_methods.md` |
-| r-aware fixed mixing | 最好构造仍约 `+63%` 更松 | 停止当前固定混合；联合 angle-shape 问题不在此范围 | `doc/paper/paper_zh_v5.md` |
+| Frobenius / square-root Frobenius / W2 | coverage 与角度弧反演使用不同形状；存在 membership 反例 | 撤回同覆盖效率优劣裁决；先统一集合后再评估 | `src/scripts/run_score_comparison.py`；`src/pcbobb_score/scores/_common.py` |
+| KL score | 历史弧长约 `+256%`，但同样受集合不一致限制；不显著不是等效 | 不以旧表裁决整体优劣或条件覆盖保证 | `src/scripts/run_score_comparison.py`；`doc/paper/paper_zh_v5.md` |
+| normalized / regularized covariance | 旧程序无更紧配对，但继承同一评价问题 | 停止当前效率主张，不扩大为方法族不可能 | `src/scripts/s1_constructive_solution.py` |
+| r-aware fixed mixing | 历史最好约 `+63%`，不是已验证的同覆盖代价 | 与其他候选一起修复协议后才能裁决 | `src/scripts/s1_constructive_solution.py` |
+| true-shape oracle | 使用部署时未知的真实形状 | 仅作诊断，不继承可部署覆盖保证 | `src/scripts/p1_1_oracle_12cfg.py` |

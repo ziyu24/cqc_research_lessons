@@ -36,12 +36,12 @@
 - 边界：自洽流水线可以支持内部趋势，不能无校准地复现或覆盖历史数字。
 - 证据：`ziyu24/pcp-obb-beyond@439e415ce3ded5fd1336bc2703160f7fa40c09c9` 的 `doc/notes/decision_log.md`、`doc/notes/bidirectional_sanity_dota_v10_r50_FAIL.json`。
 
-## 教训三：处理切片依赖会改变保证的统计单位
+## 教训三：重采样单位与目标量必须分别定义
 
 - 失败命题：把瓦片按母图聚类后仍可宣称原来的逐瓦片交换性与覆盖保证。
-- 失败原因：簇级校准把独立单位改成母图，可能更保守且 estimand 不同；瓦片数不再等于有效样本数。
-- 后续做法：明确保证是对母图、瓦片还是对象成立，按同一单位划分校准/测试并报告簇大小和有效样本数。
-- 边界：簇级方法可以正确处理依赖，但不能沿用逐瓦片保证的表述与样本量。
+- 失败原因：瓦片共享母图，不能直接用瓦片数作 iid 样本量；但“按母图聚类就必然改变 estimand”也不正确。对簇重采样并保持对象加权，仍可估计对象边际目标；改用每图最大损失或等权图均值才可能改变保证对象。
+- 后续做法：分别写清划分/重采样单位、损失聚合和加权方式；区分对象边际覆盖、图像平均风险与整图同时覆盖，不能用同一个 coverage 名称互换。
+- 边界：簇级 bootstrap 处理依赖不自动建立共形有限样本保证；后者还需相应交换性和校准构造，但不要求无必要地改换科研目标。
 - 证据：`ziyu24/pcp-obb-beyond@439e415ce3ded5fd1336bc2703160f7fa40c09c9` 的 `lab/result.md`、`doc/notes/decision_log.md`。
 
 ## 方法族停止索引
@@ -52,4 +52,4 @@
 | path-X exponential envelope | 函数与参数在同一网格拟合并验证，虽 435/435 cover、最小 R² `0.9111` | 仅作经验 envelope；停止 distribution-free 外推 | `doc/proofs/bound_report_v5_X.md`；`lab/result.md` |
 | raw + re-NMS | 多类基线相对旧 pipeline 漂移约 `±2.6–3.3` 点 | 只支持同一 pipeline 横向阈值趋势 | `doc/notes/decision_log.md` |
 | LSKNet alignment | image id 顺序错位曾使 matched pairs 几乎清空 | 停止任何未冻结 ID 映射的比较 | `doc/notes/decision_log.md` |
-| tile clustering | 独立单位从 tile 改为母图 | 允许簇级保证；停止沿用 tile 样本量和措辞 | `doc/collaborator_handoff/01_research_question.md` |
+| tile clustering | tile 不是 iid 单位；聚类本身不决定 estimand | 分别声明采样单位、加权和覆盖目标，不能自动继承保证 | `doc/collaborator_handoff/01_research_question.md` |

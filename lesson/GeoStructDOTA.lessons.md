@@ -11,7 +11,7 @@
 ## 领域位置与当前结论
 
 - **事实**：地图后验 pure/adaptive/Gaussian 的主差约为 `-0.000919/+0.001146/-0.007191`，没有达到 0.01 门。
-- **事实**：双 dustbin UOT 相对 forced Hungarian 的 AP50:95 约 `-0.044845`，匹配覆盖仅 `0.008958`。
+- **事实**：双 dustbin UOT 相对 forced Hungarian 的 AP50:95 约 `-0.044845`，`coverage@P90=0.008958` 是精确率至少 90% 时的选择性覆盖，不是匹配覆盖或 transport 质量比例。
 - **事实**：9/9 旧 panel 因来源身份和独立 gold 不成立而退役；DFC2019/US3D 现有产品也未闭合实例屋顶身份。
 - **推断**：当前失败既有方法负结果，也有数据不可识别；二者必须分开，不把资产缺口解释为 H0。
 - **未知**：Extended US3D 的完整官方实例资产是否存在仍未被穷尽证实，只能保持 unresolved。
@@ -28,12 +28,12 @@
 - 边界：高质量、同时间且实例可连接的地图数据可能改变结果；当前结论限于现有后验与匹配条件。
 - 证据：`ziyu24/GeoStructDOTA@7b9a5f846d99ca5a8cdd0c59d29315983b51526e` 的 `lab/failed_methods.md`、`lab/result.md`。
 
-## 教训二：存在性与几何解耦的部分匹配会造成监督流失
+## 教训二：部分匹配的负结果不自动定位到 dustbin 吸收
 
 - 失败命题：双 dustbin 不平衡最优传输能自动处理缺失对象，同时保留有用几何监督。
-- 失败原因：当前存在性与几何项的解耦使大量质量被吸入 dustbin，覆盖约 0.009，AP 约下降 0.0448；优化可行不等于监督分配有信息。
+- 失败原因：当前 UOT 的 AP50:95 点差约 `-0.044845`，区间约 `[-0.065578,-0.022268]`，是当前设计的负证据。但 `coverage@P90≈0.009` 衡量高精确率下的保留量，不能据此断言大量 transport 质量进入 dustbin；原总结把评价量错当成内部机制量，因果定位没有得到隔离审计支持。
 - 后续做法：在训练前用可视化和小规模真值检查质量守恒、匹配覆盖、错误类型与梯度贡献，并与最近邻及硬匹配基线比较。
-- 边界：结论针对当前解耦与代价设计，不否定有可识别缺失模型的部分匹配。
+- 边界：保留当前解耦与代价设计的性能负结果；监督流失的具体原因仍需匹配质量和梯度证据，不否定所有部分匹配。
 - 证据：`ziyu24/GeoStructDOTA@7b9a5f846d99ca5a8cdd0c59d29315983b51526e` 的 `lab/failed_methods.md`、`lab/result.md`。
 
 ## 教训三：栅格高程与语义连通域不是实例屋顶金标准
@@ -57,7 +57,7 @@
 | 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
 | --- | --- | --- | --- |
 | map posterior RBox | 三种构造均无稳定且过门的增益 | 停止当前直接伪框路线 | `lab/result.md`；`lab/failed_methods.md` |
-| double-dustbin UOT | AP50:95 `-0.044845`，coverage `0.008958` | 停止当前解耦存在性/几何代价 | `lab/result.md` |
+| double-dustbin UOT | AP50:95 `-0.044845`，选择性 `coverage@P90=0.008958`；不是 dustbin 质量证据 | 停止当前设计，不作未经验证的根因归属 | `lab/result.md` |
 | image-only legacy run | 协议非标准且不能连接到主评价 | 判运行无效，不作方法裁决 | `lab/failed_methods.md` |
 | legacy 9-panel | 来源身份与独立 gold 不成立 | 全部退役，不引用 headline | `doc/legacy/paper_notes/paper_assets_v6/10_claims_audit.md` |
 | DFC2019 / US3D carrier | 缺稳定实例 ID、精确屋顶足迹或同时间配准 | 停止当前数据主张；资产状态保持 unresolved | `lab/failed_methods.md`；`doc/legacy/ops/project_status_034.md` |

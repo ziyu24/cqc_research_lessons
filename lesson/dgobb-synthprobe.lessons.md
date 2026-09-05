@@ -10,7 +10,7 @@
 
 ## 领域位置与当前结论
 
-- **事实**：固定干预在若干域对上显示 directed scale policy 可优于 uniform，但 label-free V5 方向估计只命中 2/4 可用 pair，band-response 也只命中 4/5 directed pair 并在边界失效。
+- **事实**：固定干预在若干域对上显示 directed scale policy 可优于 uniform；历史 V5 为 2/4、band-response 为 4/5 并在边界失效，后续独立登记的 sign-only 审计则为 0/3、另两对不可用，不能混成同一准确率。
 - **事实**：SCM 的三种子 oracle 矩阵结果混合；DIOR-R→FAIR1M 的 SCM-global 相对 uniform 三个 paired delta 全负，不能升级为普适处方。
 - **事实**：normalized factor response 的 scale/angle 原始幅度约 14.67×，但 angle 缺 matched-lineage 位移，跨因素比较门失败，原“15×机制”已撤回。
 - **事实**：单图适配、无新观测的融合以及多个物理/数字载体在性能、直接归约、可识别性或数据资格上停止。
@@ -32,8 +32,8 @@
 ## 教训二：没有新观测的轨道融合仍是测试时增强
 
 - 失败命题：把同一图像的旋转视图预测做轨道一致性或加权框融合，就构成新的物理或统计问题。
-- 失败原因：orbit-consensus、RIVE、RayLift 和 Spin2 都只重组同一模型在确定变换下的输出，与 TTA/WBF 的已有对象直接同构，没有新增信息源或新识别结果。
-- 后续做法：新路线必须指出额外可观测量、不同干预或新的理论保证；仅重新命名组合算子不作为科学贡献。
+- 失败原因：项目对这些具体候选的审查未找到超出 TTA/pullback/WBF 组合的独立机制或保证；但“没有新信息源”本身不是无创新定理，同一观测也可能支持更好的估计、计算或保证。
+- 后续做法：逐项指出相对已有 TTA 的实质增量，例如估计器、计算效率、干预或保证，并给可检验依据；不要求所有进展都增加信息源，也不把重新命名组合算子当贡献。
 - 边界：更好的融合实现仍可能有工程收益，但新颖性需按已有 TTA 文献评价。
 - 证据：`ziyu24/dgobb-synthprobe@5deedb7da5665fde50cbc5a7c2a55fc8b3ee52ed` 的 `lab/failed_methods.md`。
 
@@ -64,7 +64,7 @@
 ## 教训六：有方向的训练干预有效，不等于方向可由无标签 proxy 决定
 
 - 失败命题：既然某些域对上 directed scale policy 优于 uniform，就能从目标预测分布自动选出正确方向。
-- 失败原因：固定干预回答“若方向已知会怎样”，无标签选择器回答“方向能否识别”，是两个问题。V5 top-K 估计只命中 2/4 可用 pair并漏掉 FAIR1M-source 反转；band-response 也有关键错判。
+- 失败原因：固定干预回答“若方向已知会怎样”，无标签选择器回答“方向能否识别”，是两个问题。V5 top-K 只命中 2/4 并漏掉 FAIR1M-source 反转，band-response 有关键错判；后续 sign-only 主估计器在可用三对上全错，其余两对不可用，不能把缺失当作正确或失败样本。
 - 后续做法：把 oracle intervention 与 direction estimator 分开报告；部署方法必须在未参与设计的域对上先选方向，再一次性验证结果。
 - 边界：有监督或元数据明确给出尺度关系时，oracle 干预仍可作为条件策略。
 - 证据：`ziyu24/dgobb-synthprobe@5deedb7da5665fde50cbc5a7c2a55fc8b3ee52ed` 的 `doc/legacy/audits/final_claim_consistency_099.md`、`doc/legacy/audits/label_free_sign_final_decision_101.md`。
@@ -90,9 +90,9 @@
 | 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
 | --- | --- | --- | --- |
 | single-image adaptation | 明显低于 four-view TTA，quotient-ST 区间为负 | 停止当前伪标签一步适配与阈值微调 | `lab/failed_methods.md` |
-| orbit-consensus / RIVE | 无新增观测，只是 TTA/pullback/WBF 重组 | 停止方法新颖性主张 | `lab/failed_methods.md` |
+| orbit-consensus / RIVE | 当前具体组合未建立超出 TTA/pullback/WBF 的机制或保证 | 停止现有新颖性主张，不把无新观测当普适不可能性 | `lab/failed_methods.md` |
 | RayLift / Spin2 / FiberID / DPIRT | 直接组合、90° 歧义、载体不闭合或数字到物理风险不可识别 | 停止当前物理/数字探针路线 | `lab/failed_methods.md` |
 | MV-Risk | 相同预测联合分布兼容相反真值风险 | 停止无标签完整风险点估计 | `lab/failed_methods.md` |
-| label-free scale direction | V5 仅 2/4，band probe 关键 pair 失败 | 停止自动方向选择主张 | `doc/legacy/audits/final_claim_consistency_099.md` |
+| label-free scale direction | 历史 V5 2/4；band probe 有错；后续 sign-only 0/3、另两对不可用 | 停止当前自动方向选择主张 | `doc/legacy/audits/final_claim_consistency_099.md`；`doc/legacy/audits/label_free_sign_final_decision_101.md` |
 | normalized factor ranking | angle 缺 matched-lineage 位移 | 撤回“约 15×机制倍率” | `doc/legacy/audits/normalized_factor_response_decision_098.md` |
 | SCM prescription | 三种子 oracle 结果混合且有全负反例 | 停止普适处方升级；保留 bounded 诊断 | `doc/legacy/audits/scm/scm_final_decision.md` |
