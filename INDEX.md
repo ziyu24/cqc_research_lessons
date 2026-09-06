@@ -35,7 +35,7 @@
 | `cqc_P7` | `6451a708401384a52fd95a0edaf7dcf92e7a9378` | 已登记 | 1 |
 | `cqc_P8` | `f15635f7a79386b5bf3628d2fead559bc19b7892` | 已登记 | 3 |
 | `cqc_P9` | `27f5f0918ed3f48938140df40ae152fae7f0bab3` | 已登记 | 8 |
-| `cqc_naood` | `fd264e7f2bae4b7faa2b9687b4793ab96be32d15` | 已登记 | 9 |
+| `cqc_naood` | `5439b0cb4872b971a59e2e4bc0dfbc9a78ad285e` | 已登记 | 17 |
 | `cqc_research` | `main@69f1184fb79016fe45cf32df5fbbaf23885f6bb6；secondary@c9e58d4d3786619eb9afb49cab145ba5982f016e` | 知识库，非单一科研对象 | 0 |
 | `cqc_research_lessons` | `c81a1774d39882ee8e31871e486ddb0efb412014` | 基础设施，非科研对象；本轮发布前基线 | 0 |
 | `cqc_T1` | `a395f8fb2ae20751df9659a22e5f614f107c1ae4` | 已登记 | 9 |
