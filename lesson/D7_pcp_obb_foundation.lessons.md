@@ -2,9 +2,9 @@
 
 > 使用边界：教训须结合适用条件与原始证据使用，同条件下的有效反证不能忽略，也不能跨条件自动否决新研究；来源不可访问时须注明“未独立核实”，不得将摘要当作已核实的原始证据。
 
-审计基线：当前主线 `ziyu24/D7_pcp_obb_foundation@9c04d0a6325f4df91a1f894f0ef22a5a64c088c8`。已检查全部远端分支，没有更新更晚的次线。最新已提交证据包含数值终态、B 对冻结 development 的只读复算与基础定义更正；后续独立终审任务不被当作已执行结果。
+审计基线：当前主线 `ziyu24/D7_pcp_obb_foundation@af7bb4c2fcaa9f8d668c45922e56ef71ba0353a0`。已检查全部远端分支，没有更新更晚的次线。最新证据包含已完成的独立有效性终审，以及原开发样本上的 DOTA 评测定义二因素核查；没有新的机制或效率正结果。
 
-快速阅读路径：先读“项目研究什么”→“教训一、二、三、八、九、十”→“方法族停止索引”。
+快速阅读路径：先读“项目研究什么”→“教训一、二、三、八、九、十、十一”→“方法族停止索引”。
 
 ## 项目研究什么
 
@@ -17,6 +17,7 @@
 - **事实**：阈值后选择 benchmark 在 3 个架构中有 2 个无法在 `FPI≤2` 下提供至少 5 个阈值，故没有 coverage 结果；一个要求不存在 adapter 的强基线协议同样无效。
 - **事实**：完整 1024 方向的 symKLD 存档存在四个严格可行框越过所称外界的反例；表观面积 gap 小于 1% 不构成有效数值证书，当前自定义效率/表示 benchmark 已按协议停止。
 - **事实**：旧 C2 虽 polygon 等价，却不是所称 le135 长边约定；真正 le90/le135 下，本项目绝对残差数学不变，冻结样本差仅约 1e-16。四个 Bonferroni 校准折均有分位秩溢出，本地 MaxRank-like 的覆盖与面积边界也不一致，旧有效漂移/公平效率解释已撤回。
+- **事实**：旧 DOTA 指标使用矩形化 GT 和 difficulty>=100，不能称为官方 Task1 评测。保持原匹配和操作点、改用原四边形与非零 difficulty 后，两个关键架构在全部五个开发切分仍超过原 FP 预算，定义更正没有恢复已停止的后选择支持区间；正式官方 AP 尚未复现。
 - **推断**：单独的数值失败不能证明物理方法普遍无效；这次另有独立的基线/命题定义问题，不能再概括为“只差算力闭合”。
 - **未知**：有效物理方法与正确定义基线的公平效率比较仍未获得；停止当前路线不是证明所有 OBB 可靠性问题没有研究价值。
 
@@ -104,6 +105,14 @@
 - 边界：分位溢出破坏所称分布无关保证，并不意味着每份数据的经验 coverage 必然失败；秩/product 边界失配也尚不能解释全部面积差，更不构成已发表 Max-Rank 理论的反例。
 - 证据：`ziyu24/D7_pcp_obb_foundation@9c04d0a6325f4df91a1f894f0ef22a5a64c088c8` 的 `src/r009_methods.py`、`src/r010_coordinate.py`、`src/r012_validity_audit.py`、`src/test_r012_validity_audit.py`、`doc/2026-09-06-validity-evidence.json`、`lab/result.md`。
 
+## 教训十一：官方标注输入不等于官方评测，纠错也不等于结论反转
+
+- 失败命题：使用官方数据集标注，就可以把矩形化、困难目标阈值和自定义匹配后的指标称为官方结果；或者发现口径错误就认为旧负结论已被推翻。
+- 失败原因：项目先把原四边形转成矩形，以 difficulty>=100 处理 ignore；官方 DOTA Task1 保留原四边形、非零 difficulty 和 score-greedy。原图共有 1,909 条 difficulty=1，定义差异真实存在。对原五个开发切分的 314 张并集进行二因素复算，旧逐图计数精确复现；原四边形/非零 difficulty 下两关键架构 FPI 分别为 5.604–11.132 和 2.264–3.769，仍全部超过预算 2。只改 difficulty 没改变这些操作点的 FP，不代表所有指标都不变。
+- 后续做法：分别锁定标注几何、困难目标语义、匹配顺序、IoU 边界与 AP 积分规则，再声称复现官方指标；发现错误后保持原 split/操作点做可归因诊断，区分名称撤回、数值变化和科学判定是否反转。
+- 边界：这次核查保留原最大基数与预删除 ignore，四边形交并使用 Shapely，仍不是官方 Task1 AP 复现；不把新口径混入旧预注册结果，也不因停止未反转而保留错误的“官方评测”名称。停止仅针对现有后选择协议，不是对所有可靠性研究的否定。
+- 证据：`ziyu24/D7_pcp_obb_foundation@af7bb4c2fcaa9f8d668c45922e56ef71ba0353a0` 的 `src/r006_original_eval.py`、`src/r007_dota_fpi_gate.py`、`src/dota_semantics_probe.py`、`doc/2026-09-06-dota-semantics-evidence.json`、`lab/result.md`；官方定义见 [DOTA Task1 源码](https://raw.githubusercontent.com/CAPTAIN-WHU/DOTA_devkit/master/dota_evaluation_task1.py)。
+
 ## 方法族停止索引
 
 | 方法族 | 最强负证据或限制 | 停止范围 | 当前 main 证据路径 |
@@ -119,3 +128,4 @@
 | physical support numerics | 严格可行框越过所称外界，小面积 gap 无证书效力 | 当前自定义效率路线止损，不作所有物理方法无效的推断 | `lab/result.md`；`doc/2026-09-06-validity-evidence.json` |
 | le90/le135 drift | 旧转换不满足长边 chart，正确绝对残差代数不变 | 撤回错误约定支撑的漂移机制，不泛化到所有表示 | `src/r012_validity_audit.py`；`lab/result.md` |
 | finite coordinate baselines | Bonf 分位秩溢出被截断；本地 rank 与 product 边界不一致 | 撤回旧有效性/公平效率解释，不归咎已发表方法 | `src/r009_methods.py`；`src/r010_coordinate.py`；`lab/result.md` |
+| DOTA evaluator equivalence | 矩形化与困难目标规则非官方合同；二因素诊断未恢复旧操作区间 | 撤回官方 AP 称谓，不重开原后选择协议；真实官方 AP 未验证 | `src/dota_semantics_probe.py`；`doc/2026-09-06-dota-semantics-evidence.json`；`lab/result.md` |
