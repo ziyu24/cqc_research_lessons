@@ -2,11 +2,11 @@
 
 ## 快速阅读路径
 
-先读本文的结论边界，再回查最新证据来源 `ziyu24/cqc_P14@76ba784fc9700275fe5f4452f30aee9879f6c460` 的 `lab/discussion.md`、`lab/result.md` 及 `doc/r017_review.md`；空间对应见 `doc/r016_review.md`，光谱秩比较见 `doc/r015_review.md`，有效中心停止见 `doc/r014_review.md`，无效中心执行见 `doc/r013_review.md`，残余诊断见 `doc/r012_review.md`，新地理确认见 `doc/r011_review.md`，已验证的较强基线信号见 `doc/r005_review.md`，历史纠错见 `doc/r002_review.md`、`doc/r003_review.md`、`doc/r004_review.md`、`doc/r006_review.md`。数学与实际入口契约检查见 `src/test_r006_contract.py`，保存小头回放见 `src/r007_review.py`。已抓取全部来源远端分支，只有 main。
+先读本文的结论边界，再回查最新证据来源 `ziyu24/cqc_P14@ae3a7cd429332e865bd94a6748e4673a7e0447f8` 的 `lab/discussion.md`、`lab/result.md` 及 `doc/r019_review.md`；增强见 `doc/r017_review.md`；空间对应见 `doc/r016_review.md`，光谱秩比较见 `doc/r015_review.md`，有效中心停止见 `doc/r014_review.md`，无效中心执行见 `doc/r013_review.md`，残余诊断见 `doc/r012_review.md`，新地理确认见 `doc/r011_review.md`，已验证的较强基线信号见 `doc/r005_review.md`，历史纠错见 `doc/r002_review.md`、`doc/r003_review.md`、`doc/r004_review.md`、`doc/r006_review.md`。数学与实际入口契约检查见 `src/test_r006_contract.py`，保存小头回放见 `src/r007_review.py`。已抓取全部来源远端分支，只有 main。
 
 ## 项目研究什么
 
-最新外部评测纠错入口：`ziyu24/cqc_P14@21bcb0e94a530e766fa502ba298180f423ff8203` 的 `doc/r018_review.md`、`doc/r018_review_metrics.json`、`src/r018_external_city.py`、`src/r018_review_audit.py`。已抓取全部来源分支，仍仅main。Khartoum三臂低AP可复算，但选样间距、共同网格和标签处理不符合原协议，撤回原外部迁移失败解释；修复后的结果未知。
+最新外部评测证据入口：`ziyu24/cqc_P14@ae3a7cd429332e865bd94a6748e4673a7e0447f8` 的 `doc/r019_review.md`、`doc/r019_review_metrics.json`、`src/r019_external_city_repair.py`、`src/r019_review_audit.py`。已抓取全部来源分支，仍仅main。首次外测的间距/标签等偏差使原停止解释撤回；随后完整候选和格网修复已实测，MS/低通PAN AP50为5.6773%/5.2957%，未达实用增量标准。残余投影包围盒裁图与mask填值偏差仍在，故保留实际处理条件下的有限负结果，不称严格原协议全部落实；当地监督的增量仍未知，不能用它未来的结果回填冻结迁移成功。
 
 最新增强证据入口：`ziyu24/cqc_P14@76ba784fc9700275fe5f4452f30aee9879f6c460` 的 `doc/r017_review.md`、`doc/r017_review_metrics.json`、`src/r017_registration_augmentation.py` 和 `src/r017_review_audit.py`。已抓取全部来源远端分支，只有main。固定增强已实测，未同时满足干净保持与扰动收益；空间对应证据入口及此前结论保留。
 
@@ -55,6 +55,8 @@ SpaceNet4 同一低离轴采集，201/50 地理隔离训练/验证切片，固�
 ## 教训二：匹配参数量不等于匹配输入信息，正增益不能自动归因于光谱
 
 对前条评价契约教训的新增外部案例：冻结三模型在Khartoum的PAN/MS/低通PAN AP50为3.2428%/4.7119%/4.6695%，保存预测独立重算完全一致。然而预定至少200米间隔的50图有13对足迹距离不足、最小为0；辅助网格由四舍五入尺寸生成而非严格共同2米格网，标签仅处理MultiPolygon首分量、遗漏6个分量，truncated/裁剪ignore也未落实。由此撤回的是“已忠实执行原外部协议并否定冻结迁移”的解释，不是证明这些偏差造成全部低分或修复必然有效。后续须恢复原先固定的选择算法、地理变换与实例定义，保留原模型和判断标准；不得用另一套更有利协议替代，也不能把源城市已有MS正证据一并撤回。补充证据：`ziyu24/cqc_P14@21bcb0e94a530e766fa502ba298180f423ff8203`；`src/r018_external_city.py`、`src/r018_review_audit.py`、`src/external_city_geometry.py`、`src/test_external_city_geometry.py`、`doc/r018_review.md`、`doc/r018_review_metrics.json`、`lab/result.md`、`lab/failed_methods.md`。此段补充已有教训，不将一次工程退出另列方法失败。
+
+后续实物复核进一步限制“修复完成”的含义：官方1012候选和固定50选样可重建，真实共同足迹间距均合格，0.5/2米及4:1格网成立，三臂主AP独立重算最大差不到0.005个百分点；MS仍未超过两个对照的全部预定增量。但输入使用投影包围盒而非严格共同多边形裁切、边际覆盖乘积而非联合mask、标准化前而非之后填0。最差约0.1647%格网面积越出严格共同足迹，重新计算的八波段联合覆盖仍至少99.8554%。因此接受的是实际处理下的有限未达标结果，不能宣称全部契约通过，也不能把残余偏差当作已识别的低分原因。已满足的关键检查与尚有影响不明的残余应分别保存；不必用重复修复替代科学推进，但转向有目标监督时必须另设问题、预算和评价，不能改写无目标拟合结论。补充证据：`ziyu24/cqc_P14@ae3a7cd429332e865bd94a6748e4673a7e0447f8`；`src/r019_external_city_repair.py`、`src/r019_review_audit.py`、`doc/r019_review.md`、`doc/r019_review_metrics.json`、`lab/result.md`、`lab/failed_methods.md`。
 
 - 失败命题：PAN/MS 与重复 PAN 辅助支路使用相同网络、参数量及训练预算，二者差值即可归因于多光谱信息。
 - 失败原因：实际原生 MS 从 225×225 上采样，而重复 PAN 辅助输入先被降为 64×64；两臂的空间细节并不匹配。主 PAN 也已由 900×900 压缩为 256×256。这些已核验的处理差异使“参数量相等即可排除空间信息混杂”的推理不成立。
@@ -174,3 +176,4 @@ SpaceNet4 同一低离轴采集，201/50 地理隔离训练/验证切片，固�
 |从一维检测退化推断高维必要或从未过接近门推断额外收益|二维追回大部分源增量但未满足全部接近条件；完整MS联合额外收益条件亦未通过，保留采集依赖，不追加秩/种子追分|
 |同景光谱保留可替代正确局部对应，或仅由冻结扰动推断机制|匹配远距重训未追回正确对应收益；冻结扰动另含输入变化效应，小/细长目标统一敏感性未建立，不外推真实配准或DOTA类别|
 |固定五状态小幅MS错位训练增强|扰动精确定位改善，但干净保持与扰动宏AP50目标未过；停止当前配方，保留局部收益及原生MS正结果，不扩展为全部增强无效|
+|跨城冻结模型低性能及修复后未达增量|实际处理条件下保留有限负结果，残余足迹/mask偏差不冒称消除；当地监督是新问题，不能反改冻结成绩或否定源域MS收益|
