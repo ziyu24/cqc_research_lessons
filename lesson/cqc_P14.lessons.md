@@ -6,6 +6,8 @@
 
 ## 项目研究什么
 
+最新外部评测纠错入口：`ziyu24/cqc_P14@21bcb0e94a530e766fa502ba298180f423ff8203` 的 `doc/r018_review.md`、`doc/r018_review_metrics.json`、`src/r018_external_city.py`、`src/r018_review_audit.py`。已抓取全部来源分支，仍仅main。Khartoum三臂低AP可复算，但选样间距、共同网格和标签处理不符合原协议，撤回原外部迁移失败解释；修复后的结果未知。
+
 最新增强证据入口：`ziyu24/cqc_P14@76ba784fc9700275fe5f4452f30aee9879f6c460` 的 `doc/r017_review.md`、`doc/r017_review_metrics.json`、`src/r017_registration_augmentation.py` 和 `src/r017_review_audit.py`。已抓取全部来源远端分支，只有main。固定增强已实测，未同时满足干净保持与扰动收益；空间对应证据入口及此前结论保留。
 
 研究原生高分辨率 PAN 与较粗 MS 联合检测：当观测不足以区分多个实例时，MS 是否应提供组级语义约束，而不是强行解释成逐实例光谱。目标检测框始终分别输出。当前已验证有限的真实 MS 检测增量；符合修复协议的几何分组小头未达到预定实用增益，结束该有限探针，一般观测作用粒度问题仍未裁决。
@@ -51,6 +53,8 @@ SpaceNet4 同一低离轴采集，201/50 地理隔离训练/验证切片，固�
 - 证据：`ziyu24/cqc_P14@aab7bbe8c152ce53f996f6ae7291781e93d6542f`；`src/r002_train_spacenet4.py`、`src/test_r002_geometry.py`、`doc/r002_review.md`、`doc/r002_review_metrics.json`、`lab/failed_methods.md`。
 
 ## 教训二：匹配参数量不等于匹配输入信息，正增益不能自动归因于光谱
+
+对前条评价契约教训的新增外部案例：冻结三模型在Khartoum的PAN/MS/低通PAN AP50为3.2428%/4.7119%/4.6695%，保存预测独立重算完全一致。然而预定至少200米间隔的50图有13对足迹距离不足、最小为0；辅助网格由四舍五入尺寸生成而非严格共同2米格网，标签仅处理MultiPolygon首分量、遗漏6个分量，truncated/裁剪ignore也未落实。由此撤回的是“已忠实执行原外部协议并否定冻结迁移”的解释，不是证明这些偏差造成全部低分或修复必然有效。后续须恢复原先固定的选择算法、地理变换与实例定义，保留原模型和判断标准；不得用另一套更有利协议替代，也不能把源城市已有MS正证据一并撤回。补充证据：`ziyu24/cqc_P14@21bcb0e94a530e766fa502ba298180f423ff8203`；`src/r018_external_city.py`、`src/r018_review_audit.py`、`src/external_city_geometry.py`、`src/test_external_city_geometry.py`、`doc/r018_review.md`、`doc/r018_review_metrics.json`、`lab/result.md`、`lab/failed_methods.md`。此段补充已有教训，不将一次工程退出另列方法失败。
 
 - 失败命题：PAN/MS 与重复 PAN 辅助支路使用相同网络、参数量及训练预算，二者差值即可归因于多光谱信息。
 - 失败原因：实际原生 MS 从 225×225 上采样，而重复 PAN 辅助输入先被降为 64×64；两臂的空间细节并不匹配。主 PAN 也已由 900×900 压缩为 256×256。这些已核验的处理差异使“参数量相等即可排除空间信息混杂”的推理不成立。
