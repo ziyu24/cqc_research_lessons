@@ -2,11 +2,13 @@
 
 ## 快速阅读路径
 
-先读本文的结论边界，再回查最新证据来源 `ziyu24/cqc_P14@ae3a7cd429332e865bd94a6748e4673a7e0447f8` 的 `lab/discussion.md`、`lab/result.md` 及 `doc/r019_review.md`；增强见 `doc/r017_review.md`；空间对应见 `doc/r016_review.md`，光谱秩比较见 `doc/r015_review.md`，有效中心停止见 `doc/r014_review.md`，无效中心执行见 `doc/r013_review.md`，残余诊断见 `doc/r012_review.md`，新地理确认见 `doc/r011_review.md`，已验证的较强基线信号见 `doc/r005_review.md`，历史纠错见 `doc/r002_review.md`、`doc/r003_review.md`、`doc/r004_review.md`、`doc/r006_review.md`。数学与实际入口契约检查见 `src/test_r006_contract.py`，保存小头回放见 `src/r007_review.py`。已抓取全部来源远端分支，只有 main。
+先读本文的结论边界，再回查最新证据来源 `ziyu24/cqc_P14@78d2ac2cd02724f8e7c1dac48918013e688703e6` 的 `lab/discussion.md`、`lab/result.md` 及 `doc/r020_review.md`；外部冻结见 `doc/r019_review.md`；增强见 `doc/r017_review.md`；空间对应见 `doc/r016_review.md`，光谱秩比较见 `doc/r015_review.md`，有效中心停止见 `doc/r014_review.md`，无效中心执行见 `doc/r013_review.md`，残余诊断见 `doc/r012_review.md`，新地理确认见 `doc/r011_review.md`，已验证的较强基线信号见 `doc/r005_review.md`，历史纠错见 `doc/r002_review.md`、`doc/r003_review.md`、`doc/r004_review.md`、`doc/r006_review.md`。数学与实际入口契约检查见 `src/test_r006_contract.py`，保存小头回放见 `src/r007_review.py`。已抓取全部来源远端分支，只有 main。
 
 ## 项目研究什么
 
-最新外部评测证据入口：`ziyu24/cqc_P14@ae3a7cd429332e865bd94a6748e4673a7e0447f8` 的 `doc/r019_review.md`、`doc/r019_review_metrics.json`、`src/r019_external_city_repair.py`、`src/r019_review_audit.py`。已抓取全部来源分支，仍仅main。首次外测的间距/标签等偏差使原停止解释撤回；随后完整候选和格网修复已实测，MS/低通PAN AP50为5.6773%/5.2957%，未达实用增量标准。残余投影包围盒裁图与mask填值偏差仍在，故保留实际处理条件下的有限负结果，不称严格原协议全部落实；当地监督的增量仍未知，不能用它未来的结果回填冻结迁移成功。
+最新当地监督及研究取舍入口：`ziyu24/cqc_P14@78d2ac2cd02724f8e7c1dac48918013e688703e6` 的 `doc/r020_review.md`、`doc/r020_review_metrics.json`、`doc/research_direction_decision_20260909.md`、`src/r020_local_supervised_control.py`、`src/r020_review_audit.py`。已抓取来源全部分支，仅main。三臂已能检测但MS没有预定额外优势；实际175训练图，不能冒称完整200图含空图协议通过。当前结束建筑探针链的追加训练，保留此前正向MS与有限负结果，不以更多实验编号替代新方法贡献。
+
+最新外部评测证据入口：`ziyu24/cqc_P14@ae3a7cd429332e865bd94a6748e4673a7e0447f8` 的 `doc/r019_review.md`、`doc/r019_review_metrics.json`、`src/r019_external_city_repair.py`、`src/r019_review_audit.py`。已抓取全部来源分支，仍仅main。首次外测的间距/标签等偏差使原停止解释撤回；随后完整候选和格网修复已实测，MS/低通PAN AP50为5.6773%/5.2957%，未达实用增量标准。残余投影包围盒裁图与mask填值偏差仍在，故保留实际处理条件下的有限负结果，不称严格原协议全部落实；后续当地监督已得到实际175图协议下的有限负结果，见教训十四；不能回填冻结迁移成功。
 
 最新增强证据入口：`ziyu24/cqc_P14@76ba784fc9700275fe5f4452f30aee9879f6c460` 的 `doc/r017_review.md`、`doc/r017_review_metrics.json`、`src/r017_registration_augmentation.py` 和 `src/r017_review_audit.py`。已抓取全部来源远端分支，只有main。固定增强已实测，未同时满足干净保持与扰动收益；空间对应证据入口及此前结论保留。
 
@@ -156,6 +158,14 @@ SpaceNet4 同一低离轴采集，201/50 地理隔离训练/验证切片，固�
 - 边界：有限停止仅适用于单种子、12轮、旧开发建筑位置与循环平移配方，不证明全部增强无效或复杂对齐必然有价值。原生MS增量与匹配空间控制正结果仍成立；训练历史顺序未完整保存，机制归因保持有限，独立城市及DOTA类型类别泛化未验证。
 - 证据：`ziyu24/cqc_P14@76ba784fc9700275fe5f4452f30aee9879f6c460`；`src/r017_registration_augmentation.py`、`src/r017_review_audit.py`、`src/test_r017_strata.py`、`configs/r017_registration_augmentation.json`、`doc/r017_registration_augmentation_plan.md`、`doc/r017_review.md`、`doc/r017_review_metrics.json`、`lab/result.md`、`lab/failed_methods.md`。
 
+## 教训十四：当地监督恢复检测能力，不等于恢复额外模态收益
+
+- 失败命题：源域MS已有明显增量，外部城市冻结模型很弱，因此允许当地监督后，完整MS就会重新超过相同容量的PAN与尺度匹配低通PAN辅助。
+- 失败原因：Khartoum固定50个已见评测位置中，实际当地监督三臂AP50为40.6214%/40.1052%/40.1647%（PAN/MS/低通PAN），均超过预定检测信号线，但MS没有达到任一对照的实用增量；AP75及AP50:95也未满足联合条件。独立AP重算与保存末轮冻结前端核验支持实际比较。这里识别的是“检测水平提高与模态额外优势不同”，尚未识别为何光谱收益未恢复。
+- 后续做法：将可学性、模态增量和新方法贡献分别设问，目标监督与冻结迁移分表报告。若已有检测但额外模态未达标，接受被测配方的有限停止，不因源域正信号而不断加模块、轮数或种子；研究重新立题须提出可区别于既有方法的新问题与可被否定的算子，而非积累更多编号。
+- 边界：单种子、同城开发评测和该训练预算；计划200张含空图，实际三臂一致过滤25张空有效GT，只用175张各12轮。因此不把该结果称为完整200图协议的有效否定，不证明零效应或MS无信息；历史全部随机初值和访问轨迹未完整保存。停止追加训练是资源判断，不是证明补上空图后结果必然相同。源域增量与同城跨观测正证据继续成立，跨城市的不同训练/统计等条件未被因果分离。
+- 证据：`ziyu24/cqc_P14@78d2ac2cd02724f8e7c1dac48918013e688703e6`；`src/r020_local_supervised_control.py`、`src/r020_review_audit.py`、`configs/r020_local_supervised_control.json`、`doc/r020_review.md`、`doc/r020_review_metrics.json`、`doc/research_direction_decision_20260909.md`、`lab/result.md`、`lab/failed_methods.md`。
+
 ## 方法族停止索引
 
 |方法或推理族|当前边界|
@@ -177,3 +187,4 @@ SpaceNet4 同一低离轴采集，201/50 地理隔离训练/验证切片，固�
 |同景光谱保留可替代正确局部对应，或仅由冻结扰动推断机制|匹配远距重训未追回正确对应收益；冻结扰动另含输入变化效应，小/细长目标统一敏感性未建立，不外推真实配准或DOTA类别|
 |固定五状态小幅MS错位训练增强|扰动精确定位改善，但干净保持与扰动宏AP50目标未过；停止当前配方，保留局部收益及原生MS正结果，不扩展为全部增强无效|
 |跨城冻结模型低性能及修复后未达增量|实际处理条件下保留有限负结果，残余足迹/mask偏差不冒称消除；当地监督是新问题，不能反改冻结成绩或否定源域MS收益|
+|当地监督恢复检测即可保证MS增量|实际三臂均约40% AP50但无预定MS额外优势；仅限175图实测配方，不假称完整200图设计通过；结束追加训练，保留源域MS正证据|
