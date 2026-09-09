@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读本文的结论边界，再回查最新证据来源 `ziyu24/cqc_P14@2a4adbeeacca18295dc4cdf2b1f3b621e1c004b0` 的 `lab/discussion.md`、`lab/result.md` 及 `doc/r016_review.md`；光谱秩比较见 `doc/r015_review.md`，有效中心停止见 `doc/r014_review.md`，无效中心执行见 `doc/r013_review.md`，残余诊断见 `doc/r012_review.md`，新地理确认见 `doc/r011_review.md`，已验证的较强基线信号见 `doc/r005_review.md`，历史纠错见 `doc/r002_review.md`、`doc/r003_review.md`、`doc/r004_review.md`、`doc/r006_review.md`。数学与实际入口契约检查见 `src/test_r006_contract.py`，保存小头回放见 `src/r007_review.py`。已抓取全部来源远端分支，只有 main。
+先读本文的结论边界，再回查最新证据来源 `ziyu24/cqc_P14@76ba784fc9700275fe5f4452f30aee9879f6c460` 的 `lab/discussion.md`、`lab/result.md` 及 `doc/r017_review.md`；空间对应见 `doc/r016_review.md`，光谱秩比较见 `doc/r015_review.md`，有效中心停止见 `doc/r014_review.md`，无效中心执行见 `doc/r013_review.md`，残余诊断见 `doc/r012_review.md`，新地理确认见 `doc/r011_review.md`，已验证的较强基线信号见 `doc/r005_review.md`，历史纠错见 `doc/r002_review.md`、`doc/r003_review.md`、`doc/r004_review.md`、`doc/r006_review.md`。数学与实际入口契约检查见 `src/test_r006_contract.py`，保存小头回放见 `src/r007_review.py`。已抓取全部来源远端分支，只有 main。
 
 ## 项目研究什么
 
