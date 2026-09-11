@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读研究问题与实际方法，再读八条教训及文末停止边界。当前来源为`ziyu24/cqc_P15@d0cebc77f0285613f13a0164e8a1b4153ee8da10`，相对入口：`lab/discussion.md`、`lab/result.md`、`lab/failed_methods.md`。已抓取来源全部远端分支，仅有main，没有更新更晚的次线。前三条保留其原始证据提交入口。
+先读研究问题与实际方法，再读八条教训及文末停止边界。当前来源为`ziyu24/cqc_P15@8dfec0f4ca1e8165d25e5b713a3529519debe174`，相对入口：`lab/discussion.md`、`lab/result.md`、`lab/failed_methods.md`。已抓取来源全部远端分支，仅有main，没有更新更晚的次线。前三条保留其原始证据提交入口。
 
 ## 项目研究什么
 
@@ -92,10 +92,10 @@ HRSC2016单类检测，固定种子42，训练/开发/描述性留出348/88/181�
 ## 教训八：冻结状态估计器须在新的有效配对中同时超过当前信息与随机选择
 
 - 失败命题：给六次对象IoU和关联score历史加入固定卡尔曼水平/趋势状态，就会比锚点Current信息更好地选择值得第二次曝光的候选。
-- 失败原因：在不读新条件收益的前提下，以旧A/B标签固定Q=.001、R=.01、Ridge与top4后，K14的Kalman选择AP50净收益为−1.1369点，既低于Current的−0.9905点，也低于16组随机期望−0.6003点；相对Current=−0.1464点、相对随机=−0.5366点且自身为负。评价组MSE/Spearman=4.6528/−.0412，也没有优于Current的4.0504/−.0265。32条分支均从新的持久共同前缀恢复，故该裁决不是上一条的可变起点缺陷。相同K14轨迹的六组一次复跑中，配对收益最大变化1.8628点。进一步的零更新诊断在另一张获准物理GPU上复现了固定组：两次输入、随机状态、观测到的骨干/FPN/RPN输出和总损失均一致，156个有梯度参数中140个梯度不同，最大绝对差2.4994e-06；严格确定性设置则在RPN目标构造处两次触发相同CUDA索引断言。故单条轨迹端点差不够稳定，且不能被归因为某一个已识别算子。
+- 失败原因：在不读新条件收益的前提下，以旧A/B标签固定Q=.001、R=.01、Ridge与top4后，K14的Kalman选择AP50净收益为−1.1369点，既低于Current的−0.9905点，也低于16组随机期望−0.6003点；相对Current=−0.1464点、相对随机=−0.5366点且自身为负。评价组MSE/Spearman=4.6528/−.0412，也没有优于Current的4.0504/−.0265。32条分支均从新的持久共同前缀恢复，故该裁决不是上一条的可变起点缺陷。一次六组复跑中配对收益最大变化1.8628点。后续严格模式修复了RPN正样本权重整行赋值的CUDA断言，但固定005组两次短配对的AP50收益仍为−2.5414与−1.4345点，变化1.1069点；修复后单条短轨迹仍不足以支撑稳定数值效应解释，也不能被归因为某一个已识别算子。
 - 后续做法：为状态估计器预先冻结观测模型、拟合标签、选择数和新条件，再在独立共同前缀上报告相对当前、随机期望和自身绝对收益；三者未达门时停止该固定组合，而非在同一证据上扫描噪声、窗口、回归器、组数或种子寻找阳性。若问题涉及数值波动，预先固定有限复跑次数并等权报告所有结果；零更新定位应成对比较输入、随机状态、关键输出、损失和梯度，并把严格确定性异常作为运行边界记录，不能挑选较好的一次改变裁决。
-- 边界：这是HRSC单类、单基础种子、固定六次观测、A/B→K14迁移和16组评价下的经验负结果；一次六组复跑与一个组的零更新诊断均没有识别GPU/算子数值、背景、增强或有限开发集AP波动的根因，也不替代16组随机期望。另一张GPU的诊断只定位到梯度层面的不逐位一致，不能把设备差异写成端点差的唯一原因。它不否定对象历史、不同状态模型/观测计划、不同迁移条件或在线及全成本调度；AP75的局部正值不能替换预设AP50主标准。
-- 证据：`ziyu24/cqc_P15@d0cebc77f0285613f13a0164e8a1b4153ee8da10`；`lab/result.md`与`lab/failed_methods.md`给出冻结协议、全量端点、门、复跑、零更新诊断和成本边界；`configs/kalman_gain_transfer.json`、`configs/hrsc_kalman_gain_manifest.json`、`configs/kalman_replay.json`与`configs/kalman_first_difference.json`固定状态、候选、复跑和诊断范围；`src/kalman_history.py`、`src/select_kalman_groups.py`、`src/run_r012_pairs.py`、`src/kalman_replay.py`和`src/kalman_first_difference.py`实现冻结、独立恢复、汇总和首差比较；`src/audit_r013_pr.py`核验正式PR积分。
+- 边界：这是HRSC单类、单基础种子、固定六次观测、A/B→K14迁移和16组评价下的经验负结果；一次六组复跑与一个组的两次严格短配对均没有识别GPU/算子数值、背景、增强或有限开发集AP波动的根因，也不替代16组随机期望。严格修复解除特定断言但仍有梯度不逐位一致，不能把设备或该修复写成端点差的唯一原因。它不否定对象历史、不同状态模型/观测计划、不同迁移条件或在线及全成本调度；AP75的局部正值不能替换预设AP50主标准。
+- 证据：`ziyu24/cqc_P15@8dfec0f4ca1e8165d25e5b713a3529519debe174`；`lab/result.md`与`lab/failed_methods.md`给出冻结协议、全量端点、门、复跑、严格修复和成本边界；`configs/kalman_gain_transfer.json`、`configs/hrsc_kalman_gain_manifest.json`、`configs/kalman_replay.json`、`configs/kalman_first_difference.json`与`configs/kalman_strict_repair.json`固定范围；`src/run_r012_pairs.py`、`src/kalman_replay.py`、`src/kalman_first_difference.py`、`src/rpn_row_fill_compat.py`和`src/analyze_strict_repair.py`实现恢复、修复与审计。
 
 ## 方法族停止索引
 
