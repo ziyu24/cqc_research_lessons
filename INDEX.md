@@ -66,6 +66,7 @@ NAOOD V3 专项：来源 `2a23a255b6a4268c9fdee2996fbdf5c4fdad21c9` 补齐四份
 | `cqc_P18` | `94ce864c98c3b851304ea760235ca2106cb7651e` | 已登记 | 6 |
 | `cqc_P15` | `8dfec0f4ca1e8165d25e5b713a3529519debe174` | 已登记 | 8 |
 | `cqc_P2` | `487006fd7a3ce35b5cb497c24cb39c74a90ddacb` | 已登记 | 4 |
+| `cqc_P23` | `bf55ee80f4f28c05fd1eb43f338a50e109132848` | 已登记 | 1 |
 | `cqc_P3` | `main@01ec74edab116e6d4a6f44093deb0e7a95436e13；secondary@8b59dd647a37fbd862cac3181e8e9c4956f450f6` | 已登记 | 7 |
 | `cqc_P4` | `main@0719847bfbc1b49f4e4d5254685bf0e6b318fb2c；secondary@ca6a7615605025196f46c39b22bb80c321456133` | 已登记 | 5 |
 | `cqc_P5` | `main@1093b8b57a9a8dc13a8e520376caa9b826a9fb33；secondary@8fc035ddb9827c21f56fefd9c3b3bdae2f93602c` | 已登记 | 6 |
