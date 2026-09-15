@@ -66,6 +66,7 @@ NAOOD V3 专项：来源 `2a23a255b6a4268c9fdee2996fbdf5c4fdad21c9` 补齐四份
 | `cqc_P18` | `94ce864c98c3b851304ea760235ca2106cb7651e` | 已登记 | 6 |
 | `cqc_P15` | `8dfec0f4ca1e8165d25e5b713a3529519debe174` | 已登记 | 8 |
 | `cqc_P2` | `487006fd7a3ce35b5cb497c24cb39c74a90ddacb` | 已登记 | 4 |
+| `cqc_P20` | `fe3634cbaf2dfa94b23527786f6d2a3b5ad9c51e` | 已登记 | 2 |
 | `cqc_P23` | `efe7308550ecc5cfec02bf161433f34bafde356a` | 已登记 | 2 |
 | `cqc_P3` | `main@01ec74edab116e6d4a6f44093deb0e7a95436e13；secondary@8b59dd647a37fbd862cac3181e8e9c4956f450f6` | 已登记 | 7 |
 | `cqc_P4` | `main@0719847bfbc1b49f4e4d5254685bf0e6b318fb2c；secondary@ca6a7615605025196f46c39b22bb80c321456133` | 已登记 | 5 |
@@ -125,3 +126,5 @@ NAOOD V3 专项：来源 `2a23a255b6a4268c9fdee2996fbdf5c4fdad21c9` 补齐四份
 | `SynDOTAForge` | `79976ce1773fbdf9ae1c909d4f7e48347e9c1703` | 已登记 | 4 |
 | `TAOS` | `0c3bded0220758584723f1bf8747ef2eb13a0d5c` | 已登记 | 5 |
 | `travel_strategy` | `2691a5b459e627a31027905aff0709b4d871c251` | 非论文项目 | 0 |
+
+2026-09-15 P20专项：来源`fe3634cbaf2dfa94b23527786f6d2a3b5ad9c51e`，新增GT矩形拟合与开放世界固定拒识解释的两条有边界教训。已检查全部来源分支，仅main；复核冻结预测并纠正评价几何，未重训。仅新增P20及对应索引，不重审其他项目。
