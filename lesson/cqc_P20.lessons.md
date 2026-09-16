@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源`lab/discussion.md`确认目标和授权的方法替代，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`。最新来源主线`d72627321bf004780308de654562041abbdf9fe5`，已抓取全部远端分支，仅main。
+先读来源`lab/discussion.md`确认目标和授权的方法替代，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，视图诊断见`src/p20_view_probe.py`与`src/evaluate_view_probe.py`。最新来源主线`8933c9e59185ea310c6b3a101b48215aba1893b6`，已抓取全部远端分支，仅main。
 
 ## 项目研究什么
 
@@ -13,6 +13,8 @@
 已测试的是授权的PWOOD-inspired HBox初始阶段，原生SPWOOD尚未复现。单种子下两个固定未知评分臂绝对性能很低；完整Point/HBox及弱标注增量范式尚未完成，也未被该具体负结果否定。
 
 后续开发集配对诊断确认known排序能力存在，固定0.5拒识造成巨大损失。已付费HBox正例校准可部分恢复known，但未满足预定联合条件，unknown绝对精度仍很低；不能继续沿用“局部条件成立”的旧摘要。
+
+固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。新的冻结特征前景学习对照尚未产生性能结果，不能写成成功或失败。
 
 ## 实际采用过的方法
 
@@ -42,8 +44,17 @@ DOTA-v1.0原图固定划分，训练图中20%进入L、L内各known类保留20%�
 - 边界：这是固定teacher、单种子、训练内已付费HBox正例校准与已用于探索的开发集经验结果。保留known部分恢复的正证据；尚不能识别类间尺度、训练内乐观偏差和HBox匹配的独立贡献，也未否定其他前景学习或弱标注增量。所述候选覆盖只约束固定池，不是所有dense位置的理论上限。
 - 证据：`ziyu24/cqc_P20@d72627321bf004780308de654562041abbdf9fe5`；`lab/result.md`、`lab/failed_methods.md`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`；原联合判据见`ziyu24/cqc_P20@7e8578b08fbb2febaf26b1db5dfe91c4fbd8e971`的`lab/sug.md`。
 
+## 教训四：几何区分信号和有效错位对照不保证检测收益
+
+- 失败命题：真实跨视图对应优于错位对应、目标与低重叠候选的几何支持AUC大于随机，即可将几何支持直接作为unknown评分乘子并获得检测收益。
+- 失败原因：固定teacher、141张开发图、同池1000候选和付费HBox校准下，90°真实视图几何支持的unknown对低重叠AUC为0.7187，错位为0.4486；但直接乘子使unknown AP由0.00094851降为0.00087616。跨视图known恢复后known mAP为0.2277618，仍比同池known-only低10.2213个百分点；组合unknown AP为0.00088610。真实对应有信号与最终AP下降同时成立，边际AUC不保证与原评分的组合排序有效。
+- 后续做法：固定候选成员、几何和输出容量，比较无乘子、真实对应、错位、语义恢复及组合，分别报告绝对AP、操作点精度/召回、known保持和误检组成。正信号只支持继续定位机制，不替代部署指标和完整联合条件。训练阶段前景学习的有效性须另用受控学习对照验证。
+- 边界：本次低重叠候选占基线unknown误检77,551/81,416，但低重叠仅指与数据集标注rIoU<0.1，不能视为所有候选的真实背景标签。结果约束固定单seed、已探索开发集和直接评分策略；保留真实对应优于错位、known部分恢复的正证据，不否定几何学习或完整开放世界范式。
+- 证据：`ziyu24/cqc_P20@8933c9e59185ea310c6b3a101b48215aba1893b6`；`lab/result.md`、`lab/failed_methods.md`、`src/p20_view_probe.py`、`src/evaluate_view_probe.py`、`configs/view_probe.json`。
+
 ## 方法族停止索引
 
 - 不再将不同GT拟合函数的替换称作纯角度规范修正；使用原拟合与正面积保留规则。
 - 当前固定候选/拒识组合没有提供可用检测性能。未停止整个Open-SPWOOD研究；尚未评估的Point、增量与后续组合不能登记为失败。
 - 全局训练内正例阈值未达到预定known保持条件；不再将其部分恢复宣称为联合成功，不以当前低精度unknown预测直接支持自训练。
+- 固定跨视图几何乘子及其known恢复组合未满足局部或联合条件；不再用几何AUC或优于错位替代检测收益，未训练的前景策略不登记为失败。
