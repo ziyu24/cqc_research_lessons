@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源`lab/discussion.md`确认目标和授权的方法替代，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，固定拒识规则在`src/evaluate_open_spwood.py`。来源主线`fe3634cbaf2dfa94b23527786f6d2a3b5ad9c51e`，已抓取全部远端分支，仅main。
+先读来源`lab/discussion.md`确认目标和授权的方法替代，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`。最新来源主线`d72627321bf004780308de654562041abbdf9fe5`，已抓取全部远端分支，仅main。
 
 ## 项目研究什么
 
@@ -11,6 +11,8 @@
 ## 领域位置与当前结论
 
 已测试的是授权的PWOOD-inspired HBox初始阶段，原生SPWOOD尚未复现。单种子下两个固定未知评分臂绝对性能很低；完整Point/HBox及弱标注增量范式尚未完成，也未被该具体负结果否定。
+
+后续开发集配对诊断确认known排序能力存在，固定0.5拒识造成巨大损失。已付费HBox正例校准可部分恢复known，但未满足预定联合条件，unknown绝对精度仍很低；不能继续沿用“局部条件成立”的旧摘要。
 
 ## 实际采用过的方法
 
@@ -32,7 +34,16 @@ DOTA-v1.0原图固定划分，训练图中20%进入L、L内各known类保留20%�
 - 边界：这是固定单种子、HBox初始阶段、PWOOD-inspired候选与拒识规则的经验负结果。排序的微小正差保留，不作显著性或稳定性断言；尚不能否定其他候选选择、Point、增量学习或原生SPWOOD，也不能确定低分的唯一根因。
 - 证据：`ziyu24/cqc_P20@fe3634cbaf2dfa94b23527786f6d2a3b5ad9c51e`；`src/audit_frozen_result.py`、`src/evaluate_open_spwood.py`、`configs/open_spwood_t1.json`、`lab/result.md`、`lab/failed_methods.md`。
 
+## 教训三：总体正例保留不保证分类别检测保持，更不能替代完整联合标准
+
+- 失败命题：在训练内保留95%的匹配known，并使known AP比失配阈值提高、unknown AP不下降，即可判定开放世界校准达到预定支持条件。
+- 失败原因：实例加权的总体保留率不是类别均衡保证，也不是开发集检测AP。2,540个付费HBox匹配正例拟合出0.18554全局阈值，总体保留2,413个，但plane只保留183/212。开发集known mAP恢复到20.48%/27.18%，相对各自关闭拒识仍损失12.52/13.03个百分点，超过预定最多2个百分点的限制；旧摘要遗漏这一条件，错误宣布局部支持。unknown precision仍仅0.135%/0.106%。
+- 后续做法：原样保留全部联合判据与对应参照，报告总体、各类、训练匹配与开发检测的不同分母。把阈值、候选和几何问题分开：最终候选仅覆盖110/466与94/466个unknown，调拒识不能恢复未覆盖对象；混合候选提高known覆盖却损失unknown覆盖，不能假定合并无损。大量unknown FP还需按已知混淆、重复、定位偏差和低重叠预测分解，不能从低precision直接认定唯一根因是背景。
+- 边界：这是固定teacher、单种子、训练内已付费HBox正例校准与已用于探索的开发集经验结果。保留known部分恢复的正证据；尚不能识别类间尺度、训练内乐观偏差和HBox匹配的独立贡献，也未否定其他前景学习或弱标注增量。所述候选覆盖只约束固定池，不是所有dense位置的理论上限。
+- 证据：`ziyu24/cqc_P20@d72627321bf004780308de654562041abbdf9fe5`；`lab/result.md`、`lab/failed_methods.md`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`；原联合判据见`ziyu24/cqc_P20@7e8578b08fbb2febaf26b1db5dfe91c4fbd8e971`的`lab/sug.md`。
+
 ## 方法族停止索引
 
 - 不再将不同GT拟合函数的替换称作纯角度规范修正；使用原拟合与正面积保留规则。
 - 当前固定候选/拒识组合没有提供可用检测性能。未停止整个Open-SPWOOD研究；尚未评估的Point、增量与后续组合不能登记为失败。
+- 全局训练内正例阈值未达到预定known保持条件；不再将其部分恢复宣称为联合成功，不以当前低精度unknown预测直接支持自训练。
