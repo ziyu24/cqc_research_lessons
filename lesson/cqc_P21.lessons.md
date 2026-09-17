@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`和`src/diagnose_roi_pool.py`。来源`ziyu24/cqc_P21@5a0b72872461f703a66954c42364d11b817c3d60`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/diagnose_roi_pool.py`及`src/count_odr_model.py`。来源`ziyu24/cqc_P21@a60c376746ae87bd7d5279b5c12313dad605c8ae`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -21,6 +21,7 @@
 
 - 授权的独立真实HBox监督对照：仅替换87张L的监督框，保持PWOOD优化、初始化与8000更新设置；不使用U损失，模型不回流计数路线。
 - C-WSL/ODR式HRSC单类适配：同一ImageNet ResNet50共享特征、二元MIDN、三级在线实例细化和框回归，计数约束互斥选框形成伪标签，再分别训练原PWOOD的L与L+U后端。前端与后端各8000更新、实际双卡、单种子；这是项目适配，非作者原代码或VOC数值复现。
+- 用户授权的全量计数覆盖对照：将同一适配扩至436图/1207计数，保留算法及8000更新，关闭无标签分支。全部训练图仍为阳性；后端保留每步4张有损失图，移除原无损失载体。不把此阶段结果混为原20%监督成绩，也不宣称等epoch或严格相同随机轨迹。
 
 ## 教训一：选出的框数正确，不等于实例定位正确
 
@@ -53,6 +54,8 @@
 - 后续做法：借鉴方法时核对原监督条件与适配后的实际目标；优先验证前端实例定位及最小必要后端对照，不能把更复杂结构、低损失或精确框数当成性能改善。对实现和监督信号开展反例检查，不以该适配失败宣称原论文方法无效。
 - 边界：仅为固定HRSC划分、单种子、当前候选和8000更新组合的经验负结果。真实HBox监督对照的75.2799 AP点支持后端可学习性，不是计数方案成绩，也不证明唯一失败原因；计数方法当前没有有效基线，完整命题仍未知。
 - 证据：`ziyu24/cqc_P21@5a0b72872461f703a66954c42364d11b817c3d60`；`lab/result.md`、`lab/failed_methods.md`、`src/count_odr_model.py`、`src/count_odr_ops.py`、`src/summarize_odr.py`、`configs/count_odr.json`、`src/summarize_hbox_control.py`、`src/check_count_odr.py`、`lab/discussion.md`。保存预测与原生评测重算逐项一致，包含模型、预测及数据身份核对。
+- 覆盖扩展补证：同一学习目标在100%准确计数下，前端HBox AP50反降至0.135911点，方向框仅0.003752点；原池/回归池/top50/真实数量选框的开发匹配分别527/519/15/0（分母541）。实际MIL损失从0.42259降至0.00002，数量不足为0仍未形成定位能力。源码把数值count用于自评分选框基数，图像级目标仅用`count>0`，再以所选框构造监督；不能说没有用数量，也不能说已直接优化预测实例数。该扩展限制了“多给数量标签就能解决此适配失败”的解释，但不证明训练必然进入已构造常数解或唯一因果；更充分的计数覆盖不能自动修复无定位约束的退化通路。
+- 补证边界与后续：固定步数、单种子和单类条件下的负结果；移除无损失输入改变padding及随机轨迹，因此不能把细微差异完全归因于覆盖。优先检查实际监督如何区分完整实例、局部和背景，不能继续用低损失/精确选框数替代定位验证。来源`ziyu24/cqc_P21@a60c376746ae87bd7d5279b5c12313dad605c8ae`，`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`src/count_odr_model.py`、`src/count_odr_ops.py`、`src/summarize_odr.py`、`configs/count_odr_full.json`；冻结输出完整重算一致，未读取训练位置或test。
 
 ## 方法族停止索引
 
