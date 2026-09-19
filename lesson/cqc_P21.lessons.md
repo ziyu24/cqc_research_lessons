@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`及`src/evaluate_count_points.py`。来源`ziyu24/cqc_P21@f98135142732ca7c20df6b810ade8756903cde6e`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`及`src/evaluate_grounded_background.py`。来源`ziyu24/cqc_P21@8493fd2939bde8f7b6c748b9da706e9fb71a75bc`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -22,6 +22,8 @@
 
 最新伪点后端实验在全部436张训练图上，从CountSeg PRM响应按数量取质心并训练Point2RBox-v2 72轮；主臂best OBB主AP/面积AP仅3.030/0.071点、最高召回0.370%，无数量CutLER外接OBB中心对照为10.380/2.635点、最高召回24.769%，冻结CutLER轮廓直接参照为14.015/7.462点。主臂虽选出1196/1207个训练点，验证点的一对一内部匹配仅240个、背景987个、重复89个；数量接近没有提供可靠实例身份和中心几何。无数量外接OBB中心对照也低于直接轮廓，但本轮没有分离几何丢弃、后端适配和点噪声的独立影响。
 
+后续以公开Grounding DINO与SAM产生完整方向框候选，在同一强外部先验下比较数量选取与无数量选取。权重为零的数量臂best AP07/面积AP为54.358/52.097，超过无数量的43.614/40.094；这只支持该强先验内的单种子数量选择信号。把未选高分候选从完全忽略改为固定`.25`背景分类权重后，数量臂降至1.515/0.039，固定终点归零；同权重无数量臂达到55.513/56.322，说明该干预既不能保住数量收益，也不能把无数量改善归因于数量。
+
 - 谱残差显著性候选按人工数量截取伪HBox，再接原生PWOOD几何和教师学生，比较L-only与L+U。
 - Selective Search候选、冻结ImageNet区域/外围特征、MLP评分：按当前分数与计数选中候选作正例，以硬伪标签BCE自训练；共享候选比较固定评分、学习评分、学习评分加U。
 - 冻结同一ImageNet ResNet50的14个预先固定船艇类别，对完整候选裁剪作分类评分；共享候选比较准确计数L、准确计数L+U、每张阳性图至多选一框的存在标签L+U，三项检测器各8000更新。显式利用分类语义不等同没有外部语义先验。
@@ -35,6 +37,7 @@
 - 冻结无监督轮廓迁移：使用作者初始最终CutLER权重、原生Cascade Mask R-CNN及所有前景像素单元的最小外接方向框，不作GT选掩膜或阈值搜索。181图全部17959个非空掩膜按原生排序匹配345个方向框；数量预算大，不把完整池召回当实际高精度检测能力，也不当作最佳重排上界。
 - 冻结1024维最终候选ROI特征，训练1025参数线性logit残差；以全部436张训练图的1207个数量比较CountLoss精确数量似然与概率和MSE，各40轮、双卡、单种子。原生候选几何不更新，验证不用真实数量，按合法主AP选best且报告final。它是检测候选上的损失适配，不是CountLoss原论文检测复现。
 - CountSeg伪点后端：从固定PRM响应按每图真实训练数量取局部质心，数量不足不复制，接入作者原生Point2RBox-v2并训练72轮；以无数量CutLER外接OBB中心作后端对照，以冻结CutLER轮廓方向框作直接参照。三者前端不同，主臂与对照差异是完整流水线比较，不是纯数量因果效应。
+- 公开语义/完整轮廓先验：固定 Grounding DINO 与 SAM 产生候选方向框，原生 RotatedFCOS 以数量选取或无数量分数阈值选取的伪框训练；在未选高分候选区域，成对比较背景分类权重0与固定`.25`，其余伪标签、初始化、日程和评测不变。
 
 ## 教训一：选出的框数正确，不等于实例定位正确
 
@@ -111,6 +114,14 @@
 - 边界：精确数与下界的等价反例是目标函数事实，不证明改成精确MSE就能定位，也不证明已识别低AP的唯一原因。全阳性单类缺少负类别信号，不表示所有数量监督不可能。argmax只是验证集只读诊断，没有训练其后端；GT尺寸角度平移检查不是可达AP或严格上界。仅当前固定来源，无训练位置/test。
 - 证据：`ziyu24/cqc_P21@f98135142732ca7c20df6b810ade8756903cde6e`；`src/audit_count_supervision.py`、`src/audit_point_geometry.py`、`src/countseg_author.py`、`src/point_backend.py`、`lab/result.md`、`lab/discussion.md`。原始PRM指纹、点重建与诊断一致，作者loss源代码散列核验和完整梯度反例通过；本次没有新增训练。
 
+## 教训十：自动候选的“未知区域”不能未经配对验证恢复为弱背景
+
+- 失败命题：在公开语义与完整轮廓候选产生的弱伪框训练中，把未选高分候选区域从忽略恢复为固定弱背景分类梯度，会减少误检且保住由数量选择得到的检测收益。
+- 失败原因：相同候选、伪标签、初始化、72轮日程和开发集下，背景权重0的数量臂best AP07/面积AP/TP@500为54.358/52.097/315；固定`.25`后变为1.515/0.039/5，final归零。相同`.25`的无数量臂为55.513/56.322/328，数量相对无数量反而落后53.997/56.283点及323个TP@500。该单变量配对反例表明，候选未被选中不提供把其区域作为背景的可靠语义证据；固定弱负梯度可与错误伪正例/候选失配发生破坏性交互。
+- 后续做法：保留权重0的已验证数量选择基线；若研究未知区域监督，须先以同候选、同伪标签的成对实验验证，并同时报告完整PR、固定预测预算和数量对照。不得因无数量臂的改善改写为数量收益，也不应在这条失败线上扫权重或仅延长训练。
+- 边界：这只是固定`.25`、单seed、HRSC单类、特定公开 Grounding DINO＋SAM候选与 RotatedFCOS日程的经验反例；没有识别候选漏检、伪正例、梯度规模等唯一原因，不否定所有未知区域降权/背景建模或数量监督，也不是test、跨数据集或统计显著性结论。
+- 证据：`ziyu24/cqc_P21@8493fd2939bde8f7b6c748b9da706e9fb71a75bc`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r014.recovery.json`、`src/grounded_background.py`、`src/launch_grounded_background.py`、`src/evaluate_grounded_background.py`。两臂均完成真实双卡72轮训练，best/final预测均覆盖固定181张开发图；未读取test。
+
 ## 方法族停止索引
 
 
@@ -124,3 +135,4 @@
 - 冻结CutLER无监督轮廓：已获得有限定位正证据，直接当船舶检测器仍有大量错误；保留为无数量参照。固定CountSeg检索同一轮廓的组合已经退步，停止该冻结组合及其伪标签使用；不将该组合失败外推为轮廓候选本身失败。
 - 冻结CutLER候选/ROI特征＋线性数量残差：当前精确数量似然与MSE适配没有实质检测收益，停止追加和后端用途；保留原生视觉参照，不外推为所有可训练表示、候选几何或数量监督方法已失败。
 - CountSeg PRM质心伪点＋Point2RBox-v2：当前固定链显著弱于无数量外接OBB中心对照，停止延长或将其作为后端伪监督；无数量外接OBB中心也弱于直接轮廓参照，不外推否定其它中心修正、点后端或数量监督方法。
+- 未选高分候选的固定`.25`弱背景梯度：当前配对证据显示数量臂坍塌，停止该固定干预及权重搜索；不外推否定所有未知区域监督，保留权重0数量选择基线。
