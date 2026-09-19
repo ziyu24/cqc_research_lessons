@@ -118,9 +118,10 @@
 
 - 失败命题：在公开语义与完整轮廓候选产生的弱伪框训练中，把未选高分候选区域从忽略恢复为固定弱背景分类梯度，会减少误检且保住由数量选择得到的检测收益。
 - 失败原因：相同候选、伪标签、初始化、72轮日程和开发集下，背景权重0的数量臂best AP07/面积AP/TP@500为54.358/52.097/315；固定`.25`后变为1.515/0.039/5，final归零。相同`.25`的无数量臂为55.513/56.322/328，数量相对无数量反而落后53.997/56.283点及323个TP@500。该单变量配对反例表明，候选未被选中不提供把其区域作为背景的可靠语义证据；固定弱负梯度可与错误伪正例/候选失配发生破坏性交互。
+- 增删分离补证：在同一`.25`协议下，仅补低分候选的并集臂best为55.368/56.470/335，接近但未超过无数量臂，未达到事先实用增益；仅删高分候选的交集臂降至50.788/52.335/316。二者与完整数量臂构成的二阶交互为AP07 `-49.129`点、面积AP `-52.444`点、TP@500 `-318`。这使“删除高分候选及其与新增候选的交互是风险源”成为更具体的经验结论，但仍不能识别唯一的候选语义、损失梯度或优化原因。
 - 后续做法：保留权重0的已验证数量选择基线；若研究未知区域监督，须先以同候选、同伪标签的成对实验验证，并同时报告完整PR、固定预测预算和数量对照。不得因无数量臂的改善改写为数量收益，也不应在这条失败线上扫权重或仅延长训练。
 - 边界：这只是固定`.25`、单seed、HRSC单类、特定公开 Grounding DINO＋SAM候选与 RotatedFCOS日程的经验反例；没有识别候选漏检、伪正例、梯度规模等唯一原因，不否定所有未知区域降权/背景建模或数量监督，也不是test、跨数据集或统计显著性结论。
-- 证据：`ziyu24/cqc_P21@8493fd2939bde8f7b6c748b9da706e9fb71a75bc`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r014.recovery.json`、`src/grounded_background.py`、`src/launch_grounded_background.py`、`src/evaluate_grounded_background.py`。两臂均完成真实双卡72轮训练，best/final预测均覆盖固定181张开发图；未读取test。
+- 证据：`ziyu24/cqc_P21@25a12a837ed808d4704f6b3fc2743221106967b8`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r015.recovery.json`、`src/grounded_selection.py`、`src/launch_grounded_selection.py`、`src/evaluate_grounded_selection.py`。四个集合的best/final预测均覆盖固定181张开发图；新增两臂均真实双卡72轮训练，未读取test。
 
 ## 方法族停止索引
 
