@@ -120,9 +120,10 @@
 - 失败原因：相同候选、伪标签、初始化、72轮日程和开发集下，背景权重0的数量臂best AP07/面积AP/TP@500为54.358/52.097/315；固定`.25`后变为1.515/0.039/5，final归零。相同`.25`的无数量臂为55.513/56.322/328，数量相对无数量反而落后53.997/56.283点及323个TP@500。该单变量配对反例表明，候选未被选中不提供把其区域作为背景的可靠语义证据；固定弱负梯度可与错误伪正例/候选失配发生破坏性交互。
 - 增删分离补证：在同一`.25`协议下，仅补低分候选的并集臂best为55.368/56.470/335，接近但未超过无数量臂，未达到事先实用增益；仅删高分候选的交集臂降至50.788/52.335/316。二者与完整数量臂构成的二阶交互为AP07 `-49.129`点、面积AP `-52.444`点、TP@500 `-318`。这使“删除高分候选及其与新增候选的交互是风险源”成为更具体的经验结论，但仍不能识别唯一的候选语义、损失梯度或优化原因。
 - 已学成初态补证：把同一无数量模型完整加载为新阶段初态、重置优化器后，12轮数量伪框微调相对等量无数量微调有AP07 `+2.275`点、TP@500 `+6`，但面积AP仅`+1.862`点；相对共同源模型，数量臂best AP07/面积AP/TP@500反而为`-.241/-2.196/-4`。因此共同微调初态不能把该配对主AP差写成可保留的数量收益；源模型、共同训练暴露和候选集合仍须同时作为比较对象。
+- 教师可靠性补证：共同源教师的双视图一致且获轮廓支持的伪框，配合有界软数量可靠性后，数量臂相对同教师无数量臂best的AP07/面积AP/TP@500为`+6.012/+5.986/+16`；但相对共同源模型仍为`+.706/-.491/-7`，固定终点面积也下降。教师伪框让数量产生了明确配对信号，却未证明可保留增益；评估此类两阶段方案须同时比较同阶段对照和冻结强源，不能只以配对胜出裁决。
 - 后续做法：保留权重0的已验证数量选择基线；若研究未知区域监督，须先以同候选、同伪标签的成对实验验证，并同时报告完整PR、固定预测预算和数量对照。不得因无数量臂的改善改写为数量收益，也不应在这条失败线上扫权重或仅延长训练。
 - 边界：这只是固定`.25`、单seed、HRSC单类、特定公开 Grounding DINO＋SAM候选与 RotatedFCOS日程的经验反例；没有识别候选漏检、伪正例、梯度规模等唯一原因，不否定所有未知区域降权/背景建模或数量监督，也不是test、跨数据集或统计显著性结论。
-- 证据：`ziyu24/cqc_P21@2404911a25fe750519de45247632fdaa04552c9e`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r015.recovery.json`、`configs/r016.recovery.json`、`src/grounded_selection.py`、`src/grounded_finetune.py`、`src/launch_grounded_finetune.py`、`src/evaluate_grounded_finetune.py`。四个集合及两微调臂的best/final预测均覆盖固定181张开发图；新增微调臂均真实双卡12轮训练，未读取test。
+- 证据：`ziyu24/cqc_P21@2f8d8b03907a8f593d804fa188a87dfd2a5b2c52`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r015.recovery.json`、`configs/r016.recovery.json`、`configs/r017.recovery.json`、`src/grounded_selection.py`、`src/grounded_finetune.py`、`src/reliable_count.py`、`src/prepare_reliable_count.py`、`src/launch_reliable_count.py`、`src/evaluate_reliable_count.py`。共享教师候选及三组微调臂的best/final预测均覆盖固定181张开发图；新增臂均真实双卡12轮训练，未读取test。
 
 ## 方法族停止索引
 
