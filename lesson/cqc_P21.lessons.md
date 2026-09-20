@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`及`src/audit_instance_set_result.py`。来源`ziyu24/cqc_P21@3c2189c1308f585e230a12f379b99f749e4f4972`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`及`src/evaluate_instance_set_followup.py`。来源`ziyu24/cqc_P21@db334037466d6f8c7b1a75c980f5e7a11099d272`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -12,7 +12,7 @@
 
 数量监督检测与弱监督选区已有研究，项目探索的是部分数量标注、其余完全无标签及OBB输出的完整协议。已有有限检索没有确认完整直接先例，不等于首创证明。固定显著性、硬伪标签评分及冻结ImageNet类别语义三套方法均未形成可用检测器。后者改善开发候选排序，但没有转化成有效OBB检测；完整监督范式仍未知。后续共享可训练特征和在线细化的单类适配，最终两组OBB AP均为0；独立真实HBox监督对照达到75.2799 AP点，只证明该后端在更强监督下可学习，不能充作计数方法成绩。其后的固定伪点协议把CountSeg响应质心接入原生Point2RBox-v2，主臂仍显著低于无数量CutLER外接OBB中心对照和冻结轮廓直接参照，否定了这一具体伪点链能恢复有用OBB的命题，但不否定其它数量监督或可学习的点修正机制。
 
-最新全量数量阶段取得了可保留的正结果：以在线预测OBB构造可微实例集合，配合逐掩膜完整空间统计，数量臂best AP07/面积AP/TP@500为59.732/61.889/349，相对共同强源55.513/56.322/328增加4.219/5.567点及21个匹配；相对同阶段无数量臂增加6.968/9.527点及34个匹配。数量臂final为58.221/59.146/344，仍优于源best。该结果通过事先固定的双参照判据，但仅支持单种子、HRSC开发集、100%计数和已授权外部先验内的阶段收益；不等于原20%目标、独立泛化或直接数量到几何梯度的唯一因果已证实。Grounding DINO框/文本与SAM掩膜预训练提供额外监督，不能称为无外部监督的纯数量训练。
+全量数量阶段取得了可保留的正结果：以在线预测OBB构造可微实例集合，配合逐掩膜完整空间统计，数量臂best AP07/面积AP/TP@500为59.732/61.889/349，相对共同强源55.513/56.322/328增加4.219/5.567点及21个匹配；相对同阶段无数量臂增加6.968/9.527点及34个匹配。数量臂final为58.221/59.146/344，仍优于源best。但严格回到原20%数量条件后，best为57.253/57.366/338，相对强源仅+1.741/+1.044点，未过双AP+2门槛，final面积亦低于强源；完整数量收益不能外推为原目标的可保留收益。将数量DPP核的OBB输入停止梯度后，best为59.919/61.910/350，完整模型反而低0.188/0.021点及1个TP，故该直接几何路径未显示必要增量。上述正/负结论均只覆盖单种子、HRSC开发集、相应覆盖率与已授权外部先验；不是泛化或唯一因果证明。Grounding DINO框/文本与SAM掩膜预训练提供额外监督，不能称为无外部监督的纯数量训练。
 
 ## 实际采用过的方法
 
@@ -41,6 +41,7 @@
 - CountSeg伪点后端：从固定PRM响应按每图真实训练数量取局部质心，数量不足不复制，接入作者原生Point2RBox-v2并训练72轮；以无数量CutLER外接OBB中心作后端对照，以冻结CutLER轮廓方向框作直接参照。三者前端不同，主臂与对照差异是完整流水线比较，不是纯数量因果效应。
 - 公开语义/完整轮廓先验：固定 Grounding DINO 与 SAM 产生候选方向框，原生 RotatedFCOS 以数量选取或无数量分数阈值选取的伪框训练；在未选高分候选区域，成对比较背景分类权重0与固定`.25`，其余伪标签、初始化、日程和评测不变。
 - 在线实例集合数量适配：两臂从同一无数量完整检测器初态出发，保持相同无数量伪框锚定、逐SAM完整掩膜的空间统计、原生优化与采样。数量臂以在线OBB的高斯关系构造DPP数量目标，同时向置信度和几何回传；对照不读取数量。两臂各12轮、1320更新、双卡、seed42，验证不输入真实数量。
+- 覆盖率与梯度消融：只向原87张图的248个数量开放DPP数量项、其余349张为null并保持全图采样，另在全量数量下只detach DPP关系核的OBB输入而保留数量到分数梯度；两臂各12轮、1320更新、双卡、seed42。
 
 ## 教训一：选出的框数正确，不等于实例定位正确
 
@@ -131,6 +132,14 @@
 - 证据：`ziyu24/cqc_P21@b79070c2fc02c05dc735622c25f528c08c77b478`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r015.recovery.json`、`configs/r016.recovery.json`、`configs/r017.recovery.json`、`configs/r018.recovery.json`、`src/grounded_selection.py`、`src/reliable_count.py`、`src/count_weight.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`。共享教师候选及四组后续臂的best/final预测均覆盖固定181张开发图；新增臂均真实双卡12轮训练，未读取test。独立重放与四份完整JSON一致，另已纠正结果表中两臂final召回的转录误差，不影响失败裁决。
 - 正向边界证据：`ziyu24/cqc_P21@3c2189c1308f585e230a12f379b99f749e4f4972`；`lab/result.md`、`lab/discussion.md`、`src/instance_set.py`、`src/instance_set_student.py`、`src/audit_instance_set_result.py`、`doc/instance_set_execution.md`。四套保存预测及完整PR独立重放与汇总精确一致，原生best分别为数量第8轮和无数量第6轮；模型、初态、全部训练/开发图像与监督边界均核验，未新增训练或读取test。
 
+## 教训十一：全量数量正结果不能替代原覆盖率验证，也不能单凭非零几何梯度认定必要路径
+
+- 失败命题：在全量数量上超过强源的在线集合检测收益，会自然迁移到部分数量图、其余无标签的原始协议；或者全量臂存在数量到OBB的直接梯度，就足以把该路径认定为收益的必要来源。
+- 失败原因：固定87张计数图、349张null图且不重采样的20%臂，best AP07/面积AP/TP@500为57.253/57.366/338，相对同阶段无数量虽增4.489/5.005点及23个TP，却相对共同强源仅增1.741/1.044点，未达到预设双AP+2且final面积低于强源。全量数量时只detach DPP关系核的OBB输入、保留相同前向值和数量分数梯度，best达到59.919/61.910/350；完整模型相对该臂为-0.188/-0.021点及-1个TP，未显示实用增量。首批记录确认被detach的直接几何梯度为零而分数梯度非零，因此不是消融未实际作用。
+- 后续做法：全量或高覆盖率的正结果必须在目标覆盖率、固定采样和相同强源比较下复验；机制归因至少采用值保持、目标梯度选择性阻断的配对消融，并同时报告强源、同阶段对照、best和固定终点。不能因为部分覆盖臂仍优于同期无数量，就省略强源和终点条件。
+- 边界：这是固定HRSC单类、单seed、12轮短适配、DPP关系核及披露GroundingDINO/SAM先验下的经验限制。它保留全量阶段的正结果，不否定其它20%机制、数量分数/共享特征/视觉几何路径，也不证明被detach路径从不影响任何模型或数据集。
+- 证据：`ziyu24/cqc_P21@db334037466d6f8c7b1a75c980f5e7a11099d272`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r020.recovery.json`、`src/instance_set_followup.py`、`src/evaluate_instance_set_followup.py`及`src/check_instance_set_followup.py`。两臂完整PR均覆盖固定181张开发图；输入、372项初态、null监督及梯度阻断的针对性检查均通过，未读取训练位置或test。
+
 ## 方法族停止索引
 
 
@@ -146,3 +155,4 @@
 - CountSeg PRM质心伪点＋Point2RBox-v2：当前固定链显著弱于无数量外接OBB中心对照，停止延长或将其作为后端伪监督；无数量外接OBB中心也弱于直接轮廓参照，不外推否定其它中心修正、点后端或数量监督方法。
 - 未选高分候选的固定`.25`弱背景梯度：当前配对证据显示数量臂坍塌，停止该固定干预及权重搜索；不外推否定所有未知区域监督，保留权重0数量选择基线。
 - 在线OBB实例集合＋逐掩膜空间统计：100%计数阶段已取得超过强源及同阶段对照的可保留收益，保留该机制；先验证原20%协议及直接数量到几何路径的贡献，不把已有失败线的停止边界套用到此正结果，也不据开发集单种子认定完整项目成功。
+- 在线OBB实例集合的原20%覆盖率外推：当前固定覆盖率和日程未通过强源双参照，不以全量正结果替代；不在此固定20%设定延长、扫权重或追加种子。DPP核直接OBB梯度的必要性也未获支持，保留其它未消融路径为未知。
