@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-来源主线为 `ziyu24/cqc_P19@3be33d61f8c06ec1400d7fd4460f9132b716374e`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`runs/r010/artifacts/evaluation/summary/metrics.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
+来源主线为 `ziyu24/cqc_P19@2ed2ca8b638431b1920f74eba07eae0ed12d6030`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
 
 ## 项目研究什么
 
@@ -81,18 +81,18 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 ## 教训七：同源外部对象正支持的局部增益不等于达到低误报投入标准，伪几何需以全指标检验
 
 - 失败命题：冻结对象提案只要作为额外对象正位置加入训练，就足以产生可继续投入的未知发现；在同一位置叠加伪OBB回归的单一增益即可证明几何有效。
-- 失败原因：同一完整起点的对象正支持臂使10 FP/图召回从0.1739%升至1.3561%，但未达到预定的至少+2个百分点且绝对至少5%；known mAP50仅由58.0340%变为57.4544%，small实际TP由0变1。伪OBB臂相对无伪几何臂使R@10高0.4172个百分点、known mAP高0.5385个百分点，却使small TP少1、unknown AP50低0.0807个百分点。因此局部数值不能支撑完整低误报成功，也不能把单种子B/C差异写成稳定伪几何因果效应。
+- 失败原因：同一完整起点的对象正支持臂使10 FP/图召回从0.1739%升至1.3561%，但未达到预定的至少+2个百分点且绝对至少5%；known mAP50仅由58.0340%变为57.4544%，small实际TP由0变1。伪OBB臂相对无额外伪OBB回归臂（仍用伪框指派）使R@10高0.4172个百分点、known mAP高0.5385个百分点，却使small TP少1、unknown AP50低0.0807个百分点。因此局部数值不能支撑完整低误报成功，也不能把单种子B/C差异写成稳定伪几何因果效应。
 - 后续做法：外部对象先验须与相同提案来源、起点、采样和预算的保护对照比较，并同时报告完整PR、固定误报召回、known保持、逐类和small实际TP。只有预先固定的联合判据通过，才扩展对照；不要以继续训练、换阈值或孤立AP/R@10变化挽救失败路线。
 - 边界：结论限于冻结CutLER伪框、FCOS指派、6000步、300候选、固定过滤和单种子DOTA协议。对象正支持仍有可保留的局部低误报及三类TP收益；结果不否定其他外部对象来源、真实几何信号、不同已授权协议或完整弱标签增量。
-- 证据：`ziyu24/cqc_P19@ba7ef243501428d398353b88edde06db70f5b67b`；`configs/r009.json`、`configs/r009.recovery.json`、`src/train_r009.py`、`src/run_r009.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r009/artifacts/summary_CA.json`、`runs/r009/artifacts/summary_CAB.json`。
+- 证据：`ziyu24/cqc_P19@2ed2ca8b638431b1920f74eba07eae0ed12d6030`；`doc/r009_review.json`、`configs/r009.json`、`configs/r009.recovery.json`、`src/train_r009.py`、`src/run_r009.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r009/artifacts/summary_CA.json`、`runs/r009/artifacts/summary_CAB.json`。
 
 ## 教训八：训练端对象支持的局部收益不能直接推出固定外部候选上的排序收益
 
 - 失败命题：若外部对象正支持在训练端相对保护臂提高低误报检出，则冻结学生对象性在同一外部候选上也会超过原外部分数，可据此继续投入。
-- 失败原因：固定79695个CutLER候选、共同known过滤和300预算下，C对象性R@10为0.8345%，较A的0.0348%高0.7997个百分点，却低于CutLER原分数1.8776%；其small TP为0，只有一个unknown类的实际TP同时高于两对照。预先固定的相对增益、绝对5%、small和三类条件均失败。3487个候选没有有效FCOS指派点而保留零分，故排序读出还受投影支持限制。
+- 失败原因：固定79695个CutLER候选、共同known过滤和300预算下，C对象性R@10为0.8345%，较A的0.0348%高0.7997个百分点，却低于CutLER原分数1.8776%；其small TP为0，只有一个unknown类的实际TP同时高于两对照。预先固定的相对增益、绝对5%、small和三类条件均失败。3487个候选没有有效FCOS点属实，但完整GT复核确认后过滤覆盖的595个unknown、其中70个small仍全部有有效评分支持，零支持造成的GT覆盖损失均为0。因此收缩旧“投影支持限制”的解释：候选零点比例不能直接充当本次低召回的原因，具体投影是否影响排序仍未知。
 - 后续做法：把训练端性能、共同候选覆盖和部署排序视为不同问题。评价冻结读出时固定候选几何、预算、known过滤和并列FP规则，保留零支持样本，并同时报告支持率、完整PR、实际TP与FP构成；不可用训练端局部提升替代该读出验证。
-- 边界：结论仅覆盖这三个单种子端点、CutLER候选、FCOS中心/尺度/最小面积指派及均值投影。它不否定其他投影、真实几何、外部对象源或新的授权训练；C仍相对A有局部排序收益，不能改写成“对象性无用”。
-- 证据：`ziyu24/cqc_P19@3be33d61f8c06ec1400d7fd4460f9132b716374e`；`configs/r010.json`、`configs/r010.recovery.json`、`src/r010_core.py`、`src/predict_r010.py`、`src/evaluate_r010.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r010/artifacts/evaluation/summary/metrics.json`。
+- 边界：结论仅覆盖这三个单种子端点、CutLER候选、FCOS中心/尺度/最小面积指派及均值投影。它不否定其他投影、真实几何、外部对象源或新的授权训练；C仍相对A有局部排序收益，且在50 FP/图有319 TP、高于CutLER的270，不能改写成整条曲线全面劣化或“对象性无用”，也不能事后更换主误报标准。C在10 FP/图的FP中42.38%来自known混淆/定位，56.09%为低重叠背景代理；这不是穷尽真背景或训练因果识别。保存记录复核没有独立重算旋转IoU。
+- 证据：`ziyu24/cqc_P19@2ed2ca8b638431b1920f74eba07eae0ed12d6030`；`configs/r010.json`、`configs/r010.recovery.json`、`src/r010_core.py`、`src/predict_r010.py`、`src/evaluate_r010.py`、`src/read_r010_evidence.py`、`doc/r010_review.json`、`lab/result.md`、`lab/failed_methods.md`、`runs/r010/artifacts/evaluation/summary/metrics.json`。
 
 ## 方法族停止索引
 
@@ -104,6 +104,6 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 | known正位置独立对象性及高置信负例降权 | 当前配对实现未达到完整未知发现条件，不继续盲调或换主评分 | 独立对象正支持、其他实现及弱标签增量 |
 | 冻结外部提案加known剔除 | 固定组合未达低误报与非储罐并集增益要求，11点AP不能独立支持成功 | 互补支持及有依据的公平适配 |
 | 同源外部伪框对象正支持及伪OBB回归 | 当前固定三臂未过完整低误报投入门槛，不延长或改指标挽救 | 其他对象来源、真实几何信号及新授权协议 |
-| 固定外部候选上的冻结学生对象性排序 | 当前投影未超过CutLER原分数，不作为下一轮投入依据 | 其他投影、真实几何与新授权训练 |
+| 固定外部候选上的冻结学生对象性排序 | 当前投影未在主低误报操作点超过CutLER原分数，不作为下一轮投入依据；保留宽松误报下的收益 | 其他投影、真实几何与新授权训练 |
 
 这些是实现与解释范围内的边界，不是项目STOP指令或跨项目否决规则。
