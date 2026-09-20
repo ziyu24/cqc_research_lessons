@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-来源主线为 `ziyu24/cqc_P19@a06e4c6dfc6dc7d111a580b88b9a9ebab637bbad`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
+来源主线为 `ziyu24/cqc_P19@32966dfac9bffecddf969ccf64b40eb82cf639ea`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
 
 ## 项目研究什么
 
@@ -99,10 +99,10 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 ## 教训九：单一输入放大可改善中大目标排序，却不能以局部增益替代完整尺度鲁棒性
 
 - 失败命题：在固定对象提案器上把同一窗口输入从1024放大到2048，便足以跨过完整未知发现的低误报投入门槛，或可由IoU .5 AP和中大目标收益替代小目标检验。
-- 失败原因：同一458图、5297窗口、300候选和共同known过滤下，2×将10 FP/图实际unknown TP从54提升至79，IoU .5 AP从3.2154%提升至6.2731%，但R@10仅从1.8776%到2.7469%，small TP仍为0；因而未达到预先固定的绝对5%、相对增幅及small条件。六类TP均提高、34个新增对9个丢失的局部结果不改变该结论。
-- 后续做法：尺度干预必须保持权重、候选、过滤、预算和完整GT不变，配对报告低误报PR、类别、原图面积分层及新增/丢失对象；只有联合门槛通过才值得进入同先验强对照，不能通过继续扫尺度、阈值或预算挽救。
+- 失败原因：同一458图、5297窗口、300候选和共同known过滤下，2×将10 FP/图实际unknown TP从54提升至79，IoU .5 AP从3.2154%提升至6.2731%，但R@10仅从1.8776%到2.7469%，small TP仍为0；因而未达到预先固定的绝对5%、相对增幅及small条件。六类TP均提高、34个新增对9个丢失的局部结果不改变该结论。保存记录复核进一步确认小目标在原图NMS前仅181→182，最终候选覆盖70→54；IoU .5积分AP由0.2700%升至0.3713%，而2×的AP11有96.61%来自零召回格，不能把AP11近乎翻倍扩大为可用检测性能。
+- 后续做法：尺度干预必须保持权重、候选生成及预算规则、过滤和完整GT不变，实际候选可随输入尺度变化，配对报告低误报PR、类别、原图面积分层及新增/丢失对象；只有联合门槛通过才值得进入同先验强对照，不能通过继续扫尺度、阈值或预算挽救。
 - 边界：结果只约束冻结CutLER、双线性2×、像素中心回映、该DOTA开发集及单种子推理协议。它不否定其他前端、真实多尺度训练、不同已授权输入策略或完整项目目标；同一known输出只是复用的对照，不是新增保持能力。
-- 证据：`ziyu24/cqc_P19@a06e4c6dfc6dc7d111a580b88b9a9ebab637bbad`；`configs/r011.json`、`configs/r011.recovery.json`、`src/r011_core.py`、`src/run_r011.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r011/artifacts/evaluation/summary/metrics.json`。
+- 证据：`ziyu24/cqc_P19@32966dfac9bffecddf969ccf64b40eb82cf639ea`；`configs/r011.json`、`configs/r011.recovery.json`、`src/r011_core.py`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r011/artifacts/evaluation/summary/metrics.json`。
 
 ## 方法族停止索引
 
