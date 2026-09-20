@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-来源主线为 `ziyu24/cqc_P19@ba7ef243501428d398353b88edde06db70f5b67b`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
+来源主线为 `ziyu24/cqc_P19@3be33d61f8c06ec1400d7fd4460f9132b716374e`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`runs/r010/artifacts/evaluation/summary/metrics.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
 
 ## 项目研究什么
 
@@ -27,6 +27,8 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 对冻结提案重放原生旋转NMS/IoU，再从458份逐图记录回算全部GT的首次损失和误报类型。未增加训练；重新打分不能恢复候选外对象，阶段计数也不构成移除组件的因果效果。
 
 - 以冻结CutLER训练提案为同一外部先验，从同一30000步完整学生/教师/优化器/EMA状态续训6000步，比较仅保护、对象正支持以及对象正支持加伪OBB回归三臂；每臂单种子、2卡，并在同一458验证图、300候选和固定known过滤下评测。
+
+- 固定上述CutLER候选的几何、ID、预算和共同known过滤，冻结读取A/C/B对象性在原生FCOS有效指派位置的跨窗口均值；零支持候选保留零分，与CutLER原分数进行完整PR和固定误报对照。
 
 ## 教训一：成功匹配对象间的高区分度不能替代完整未知发现
 
@@ -84,6 +86,14 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 边界：结论限于冻结CutLER伪框、FCOS指派、6000步、300候选、固定过滤和单种子DOTA协议。对象正支持仍有可保留的局部低误报及三类TP收益；结果不否定其他外部对象来源、真实几何信号、不同已授权协议或完整弱标签增量。
 - 证据：`ziyu24/cqc_P19@ba7ef243501428d398353b88edde06db70f5b67b`；`configs/r009.json`、`configs/r009.recovery.json`、`src/train_r009.py`、`src/run_r009.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r009/artifacts/summary_CA.json`、`runs/r009/artifacts/summary_CAB.json`。
 
+## 教训八：训练端对象支持的局部收益不能直接推出固定外部候选上的排序收益
+
+- 失败命题：若外部对象正支持在训练端相对保护臂提高低误报检出，则冻结学生对象性在同一外部候选上也会超过原外部分数，可据此继续投入。
+- 失败原因：固定79695个CutLER候选、共同known过滤和300预算下，C对象性R@10为0.8345%，较A的0.0348%高0.7997个百分点，却低于CutLER原分数1.8776%；其small TP为0，只有一个unknown类的实际TP同时高于两对照。预先固定的相对增益、绝对5%、small和三类条件均失败。3487个候选没有有效FCOS指派点而保留零分，故排序读出还受投影支持限制。
+- 后续做法：把训练端性能、共同候选覆盖和部署排序视为不同问题。评价冻结读出时固定候选几何、预算、known过滤和并列FP规则，保留零支持样本，并同时报告支持率、完整PR、实际TP与FP构成；不可用训练端局部提升替代该读出验证。
+- 边界：结论仅覆盖这三个单种子端点、CutLER候选、FCOS中心/尺度/最小面积指派及均值投影。它不否定其他投影、真实几何、外部对象源或新的授权训练；C仍相对A有局部排序收益，不能改写成“对象性无用”。
+- 证据：`ziyu24/cqc_P19@3be33d61f8c06ec1400d7fd4460f9132b716374e`；`configs/r010.json`、`configs/r010.recovery.json`、`src/r010_core.py`、`src/predict_r010.py`、`src/evaluate_r010.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r010/artifacts/evaluation/summary/metrics.json`。
+
 ## 方法族停止索引
 
 | 方法或解释 | 当前证据支持的停止边界 | 仍未裁决 |
@@ -94,5 +104,6 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 | known正位置独立对象性及高置信负例降权 | 当前配对实现未达到完整未知发现条件，不继续盲调或换主评分 | 独立对象正支持、其他实现及弱标签增量 |
 | 冻结外部提案加known剔除 | 固定组合未达低误报与非储罐并集增益要求，11点AP不能独立支持成功 | 互补支持及有依据的公平适配 |
 | 同源外部伪框对象正支持及伪OBB回归 | 当前固定三臂未过完整低误报投入门槛，不延长或改指标挽救 | 其他对象来源、真实几何信号及新授权协议 |
+| 固定外部候选上的冻结学生对象性排序 | 当前投影未超过CutLER原分数，不作为下一轮投入依据 | 其他投影、真实几何与新授权训练 |
 
 这些是实现与解释范围内的边界，不是项目STOP指令或跨项目否决规则。
