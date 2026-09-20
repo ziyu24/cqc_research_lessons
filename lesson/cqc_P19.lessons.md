@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-来源主线为 `ziyu24/cqc_P19@2ed2ca8b638431b1920f74eba07eae0ed12d6030`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
+来源主线为 `ziyu24/cqc_P19@a06e4c6dfc6dc7d111a580b88b9a9ebab637bbad`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
 
 ## 项目研究什么
 
@@ -10,7 +10,7 @@
 
 ## 领域位置与当前结论
 
-PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督未知发现和稀疏known恢复已有相关方法，组合任务关键词不能单独证明创新。现有证据建立了合法known基线及多条局部负结果，尚未建立有效的完整开放世界方法。关于弱几何额外造成语义混淆的当前监督包解释未获得预设支持；这不等于整个科学目标不可能。仅以known正位置训练的独立对象性及高置信负例降权也未形成有效未知发现；其共同匹配子集存在语义改善，不能扩大为全总体成功。冻结CutLER已有真实局部覆盖增益，但简单known过滤仍未建立有效低误报发现；11点AP的零召回格敏感性限制单一AP倍数解释。同源CutLER伪框作为外部对象正支持能带来局部低误报提升，却未过预注册投入门槛；额外伪OBB回归在单种子上不呈稳定全指标收益。
+PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督未知发现和稀疏known恢复已有相关方法，组合任务关键词不能单独证明创新。现有证据建立了合法known基线及多条局部负结果，尚未建立有效的完整开放世界方法。关于弱几何额外造成语义混淆的当前监督包解释未获得预设支持；这不等于整个科学目标不可能。仅以known正位置训练的独立对象性及高置信负例降权也未形成有效未知发现；其共同匹配子集存在语义改善，不能扩大为全总体成功。冻结CutLER已有真实局部覆盖增益，但简单known过滤仍未建立有效低误报发现；11点AP的零召回格敏感性限制单一AP倍数解释。同源CutLER伪框作为外部对象正支持能带来局部低误报提升，却未过预注册投入门槛；额外伪OBB回归在单种子上不呈稳定全指标收益。固定2×输入提高中大目标与IoU .5低误报发现，但small仍为零且整体门槛未过。
 
 ## 实际采用过的方法
 
@@ -29,6 +29,8 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 以冻结CutLER训练提案为同一外部先验，从同一30000步完整学生/教师/优化器/EMA状态续训6000步，比较仅保护、对象正支持以及对象正支持加伪OBB回归三臂；每臂单种子、2卡，并在同一458验证图、300候选和固定known过滤下评测。
 
 - 固定上述CutLER候选的几何、ID、预算和共同known过滤，冻结读取A/C/B对象性在原生FCOS有效指派位置的跨窗口均值；零支持候选保留零分，与CutLER原分数进行完整PR和固定误报对照。
+
+- 对同一冻结CutLER、窗口、NMS、预算及known过滤只固定将输入边长加倍，以像素中心逆变换将mask映回原图；复用1×预测作配对评价，不训练、不做尺度融合或搜索。
 
 ## 教训一：成功匹配对象间的高区分度不能替代完整未知发现
 
@@ -94,6 +96,14 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 边界：结论仅覆盖这三个单种子端点、CutLER候选、FCOS中心/尺度/最小面积指派及均值投影。它不否定其他投影、真实几何、外部对象源或新的授权训练；C仍相对A有局部排序收益，且在50 FP/图有319 TP、高于CutLER的270，不能改写成整条曲线全面劣化或“对象性无用”，也不能事后更换主误报标准。C在10 FP/图的FP中42.38%来自known混淆/定位，56.09%为低重叠背景代理；这不是穷尽真背景或训练因果识别。保存记录复核没有独立重算旋转IoU。
 - 证据：`ziyu24/cqc_P19@2ed2ca8b638431b1920f74eba07eae0ed12d6030`；`configs/r010.json`、`configs/r010.recovery.json`、`src/r010_core.py`、`src/predict_r010.py`、`src/evaluate_r010.py`、`src/read_r010_evidence.py`、`doc/r010_review.json`、`lab/result.md`、`lab/failed_methods.md`、`runs/r010/artifacts/evaluation/summary/metrics.json`。
 
+## 教训九：单一输入放大可改善中大目标排序，却不能以局部增益替代完整尺度鲁棒性
+
+- 失败命题：在固定对象提案器上把同一窗口输入从1024放大到2048，便足以跨过完整未知发现的低误报投入门槛，或可由IoU .5 AP和中大目标收益替代小目标检验。
+- 失败原因：同一458图、5297窗口、300候选和共同known过滤下，2×将10 FP/图实际unknown TP从54提升至79，IoU .5 AP从3.2154%提升至6.2731%，但R@10仅从1.8776%到2.7469%，small TP仍为0；因而未达到预先固定的绝对5%、相对增幅及small条件。六类TP均提高、34个新增对9个丢失的局部结果不改变该结论。
+- 后续做法：尺度干预必须保持权重、候选、过滤、预算和完整GT不变，配对报告低误报PR、类别、原图面积分层及新增/丢失对象；只有联合门槛通过才值得进入同先验强对照，不能通过继续扫尺度、阈值或预算挽救。
+- 边界：结果只约束冻结CutLER、双线性2×、像素中心回映、该DOTA开发集及单种子推理协议。它不否定其他前端、真实多尺度训练、不同已授权输入策略或完整项目目标；同一known输出只是复用的对照，不是新增保持能力。
+- 证据：`ziyu24/cqc_P19@a06e4c6dfc6dc7d111a580b88b9a9ebab637bbad`；`configs/r011.json`、`configs/r011.recovery.json`、`src/r011_core.py`、`src/run_r011.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r011/artifacts/evaluation/summary/metrics.json`。
+
 ## 方法族停止索引
 
 | 方法或解释 | 当前证据支持的停止边界 | 仍未裁决 |
@@ -105,5 +115,6 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 | 冻结外部提案加known剔除 | 固定组合未达低误报与非储罐并集增益要求，11点AP不能独立支持成功 | 互补支持及有依据的公平适配 |
 | 同源外部伪框对象正支持及伪OBB回归 | 当前固定三臂未过完整低误报投入门槛，不延长或改指标挽救 | 其他对象来源、真实几何信号及新授权协议 |
 | 固定外部候选上的冻结学生对象性排序 | 当前投影未在主低误报操作点超过CutLER原分数，不作为下一轮投入依据；保留宽松误报下的收益 | 其他投影、真实几何与新授权训练 |
+| 固定2×输入尺度适配 | 当前单一放大未同时满足低误报绝对/增幅及small条件，不追加尺度、阈值或预算搜索 | 其他前端、真实多尺度训练及新授权策略 |
 
 这些是实现与解释范围内的边界，不是项目STOP指令或跨项目否决规则。
