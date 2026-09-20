@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`及`src/evaluate_grounded_background.py`。来源`ziyu24/cqc_P21@8493fd2939bde8f7b6c748b9da706e9fb71a75bc`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`及`src/count_weight_student.py`。来源`ziyu24/cqc_P21@8323fac46bf28409788616477d6cd73cae6c88b2`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -121,9 +121,10 @@
 - 增删分离补证：在同一`.25`协议下，仅补低分候选的并集臂best为55.368/56.470/335，接近但未超过无数量臂，未达到事先实用增益；仅删高分候选的交集臂降至50.788/52.335/316。二者与完整数量臂构成的二阶交互为AP07 `-49.129`点、面积AP `-52.444`点、TP@500 `-318`。这使“删除高分候选及其与新增候选的交互是风险源”成为更具体的经验结论，但仍不能识别唯一的候选语义、损失梯度或优化原因。
 - 已学成初态补证：把同一无数量模型完整加载为新阶段初态、重置优化器后，12轮数量伪框微调相对等量无数量微调有AP07 `+2.275`点、TP@500 `+6`，但面积AP仅`+1.862`点；相对共同源模型，数量臂best AP07/面积AP/TP@500反而为`-.241/-2.196/-4`。因此共同微调初态不能把该配对主AP差写成可保留的数量收益；源模型、共同训练暴露和候选集合仍须同时作为比较对象。
 - 教师可靠性补证：共同源教师的双视图一致且获轮廓支持的伪框，配合有界软数量可靠性后，数量臂相对同教师无数量臂best的AP07/面积AP/TP@500为`+6.012/+5.986/+16`；但相对共同源模型仍为`+.706/-.491/-7`，固定终点面积也下降。教师伪框让数量产生了明确配对信号，却未证明可保留增益；评估此类两阶段方案须同时比较同阶段对照和冻结强源，不能只以配对胜出裁决。
+- 硬正例权重补证：将相同q_C/q_H改为只重分配原生硬正例分类权重、固定跨rank正例总权重后，数量相对同阶段无数量best仅`+.996/+ .963`双AP点；相对共同强源反降`1.725/1.663`点、TP@500少15。故“软目标负项是上一轮未保留收益的唯一原因”不成立；权重归一化也不能替代相对源和完整PR的性能检验。
 - 后续做法：保留权重0的已验证数量选择基线；若研究未知区域监督，须先以同候选、同伪标签的成对实验验证，并同时报告完整PR、固定预测预算和数量对照。不得因无数量臂的改善改写为数量收益，也不应在这条失败线上扫权重或仅延长训练。
 - 边界：这只是固定`.25`、单seed、HRSC单类、特定公开 Grounding DINO＋SAM候选与 RotatedFCOS日程的经验反例；没有识别候选漏检、伪正例、梯度规模等唯一原因，不否定所有未知区域降权/背景建模或数量监督，也不是test、跨数据集或统计显著性结论。
-- 证据：`ziyu24/cqc_P21@2f8d8b03907a8f593d804fa188a87dfd2a5b2c52`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r015.recovery.json`、`configs/r016.recovery.json`、`configs/r017.recovery.json`、`src/grounded_selection.py`、`src/grounded_finetune.py`、`src/reliable_count.py`、`src/prepare_reliable_count.py`、`src/launch_reliable_count.py`、`src/evaluate_reliable_count.py`。共享教师候选及三组微调臂的best/final预测均覆盖固定181张开发图；新增臂均真实双卡12轮训练，未读取test。
+- 证据：`ziyu24/cqc_P21@8323fac46bf28409788616477d6cd73cae6c88b2`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r015.recovery.json`、`configs/r016.recovery.json`、`configs/r017.recovery.json`、`configs/r018.recovery.json`、`src/grounded_selection.py`、`src/reliable_count.py`、`src/count_weight.py`、`src/count_weight_student.py`。共享教师候选及四组后续臂的best/final预测均覆盖固定181张开发图；新增臂均真实双卡12轮训练，未读取test。
 
 ## 方法族停止索引
 
