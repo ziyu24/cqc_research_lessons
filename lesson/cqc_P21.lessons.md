@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`及`src/gradient_retention.py`。来源`ziyu24/cqc_P21@20a46410b5f349816d88744c5ea89318314640bf`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`及`src/gradient_retention.py`。来源`ziyu24/cqc_P21@f843e128d0a0249fedda5d6f7fb742ea3cb31049`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -14,7 +14,7 @@
 
 全量数量阶段取得了可保留的正结果：以在线预测OBB构造可微实例集合，配合逐掩膜完整空间统计，数量臂best AP07/面积AP/TP@500为59.732/61.889/349，相对共同强源55.513/56.322/328增加4.219/5.567点及21个匹配；相对同阶段无数量臂增加6.968/9.527点及34个匹配。数量臂final为58.221/59.146/344，仍优于源best。但严格回到原20%数量条件后，best为57.253/57.366/338，相对强源仅+1.741/+1.044点，未过双AP+2门槛，final面积亦低于强源；完整数量收益不能外推为原目标的可保留收益。将数量DPP核的OBB输入停止梯度后，best为59.919/61.910/350，完整模型反而低0.188/0.021点及1个TP，故该直接几何路径未显示必要增量。上述正/负结论均只覆盖单种子、HRSC开发集、相应覆盖率与已授权外部先验；不是泛化或唯一因果证明。Grounding DINO框/文本与SAM掩膜预训练提供额外监督，不能称为无外部监督的纯数量训练。
 
-部分数量的后续检验补齐了必要的匹配控制：普通候选概率和MSE配合一对一视觉几何的计数臂best AP07/面积AP/TP@500为59.217/60.769/351，final面积56.616；在完全相同视觉项、候选、初态和日程下，移除全部436图数量后的无数量臂为53.060/52.599/318，final面积49.046。计数best相对匹配无数量增加6.157/8.170点及33个TP@500，final面积增加7.571点，关闭了旧无数量视觉不同的开发集归因缺口；同时仍通过强源参照。然而冻结453图留出上，计数best相对匹配无数量仍增11.814/11.168点及64个TP@500，但计数final面积45.408低于强源48.620，未保住预定联合门槛。此证据保留开发集配对增量，却不支持将其写成冻结留出可保留收益、泛化、显著性、独立测试或项目成功；同样不挽回“一对一支持框承载数量并显式约束U”的失败主张。
+部分数量的后续检验补齐了必要的匹配控制：普通候选概率和MSE配合一对一视觉几何的计数臂best AP07/面积AP/TP@500为59.217/60.769/351，final面积56.616；在完全相同视觉项、候选、初态和日程下，移除全部436图数量后的无数量臂为53.060/52.599/318，final面积49.046。计数best相对匹配无数量增加6.157/8.170点及33个TP@500，final面积增加7.571点，关闭了旧无数量视觉不同的开发集归因缺口；同时仍通过强源参照。然而冻结453图留出上，计数best相对匹配无数量仍增11.814/11.168点及64个TP@500，但计数final面积45.408低于强源48.620，未保住预定联合门槛。预先按开发集选定并冻结的best在该留出相对强源仍增加AP07/面积AP 3.963/4.978点；它是有效的条件性检测收益，不能因final未保留而抹去。历史联合条件失败继续保留，但不等于best无效或20%数量完全未做起来；跨数据、跨种子、机制新颖性及完整项目成功尚未建立，同样不挽回“一对一支持框承载数量并显式约束U”的失败主张。
 
 ## 实际采用过的方法
 
@@ -143,17 +143,20 @@
 
 - 证据：`ziyu24/cqc_P21@db334037466d6f8c7b1a75c980f5e7a11099d272`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r020.recovery.json`、`src/instance_set_followup.py`、`src/evaluate_instance_set_followup.py`及`src/check_instance_set_followup.py`。两臂完整PR均覆盖固定181张开发图；输入、372项初态、null监督及梯度阻断的针对性检查均通过，未读取训练位置或test。
 
-## 教训十二：部分计数的单次best提升不能替代固定终点与简单目标对照
+## 教训十二：合法best收益、末期保留与额外机制贡献须分别判断
 
 - 失败命题：在同一在线候选和共享视觉/检测损失中，20%准确数量的DPP式集合目标可以由单次best相对无数量或强源的提升证明可保留收益；或者候选间关系无需同时胜过独立Bernoulli兼容与普通概率和MSE，就可被认定为额外机制贡献。
 - 失败原因：严格固定87张计数图、349张null图的三臂比较中，MSE的best相对强源增加AP07/面积AP/TP@500 `+3.732/+3.604/+24`，但final面积AP为53.002，低于强源56.322，故未通过预定的保留条件；DPP集合和独立目标也没有同时通过两个参考。全量计数下，集合目标相对MSE的best仅`+1.066/+2.238/-6`，相对独立目标的final AP07仅`+1.038`且TP@500少2；20%和100%都未同时越过两个简单对照的关系门槛。候选关系、相同系数和损失下降均不能补齐这些完整PR条件。
-- 后续做法：部分覆盖数量研究须预先保留同阶段无数量、共同强源、best和固定终点的联合比较；若主张实例关系，还须在每个覆盖率下对两个非关系数量目标同时成立，报告连续差值与TP/召回，而非挑最高best或较弱控制。固定目标族未通过时停止该族的延长、权重搜索和追加种子；新投入应提出可独立检验的实例身份或向无标签图传递机制。
+- 后续做法：部分覆盖数量研究须保留同阶段无数量和共同强源，并在评测前明确合法best与固定终点各自回答的问题；本项目历史联合判据及停止边界不能评分后撤销，但不把末期保留推广为所有研究的一票否决。若主张实例关系，须证明对非关系简单目标的必要增量。若贡献是有区别的监督设置与有效简单方案，MSE可以是方法主体，不要求为了创新额外发明更复杂损失。未来选择或验证协议的变更须前瞻性定义，不能用已解盲留出挑模型。
 - 边界：这是HRSC单类、单seed、12轮、相同`.1`权重和重复开发集下的匹配经验结果，不证明MSE、DPP关系或数量监督在其它数据、预算、覆盖率或模型中无效。全量集合臂仍有相对强源的正结果，MSE20也有局部best信号；结果不是test、显著性、泛化或唯一因果判定。
 - 证据：`ziyu24/cqc_P21@d1ffa1c7302b200794cf539e1c21f53cc55c37d9`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r021.recovery.json`、`src/count_objectives.py`、`src/launch_count_objectives.py`、`src/evaluate_count_objectives.py`及`src/check_count_objectives.py`。五个新臂均实际双卡完成12×110更新，连同复用全量集合参照的六条件汇总、完整181图PR、输入和梯度契约均通过；未读取训练位置或test。
 
 
 - 冻结预测归因补证：八个数量/无数量条件的best/final共16端点完整PR显示，MSE20的前500正确匹配从352降至323，实际为丢52、新增23；失去者35仍有正确框但排在500之后，17已无IoU50候选。全池覆盖丢26、新增22，净406→402；IoU75覆盖235→207，最终输出重复误检为0。强无数量源和同阶段无数量也分别出现不同的预算与覆盖转移。因此接近不变的总召回不能支持“几何基本不变、只是重复或排序”的解释，必须分开实例丢失、新增、预算名次及严格定位覆盖。低排名正确框不唯一证明分数因果，零重复也不说明NMS前没有候选歧义。MSE20最佳轮的IoU75覆盖仍高于强源153，保留真实几何正信号。
 - 补证边界与证据：16端点的ID全集、原图、合同、checkpoint、完整PR与逐GT转移均精确核验；未新训、未做模型前向、未读训练几何或test。不能把输出分桶比例、最大匹配或预算转移当AP损失的独立因果贡献率或部署指标。来源`ziyu24/cqc_P21@50e463ce6c5f6b0093ddffca3b9e2125a6521992`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r022.recovery.json`、`src/diagnose_count_retention.py`、`src/check_count_retention.py`、`configs/count_retention.json`。
+
+- 选优解释修正：原生训练按开发AP07选best，普通MSE与新几何MSE的最佳权重均被保存并在留出前冻结；末期条件没有覆盖这些best，却影响了方法级停止与后续诊断投入。旧MSE开发best为59.245/59.926，新几何为59.217/60.769，后者末期面积提高3.614点，是其获优先推进的重要依据。把联合条件失败概括为数量路线整体无效，会错抹合法正结果；同样不能因组件已有就否定研究价值。PWOOD原文明确继承既有教师—学生、方向/尺度学习，其贡献还依赖问题设置、组合适配及系统实证；本项目是否达到同样成熟度须单独验证。
+- 修正边界与证据：不是更改历史成功判据，不恢复未获支持的DPP关系或一对一数量单位主张，也不授权新实验。来源`ziyu24/cqc_P21@f843e128d0a0249fedda5d6f7fb742ea3cb31049`；`lab/discussion.md`、`lab/result.md`、`src/grounded_student.py`、`src/count_objectives.py`、`configs/grounded_count.json`及`doc/instance_set_execution.md`；[PWOOD原文](https://arxiv.org/html/2507.02751v3)。
 
 ## 教训十三：视觉一对一对应不能自动成为数量的正确实例单位
 
@@ -191,4 +194,4 @@
 - 在线OBB实例集合的原20%覆盖率外推：当前固定覆盖率和日程未通过强源双参照，不以全量正结果替代；不在此固定20%设定延长、扫权重或追加种子。DPP核直接OBB梯度的必要性也未获支持，保留其它未消融路径为未知。
 - 在线候选的固定DPP/独立/MSE数量目标比较：20%三种目标均未满足完整保留条件，关系项在20%与100%均未同时胜过两个简单对照；停止该固定目标族的局部搜索，保留全量集合正结果、MSE20局部信号及其它信息传递机制为未知。
 - 视觉一对一掩膜对应承载数量及显式U项：在当前固定匹配阈值、权重和日程下无相对简单MSE、仅几何对应或U消融的实用增量，停止本方案的局部搜索；不外推为所有视觉实例机制失败。
-- 普通MSE计数＋一对一视觉几何的冻结留出保留：开发集的同视觉数量增量和强源比较均为正，但冻结453图上未保住相对强源的final面积；停止将该固定模型称为可保留泛化结果，且不对已解盲留出搜索模型、阈值、日程或seed。保留开发集信号与其它数量机制的未知。
+- 普通MSE计数＋一对一视觉几何：冻结453图上的合法best相对匹配无数量及强源均有真实正收益；final对强源保留失败，不能称历史联合条件通过或普遍稳定泛化。不得用后者抹去前者，也不对已解盲留出搜索模型、阈值、日程或seed。
