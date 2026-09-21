@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`及`src/frozen_heldout.py`。来源`ziyu24/cqc_P21@22f76f75acfbc5aa8b1257fd4de8d281ea0bfe98`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`及`src/gradient_retention.py`。来源`ziyu24/cqc_P21@20a46410b5f349816d88744c5ea89318314640bf`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -169,6 +169,9 @@
 - 冻结留出补证：同一九个既有checkpoint的完整原生双rank推理固定在453图、1228目标、40个difficult和15张空图。新几何计数相对匹配无数量的best/final持续为`+11.814/+11.168/+64/+3.583`与`+7.986/+5.437/+32/+2.280`（AP07/面积AP/TP500/最大召回），但其final面积45.408比强无数量源48.620低3.212点，故不通过事先联合保留条件。留出清单与推理配置冻结后才读标签；不以结果调整端点、阈值或日程。
 - 后续做法：开发集的同视觉数量差和冻结留出上的强源final保留应同时报告；一项配对优胜不能替代另一个参考或固定终点。已解盲留出失败后，不在同一留出上继续选模型、阈值、NMS、种子或训练日程；保留开发集信号和失败边界，另一个数据/seed协议须预先独立定义。
 - 边界与证据：这是项目冻结453图清单，不是已核实的官方444标准清单，且只覆盖固定seed42、PWOOD/RotatedFCOS-R50和披露先验；不证明所有数量监督无效或识别唯一失败原因。`ziyu24/cqc_P21@22f76f75acfbc5aa8b1257fd4de8d281ea0bfe98`；`lab/result.md`、`lab/failed_methods.md`、`configs/frozen_heldout.json`、`configs/r025.recovery.json`、`src/frozen_heldout.py`、`src/launch_frozen_heldout.py`、`src/check_frozen_heldout.py`及`doc/frozen_heldout_execution.md`。
+
+- 固定状态梯度补证：四个既有状态在同一训练目标、相同436图和相同110批双rank输入上仅作求导，参数和buffer未更新。65个含计数批里，原生伪框—数量全参数余弦的中位数均为负（强源`-.044`、MSE20 best`-.182`、MSE20 final`-.094`、匹配无数量`-.008`），但MSE20 best/final的数量/原生范数中位比`.542/.485`，强源/无数量为`7.615/6.350`；45个null批数量梯度严格为零。该结果仅说明这些冻结状态存在局部一阶方向与强度差异，不能定因留出AP退步，也不能推出删除、调权或重训某项会改善。
+- 补证边界与证据：没有新增验证/留出前向、优化更新或模型选择；r025联合条件失败和r024开发集配对增量均不被该诊断改写。`ziyu24/cqc_P21@20a46410b5f349816d88744c5ea89318314640bf`；`lab/result.md`、`lab/discussion.md`、`configs/gradient_retention.json`、`configs/r026.recovery.json`、`src/gradient_retention.py`、`src/launch_gradient_retention.py`、`src/check_gradient_retention.py`及`doc/gradient_retention_execution.md`。
 
 ## 方法族停止索引
 
