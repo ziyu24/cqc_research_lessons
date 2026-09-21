@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`及`src/evaluate_instance_identity.py`。来源`ziyu24/cqc_P21@37e36e9940eef416a52ffc578f9d681d62b08a75`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`及`src/evaluate_instance_identity.py`。来源`ziyu24/cqc_P21@ab243e3ddd203e2b21b7c760c1a87701e2ff4f5a`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -13,6 +13,8 @@
 数量监督检测与弱监督选区已有研究，项目探索的是部分数量标注、其余完全无标签及OBB输出的完整协议。已有有限检索没有确认完整直接先例，不等于首创证明。固定显著性、硬伪标签评分及冻结ImageNet类别语义三套方法均未形成可用检测器。后者改善开发候选排序，但没有转化成有效OBB检测；完整监督范式仍未知。后续共享可训练特征和在线细化的单类适配，最终两组OBB AP均为0；独立真实HBox监督对照达到75.2799 AP点，只证明该后端在更强监督下可学习，不能充作计数方法成绩。其后的固定伪点协议把CountSeg响应质心接入原生Point2RBox-v2，主臂仍显著低于无数量CutLER外接OBB中心对照和冻结轮廓直接参照，否定了这一具体伪点链能恢复有用OBB的命题，但不否定其它数量监督或可学习的点修正机制。
 
 全量数量阶段取得了可保留的正结果：以在线预测OBB构造可微实例集合，配合逐掩膜完整空间统计，数量臂best AP07/面积AP/TP@500为59.732/61.889/349，相对共同强源55.513/56.322/328增加4.219/5.567点及21个匹配；相对同阶段无数量臂增加6.968/9.527点及34个匹配。数量臂final为58.221/59.146/344，仍优于源best。但严格回到原20%数量条件后，best为57.253/57.366/338，相对强源仅+1.741/+1.044点，未过双AP+2门槛，final面积亦低于强源；完整数量收益不能外推为原目标的可保留收益。将数量DPP核的OBB输入停止梯度后，best为59.919/61.910/350，完整模型反而低0.188/0.021点及1个TP，故该直接几何路径未显示必要增量。上述正/负结论均只覆盖单种子、HRSC开发集、相应覆盖率与已授权外部先验；不是泛化或唯一因果证明。Grounding DINO框/文本与SAM掩膜预训练提供额外监督，不能称为无外部监督的纯数量训练。
+
+部分数量的后续检验保留了一个新正信号：普通候选概率和MSE配合一对一视觉几何时，best AP07/面积AP/TP@500为59.217/60.769/351，final面积56.616，超过强源56.322，满足事先固定的历史参照门槛。但旧无数量参照使用不同视觉项，因此这还不能单独证明相同新几何下数量的实用增量；相应数量移除控制尚无结果。历史数值达标、数量归因和完整项目成功须分别判断。
 
 ## 实际采用过的方法
 
@@ -160,6 +162,9 @@
 - 后续做法：停止该具体“视觉一对一对应承载数量并显式约束U”的方案，不扫匹配阈值、权重、日程或seed。实例身份机制必须同时证明相对简单计数和仅几何对应的增量，并保留强源、同阶段无数量、best与固定终点；不能因匹配是全局一对一或掩膜看似实例化就把它当作真实身份。
 - 边界：SAM掩膜是有损外部视觉先验而非实例真值，局部匹配可跨迭代切换；U消融仅隔离显式项，不能切断共享参数传递。结论限于HRSC单类、单seed、固定开发集、原H与披露GroundingDINO/SAM先验，不否定所有视觉项、实例机制或数量监督，也不是test、泛化、显著性或新颖性结论。
 - 证据：`ziyu24/cqc_P21@37e36e9940eef416a52ffc578f9d681d62b08a75`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r023.recovery.json`、`src/instance_identity.py`、`src/instance_identity_student.py`、`src/evaluate_instance_identity.py`、`src/check_instance_identity.py`及`doc/instance_identity_execution.md`。三臂各真实双卡完成1320更新，完整181图PR、输入身份、rank和匹配暴露均已核验，未读取训练几何或test。
+
+- 配对边界补充：上述正向几何计数条件与旧同阶段无数量参照同时改变数量和视觉项。旧参照门槛确实通过，不能事后撤销；但同视觉项的数量增量仍缺直接控制，不能把历史双参考胜出直接归因给数量。应只补缺失的同视觉、全null数量单元，复用其他三格；四格在不同合法best轮的差分交互只能作描述。尚未运行的新控制不构成数量无用或纯几何有效的证据。
+- 补证：`ziyu24/cqc_P21@ab243e3ddd203e2b21b7c760c1a87701e2ff4f5a`；`lab/result.md`、`lab/discussion.md`、`src/instance_identity.py`、`src/geometry_control.py`、`src/check_geometry_control.py`及`doc/geometry_control_execution.md`。几何计数best/final完整原生PR和来源独立只读重放一致；控制适配确认移除数量保持给定预测下的原生/视觉值及梯度。此为比较设计的边界修正，没有新的训练结果。
 
 ## 方法族停止索引
 
