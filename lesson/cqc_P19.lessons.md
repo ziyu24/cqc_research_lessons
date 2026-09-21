@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-来源主线为 `ziyu24/cqc_P19@32966dfac9bffecddf969ccf64b40eb82cf639ea`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
+来源主线为 `ziyu24/cqc_P19@45b2303b33ba3863ed0952bd71dec9c9bfbab21f`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
 
 ## 项目研究什么
 
@@ -31,6 +31,8 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 固定上述CutLER候选的几何、ID、预算和共同known过滤，冻结读取A/C/B对象性在原生FCOS有效指派位置的跨窗口均值；零支持候选保留零分，与CutLER原分数进行完整PR和固定误报对照。
 
 - 对同一冻结CutLER、窗口、NMS、预算及known过滤只固定将输入边长加倍，以像素中心逆变换将mask映回原图；复用1×预测作配对评价，不训练、不做尺度融合或搜索。
+
+- 冻结SA-1B预训练的SAM ViT-H，以固定64×64自动掩码网格在同一窗口上生成候选，经每窗口100、原图NMS、300预算和共同known过滤，在完整开发集与两个冻结CutLER参照下评价；零训练，不扫描网格、阈值或预算。
 
 ## 教训一：成功匹配对象间的高区分度不能替代完整未知发现
 
@@ -104,6 +106,14 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 边界：结果只约束冻结CutLER、双线性2×、像素中心回映、该DOTA开发集及单种子推理协议。它不否定其他前端、真实多尺度训练、不同已授权输入策略或完整项目目标；同一known输出只是复用的对照，不是新增保持能力。
 - 证据：`ziyu24/cqc_P19@32966dfac9bffecddf969ccf64b40eb82cf639ea`；`configs/r011.json`、`configs/r011.recovery.json`、`src/r011_core.py`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r011/artifacts/evaluation/summary/metrics.json`。
 
+## 教训十：自动掩码前端的高覆盖不能替代固定低误报发现
+
+- 失败命题：引入强分割预训练并以密集自动掩码覆盖对象，就足以在相同预算下补足未知对象、尤其小目标的低误报发现。
+- 失败原因：固定SAM自动掩码在完整458图上于AMG后覆盖2235/2876个unknown、948/1312个small，但经既定窗口上限、NMS、300预算和known过滤后只保留805个unknown覆盖；10 FP/图实际检出55/2876=1.9124%，small为0。相对固定CutLER 2×的79个TP/2.7469%，SAM少24个TP、少0.8345个百分点；虽有四类TP提高和较高R@50，仍未达到预设绝对、增益和small的联合条件。
+- 后续做法：将前端候选覆盖、后端预算/去重损失与固定误报一对一发现分开报告；强预训练基线也必须用完整GT、类别和尺度TP、FP归因及固定参照评价。固定联合条件失败后停止该设置，不通过扫网格、阈值、预算或训练把开发集调到通过。
+- 边界：这只是否定SA-1B SAM ViT-H、64×64 AMG网格、每窗口100、原图300预算和共同known过滤在该DOTA开发协议下的部署；不证明SAM一般无效，不唯一归因某一后处理步骤，也不否定其他独立对象先验或完整项目目标。
+- 证据：`ziyu24/cqc_P19@45b2303b33ba3863ed0952bd71dec9c9bfbab21f`；`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r012/artifacts/evaluation/summary/metrics.json`。
+
 ## 方法族停止索引
 
 | 方法或解释 | 当前证据支持的停止边界 | 仍未裁决 |
@@ -116,5 +126,6 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 | 同源外部伪框对象正支持及伪OBB回归 | 当前固定三臂未过完整低误报投入门槛，不延长或改指标挽救 | 其他对象来源、真实几何信号及新授权协议 |
 | 固定外部候选上的冻结学生对象性排序 | 当前投影未在主低误报操作点超过CutLER原分数，不作为下一轮投入依据；保留宽松误报下的收益 | 其他投影、真实几何与新授权训练 |
 | 固定2×输入尺度适配 | 当前单一放大未同时满足低误报绝对/增幅及small条件，不追加尺度、阈值或预算搜索 | 其他前端、真实多尺度训练及新授权策略 |
+| 固定SAM自动掩码 | 当前高前端覆盖未转化为低误报和small收益，不扫描网格、阈值、预算或训练挽救 | 其他独立对象先验及新授权协议 |
 
 这些是实现与解释范围内的边界，不是项目STOP指令或跨项目否决规则。
