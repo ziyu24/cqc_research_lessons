@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`及`src/diagnose_count_retention.py`。来源`ziyu24/cqc_P21@50e463ce6c5f6b0093ddffca3b9e2125a6521992`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`及`src/evaluate_instance_identity.py`。来源`ziyu24/cqc_P21@37e36e9940eef416a52ffc578f9d681d62b08a75`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -153,6 +153,14 @@
 - 冻结预测归因补证：八个数量/无数量条件的best/final共16端点完整PR显示，MSE20的前500正确匹配从352降至323，实际为丢52、新增23；失去者35仍有正确框但排在500之后，17已无IoU50候选。全池覆盖丢26、新增22，净406→402；IoU75覆盖235→207，最终输出重复误检为0。强无数量源和同阶段无数量也分别出现不同的预算与覆盖转移。因此接近不变的总召回不能支持“几何基本不变、只是重复或排序”的解释，必须分开实例丢失、新增、预算名次及严格定位覆盖。低排名正确框不唯一证明分数因果，零重复也不说明NMS前没有候选歧义。MSE20最佳轮的IoU75覆盖仍高于强源153，保留真实几何正信号。
 - 补证边界与证据：16端点的ID全集、原图、合同、checkpoint、完整PR与逐GT转移均精确核验；未新训、未做模型前向、未读训练几何或test。不能把输出分桶比例、最大匹配或预算转移当AP损失的独立因果贡献率或部署指标。来源`ziyu24/cqc_P21@50e463ce6c5f6b0093ddffca3b9e2125a6521992`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r022.recovery.json`、`src/diagnose_count_retention.py`、`src/check_count_retention.py`、`configs/count_retention.json`。
 
+## 教训十三：视觉一对一对应不能自动成为数量的正确实例单位
+
+- 失败命题：对在线框与SAM视觉掩膜用不读分数或数量的停止梯度一对一几何匹配，再令数量MSE只统计匹配支持框、并在无数量图施加同一显式视觉对应，就能相对原MSE、仅替换视觉几何及U消融保留实用OBB增量。
+- 失败原因：在固定87张计数图、349张null图、相同H/初态/12轮条件下，主臂相对“旧MSE计数+新几何”的best/final面积AP分别低1.380/1.431点、TP@500少19/13；相对原MSE20的best面积AP也低0.537点。去掉U显式对应的对照没有显示主臂所需增量。反而仅替换L/U视觉项、保留旧MSE全部在线候选计数的对照通过原双参考门槛，故不能把该正信号归因给一对一数量单位。三臂均有实际L/U匹配和极低短缺，失败不是空匹配路径。
+- 后续做法：停止该具体“视觉一对一对应承载数量并显式约束U”的方案，不扫匹配阈值、权重、日程或seed。实例身份机制必须同时证明相对简单计数和仅几何对应的增量，并保留强源、同阶段无数量、best与固定终点；不能因匹配是全局一对一或掩膜看似实例化就把它当作真实身份。
+- 边界：SAM掩膜是有损外部视觉先验而非实例真值，局部匹配可跨迭代切换；U消融仅隔离显式项，不能切断共享参数传递。结论限于HRSC单类、单seed、固定开发集、原H与披露GroundingDINO/SAM先验，不否定所有视觉项、实例机制或数量监督，也不是test、泛化、显著性或新颖性结论。
+- 证据：`ziyu24/cqc_P21@37e36e9940eef416a52ffc578f9d681d62b08a75`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r023.recovery.json`、`src/instance_identity.py`、`src/instance_identity_student.py`、`src/evaluate_instance_identity.py`、`src/check_instance_identity.py`及`doc/instance_identity_execution.md`。三臂各真实双卡完成1320更新，完整181图PR、输入身份、rank和匹配暴露均已核验，未读取训练几何或test。
+
 ## 方法族停止索引
 
 
@@ -170,3 +178,4 @@
 - 在线OBB实例集合＋逐掩膜空间统计：100%计数阶段已取得超过强源及同阶段对照的可保留收益，保留该机制；先验证原20%协议及直接数量到几何路径的贡献，不把已有失败线的停止边界套用到此正结果，也不据开发集单种子认定完整项目成功。
 - 在线OBB实例集合的原20%覆盖率外推：当前固定覆盖率和日程未通过强源双参照，不以全量正结果替代；不在此固定20%设定延长、扫权重或追加种子。DPP核直接OBB梯度的必要性也未获支持，保留其它未消融路径为未知。
 - 在线候选的固定DPP/独立/MSE数量目标比较：20%三种目标均未满足完整保留条件，关系项在20%与100%均未同时胜过两个简单对照；停止该固定目标族的局部搜索，保留全量集合正结果、MSE20局部信号及其它信息传递机制为未知。
+- 视觉一对一掩膜对应承载数量及显式U项：在当前固定匹配阈值、权重和日程下无相对简单MSE、仅几何对应或U消融的实用增量，停止本方案的局部搜索；不外推为所有视觉实例机制失败。
