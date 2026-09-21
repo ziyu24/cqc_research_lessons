@@ -184,6 +184,14 @@
 - 边界：这是固定独立Bernoulli、`.1`权重、HRSC单类、PWOOD/RotatedFCOS-R50、单seed和开发集的经验失败，不否定CountLoss文献、其他概率结构/候选/优化或数量监督本身，亦不识别失败的唯一原因，更不是跨数据、统计显著性或新颖性裁决。
 - 证据：`ziyu24/cqc_P21@a2d84f9cedeef1d85c987c342ceaeb23b332c997`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/exact_count.json`、`configs/r027.recovery.json`、`src/exact_count.py`、`src/launch_exact_count.py`、`src/evaluate_exact_count.py`及`src/check_exact_count.py`。该臂真实双卡完成1320更新，输入合同和181图完整PR通过，未读取已解盲留出。
 
+## 教训十五：源域配对数量收益不能替代冻结跨数据验证
+
+- 失败命题：HRSC中相对同视觉无数量和强无数量源均有正收益的20%准确数量MSE模型，不经目标域训练或选优即可在另一船舶数据集上保留实用检测增量。
+- 失败原因：三个预先冻结的HRSC开发best在同一DIOR-R ship test全量推理后，MSE的AP07/面积AP/TP@500/最大召回为`11.819/3.734/157/20.359%`；匹配无数量为`12.496/5.920/236/29.295%`，强无数量源为`13.313/6.150/231/30.526%`。MSE对两参照均退步，分别`-.677/-2.186/-79/-8.936`和`-1.494/-2.417/-74/-10.167`。三模型均覆盖固定11738图（含10334空图），每个模型两rank各5869次CUDA前向。
+- 后续做法：源域收益必须在模型与目标数据协议预冻结后，以完整目标图像同时比较匹配无数量和共同强源；跨域失败后不在已解盲目标集上选模型、调阈值、重训或增加种子。
+- 边界：这是单seed、HRSC→本地DIOR-R单类ship、固定RotatedFCOS/PWOOD与外部先验的经验反例，不否定HRSC内正证据、其它跨域适配、不同数据/类别或统计显著性。
+- 证据：`ziyu24/cqc_P21@da3e9ed27d02189053b248d2570bef7e6868c1d8`；`lab/result.md`、`lab/failed_methods.md`、`configs/dior_transfer.json`、`configs/r029.recovery.json`、`src/dior_data.py`、`src/dior_transfer.py`及`src/launch_dior_transfer.py`。
+
 ## 方法族停止索引
 
 
