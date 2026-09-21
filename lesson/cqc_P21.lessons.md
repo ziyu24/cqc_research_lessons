@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`及`src/evaluate_count_objectives.py`。来源`ziyu24/cqc_P21@95d1d57a0e744971f466e7bfddf7ef7269946f9a`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`及`src/diagnose_count_retention.py`。来源`ziyu24/cqc_P21@50e463ce6c5f6b0093ddffca3b9e2125a6521992`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -150,8 +150,8 @@
 - 证据：`ziyu24/cqc_P21@d1ffa1c7302b200794cf539e1c21f53cc55c37d9`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r021.recovery.json`、`src/count_objectives.py`、`src/launch_count_objectives.py`、`src/evaluate_count_objectives.py`及`src/check_count_objectives.py`。五个新臂均实际双卡完成12×110更新，连同复用全量集合参照的六条件汇总、完整181图PR、输入和梯度契约均通过；未读取训练位置或test。
 
 
-- 冻结预测归因补证：MSE20的前500正确匹配从352降至323，实际为丢52、新增23；失去者35仍有正确框但排在500之后，17已无IoU50候选。全池覆盖丢26、新增22，净406→402；IoU75覆盖235→207，最终输出重复误检为0。因此接近不变的总召回不能支持“几何基本不变、只是重复或排序”的解释，必须分开实例丢失、新增、预算名次及严格定位覆盖。低排名正确框不唯一证明分数因果，零重复也不说明NMS前没有候选歧义。MSE20最佳轮的IoU75覆盖仍高于强源153，保留真实几何正信号。
-- 补证边界与证据：同一开发集上的MSE20、强无数量源、同阶段无数量共六端点保存预测完整PR已精确重放；未新训、未读训练几何或test，也未完成其它五条件的新归因。不能把输出分桶比例当AP损失的独立因果贡献率。来源`ziyu24/cqc_P21@95d1d57a0e744971f466e7bfddf7ef7269946f9a`；`lab/result.md`、`lab/failed_methods.md`、`src/diagnose_count_retention.py`、`src/check_count_retention.py`、`configs/count_retention.json`。
+- 冻结预测归因补证：八个数量/无数量条件的best/final共16端点完整PR显示，MSE20的前500正确匹配从352降至323，实际为丢52、新增23；失去者35仍有正确框但排在500之后，17已无IoU50候选。全池覆盖丢26、新增22，净406→402；IoU75覆盖235→207，最终输出重复误检为0。强无数量源和同阶段无数量也分别出现不同的预算与覆盖转移。因此接近不变的总召回不能支持“几何基本不变、只是重复或排序”的解释，必须分开实例丢失、新增、预算名次及严格定位覆盖。低排名正确框不唯一证明分数因果，零重复也不说明NMS前没有候选歧义。MSE20最佳轮的IoU75覆盖仍高于强源153，保留真实几何正信号。
+- 补证边界与证据：16端点的ID全集、原图、合同、checkpoint、完整PR与逐GT转移均精确核验；未新训、未做模型前向、未读训练几何或test。不能把输出分桶比例、最大匹配或预算转移当AP损失的独立因果贡献率或部署指标。来源`ziyu24/cqc_P21@50e463ce6c5f6b0093ddffca3b9e2125a6521992`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r022.recovery.json`、`src/diagnose_count_retention.py`、`src/check_count_retention.py`、`configs/count_retention.json`。
 
 ## 方法族停止索引
 
