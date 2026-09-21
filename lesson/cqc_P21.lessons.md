@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`及`src/gradient_retention.py`。来源`ziyu24/cqc_P21@f843e128d0a0249fedda5d6f7fb742ea3cb31049`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`、`src/gradient_retention.py`、`src/exact_count.py`及`src/evaluate_exact_count.py`。来源`ziyu24/cqc_P21@a2d84f9cedeef1d85c987c342ceaeb23b332c997`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -176,6 +176,14 @@
 - 固定状态梯度补证：四个既有状态在同一训练目标、相同436图和相同110批双rank输入上仅作求导，参数和buffer未更新。65个含计数批里，原生伪框—数量全参数余弦的中位数均为负（强源`-.044`、MSE20 best`-.182`、MSE20 final`-.094`、匹配无数量`-.008`），但MSE20 best/final的数量/原生范数中位比`.542/.485`，强源/无数量为`7.615/6.350`；45个null批数量梯度严格为零。该结果仅说明这些冻结状态存在局部一阶方向与强度差异，不能定因留出AP退步，也不能推出删除、调权或重训某项会改善。
 - 补证边界与证据：没有新增验证/留出前向、优化更新或模型选择；r025联合条件失败和r024开发集配对增量均不被该诊断改写。`ziyu24/cqc_P21@20a46410b5f349816d88744c5ea89318314640bf`；`lab/result.md`、`lab/discussion.md`、`configs/gradient_retention.json`、`configs/r026.recovery.json`、`src/gradient_retention.py`、`src/launch_gradient_retention.py`、`src/check_gradient_retention.py`及`doc/gradient_retention_execution.md`。
 
+## 教训十四：精确基数似然不因准确数量而自动优于均值MSE
+
+- 失败命题：在部分图有准确总数、其余图无数量的在线检测中，将候选概率和MSE替换为独立Bernoulli的精确`-log P(K=n)`，仅因后者表达“恰好n个”的概率，就能至少保留匹配MSE的完整检测表现和强源增量。
+- 失败原因：在固定87张计数图、349张null图、同一在线候选/一对一视觉项、初始化、系数、12轮与单seed条件下，精确似然best的AP07/面积AP/TP@500为`55.829/55.951/337`，低于新视觉MSE的`59.217/60.769/351`和原MSE的`59.245/59.926/352`；相对强源的面积AP仍低`.371`点。其NLL由`.419`降至`.253`，说明似然被优化，但不能代替完整PR比较。该结果也不能用“同均值而不同分布”这一数学区别直接推出实例身份、候选覆盖或排序收益。
+- 后续做法：精确基数目标应作为与MSE同候选、同初始化、同日程的预先比较对象，并同时报告强源、同阶段对照、合法best和固定终点的完整PR；若未通过，不以调权、候选上限、延长训练、增加种子或已解盲留出选模来挽回。保留MSE的有效参照，不把损失下降写成检测提升。
+- 边界：这是固定独立Bernoulli、`.1`权重、HRSC单类、PWOOD/RotatedFCOS-R50、单seed和开发集的经验失败，不否定CountLoss文献、其他概率结构/候选/优化或数量监督本身，亦不识别失败的唯一原因，更不是跨数据、统计显著性或新颖性裁决。
+- 证据：`ziyu24/cqc_P21@a2d84f9cedeef1d85c987c342ceaeb23b332c997`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/exact_count.json`、`configs/r027.recovery.json`、`src/exact_count.py`、`src/launch_exact_count.py`、`src/evaluate_exact_count.py`及`src/check_exact_count.py`。该臂真实双卡完成1320更新，输入合同和181图完整PR通过，未读取已解盲留出。
+
 ## 方法族停止索引
 
 
@@ -195,3 +203,4 @@
 - 在线候选的固定DPP/独立/MSE数量目标比较：20%三种目标均未满足完整保留条件，关系项在20%与100%均未同时胜过两个简单对照；停止该固定目标族的局部搜索，保留全量集合正结果、MSE20局部信号及其它信息传递机制为未知。
 - 视觉一对一掩膜对应承载数量及显式U项：在当前固定匹配阈值、权重和日程下无相对简单MSE、仅几何对应或U消融的实用增量，停止本方案的局部搜索；不外推为所有视觉实例机制失败。
 - 普通MSE计数＋一对一视觉几何：冻结453图上的合法best相对匹配无数量及强源均有真实正收益；final对强源保留失败，不能称历史联合条件通过或普遍稳定泛化。不得用后者抹去前者，也不对已解盲留出搜索模型、阈值、日程或seed。
+- 在线候选的独立精确基数似然替代MSE：固定20%协议未追平两份MSE，停止该配置的局部搜索；不外推否定其它概率结构、候选、优化或数量监督。
