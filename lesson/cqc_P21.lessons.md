@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`、`src/gradient_retention.py`、`src/exact_count.py`、`src/evaluate_exact_count.py`、`src/dior_prior_diagnostic.py`及`src/dior_prior_resolution.py`。来源`ziyu24/cqc_P21@7e532c218241b2e4a38bfe187a17bfaee4f07c8c`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`、`src/gradient_retention.py`、`src/exact_count.py`、`src/evaluate_exact_count.py`、`src/dior_prior_diagnostic.py`及`src/dior_prior_resolution.py`。来源`ziyu24/cqc_P21@57763f6be208139b1f442f1049b3c9529fd14132`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -199,9 +199,11 @@
 - 失败命题：单类数量方法已有约60点开发AP，换到20类后的约6点就说明数量损失崩溃；或者只要原始查询能覆盖多数目标，放开argmax、换token聚合、拆成单类提示或整图上采样便可恢复有效检测。
 - 失败原因：单类结果是在已训练的55.51点检测器上适配；DIOR两臂则共享ImageNet骨干和随机20类检测头，初态不等价。全类内部留出数量/无数量AP07为6.4767/5.3305，虽增1.1462点，宏最大召回却下降3.5999点；没有达到完整实用标准。开发集17322个GT中，900个查询的类无关/同类HBox存在性覆盖为11786/3357，原0.30完整输出仅1096/277；原先验OBB AP07为4.5718点，低于学生数量/无数量的6.2751/5.4280点。故低分缺口在前端识别、定类与早期筛选已存在，不能把学生当作唯一或主要额外损失。固定64图全20类单提示的HBox AP07相对共同提示仅4.1176→4.6320点，也不足以称已修复。
 - 后续做法：固定图像和类别全集，分别核对查询几何、类别分数、掩膜、抑制、阈值与学生完整PR；HBox、OBB、GT存在性覆盖和一对一召回必须分开。比较同初始化、同视觉项的数量/无数量增量，同时报告绝对能力与逐类退步。先以有明确变量的前端干预验证性能，再决定是否值得重建训练监督；不得因训练退出正常、局部AP改善或高类无关覆盖而继续盲目重训。
-- 边界：这是固定公开Grounding DINO/SAM、DIOR内部划分、12轮、单seed的经验结果，训练仍只有L数量和U=null。分阶段损失不能识别尺度、文本、查询分配、域差异与学习机制的独立因果；单提示同时改变上下文及每类查询预算，64图分层子集不是全开发基准。训练审计无几何真值，不能由其候选计数推算定位召回。保留HRSC内正证据，不外推否定MSE、数量范式或全部多类适配；固定整图短边800→1600的后续反事实已经失败：完整开发OBB AP07/面积AP从4.5718/3.5457降至3.3117/1.9217，平均每类TP500下降8.25、宏最大召回下降2.4911点；900查询的类无关/正确类存在性覆盖降至5964/1028。固定模型上采样没有修复前端，也不增加原图信息；它不证明全部尺度策略、模型或数量监督无效。停止对此固定配置追加尺度/提示/阈值扫描，新公开模型替换尚无性能结果。
-- 证据：`ziyu24/cqc_P21@7e532c218241b2e4a38bfe187a17bfaee4f07c8c`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`src/dior_count_data.py`、`src/dior_count_prior.py`、`src/dior_count_closeout.py`、`src/dior_prior_diagnostic.py`、`configs/dior_count.json`、`configs/dior_prior_diagnostic.json`、`src/dior_prior_resolution.py`和`configs/dior_prior_resolution.json`。完整5844训练链路映射、2923开发输入及两种固定尺度各2923份原始输出散列、实际形状和两rank计算记录已核对；没有新训练、训练几何或新盲集读取。
+- 边界：这是固定公开Grounding DINO/SAM、DIOR内部划分、12轮、单seed的经验结果，训练仍只有L数量和U=null。分阶段损失不能识别尺度、文本、查询分配、域差异与学习机制的独立因果；单提示同时改变上下文及每类查询预算，64图分层子集不是全开发基准。训练审计无几何真值，不能由其候选计数推算定位召回。保留HRSC内正证据，不外推否定MSE、数量范式或全部多类适配；固定整图短边800→1600的后续反事实已经失败：完整开发OBB AP07/面积AP从4.5718/3.5457降至3.3117/1.9217，平均每类TP500下降8.25、宏最大召回下降2.4911点；900查询的类无关/正确类存在性覆盖降至5964/1028。固定模型上采样没有修复前端，也不增加原图信息；它不证明全部尺度策略、模型或数量监督无效。停止对此固定配置追加尺度/提示/阈值扫描。随后固定Swin-B替换把全类AP07/面积AP提高到6.4964/4.9201，TP500和宏召回也增加，但未达预定双AP各+2点，条件学生训练没有启动；正增量和实用标准失败同时成立，不能说模型继续掉分。Swin-B仍有10类AP07为0，ship仅32/7047个TP却有9.09点AP07，不能用插值台阶掩盖低召回。容量和外部预训练同时变化，不识别架构独立贡献。
+- 证据：`ziyu24/cqc_P21@57763f6be208139b1f442f1049b3c9529fd14132`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`src/dior_count_data.py`、`src/dior_count_prior.py`、`src/dior_count_closeout.py`、`src/dior_prior_diagnostic.py`、`configs/dior_count.json`、`configs/dior_prior_diagnostic.json`、`src/dior_prior_resolution.py`、`configs/dior_prior_resolution.json`、`src/dior_prior_upgrade.py`和`configs/dior_prior_upgrade.json`。完整5844训练链路映射、2923开发输入及两种固定尺度和Swin-B各2923份原始输出散列、实际形状和两rank计算记录已核对；没有新训练、训练几何或新盲集读取。
 
+- 可见标签一致性补证：在1168张原计数图上，2371/2853个伪正例、18724/20853个视觉实例属于本图已知真实数量为零的类别；原生数据集仍读入这些标签，数量MSE同时要求对应类概率和为零。准确数量存在及数量损失被优化，不保证其它伪监督已与已知信息一致。两个比例是候选/标签统计，不是有效梯度或AP损失的因果份额；剩余候选也未获正确性保证。全阳性HRSC单类不具有同一多类缺席冲突，因此不能不加检查地继承其辅助监督。
+- 补证后续与边界：在保持原信息预算下可检验撤销真零类别伪正例及视觉实例，把错类区域保留为未知而非强判空背景；对照也使用了类别缺席信息，必须与完全无人工标签的对照区分。该一致性修正及数量MSE的条件增量尚未训练验证，不能记为成功或低AP的已定唯一原因，更不能靠删除恢复缺失正例。证据`ziyu24/cqc_P21@57763f6be208139b1f442f1049b3c9529fd14132`；`lab/result.md`、`lab/discussion.md`、`src/dior_count_student.py`、`src/dior_label_consistency.py`及`src/check_dior_label_consistency.py`。原四端点开发PR已复算，原生数据加载、null恒等、正类别不截断和正例优先反例通过；新训练仍待执行。
 ## 方法族停止索引
 
 
@@ -222,4 +224,4 @@
 - 视觉一对一掩膜对应承载数量及显式U项：在当前固定匹配阈值、权重和日程下无相对简单MSE、仅几何对应或U消融的实用增量，停止本方案的局部搜索；不外推为所有视觉实例机制失败。
 - 普通MSE计数＋一对一视觉几何：冻结453图上的合法best相对匹配无数量及强源均有真实正收益；final对强源保留失败，不能称历史联合条件通过或普遍稳定泛化。不得用后者抹去前者，也不对已解盲留出搜索模型、阈值、日程或seed。
 - 在线候选的独立精确基数似然替代MSE：固定20%协议未追平两份MSE，停止该配置的局部搜索；不外推否定其它概率结构、候选、优化或数量监督。
-- 固定公开先验与随机全类检测头的DIOR适配：当前两臂存在数量数值增益但绝对能力低、召回退步，未达到实用标准。前端识别和筛选缺口已验证，不靠拆提示的小幅子集增益或继续加轮数宣布解决；固定800→1600整图上采样使完整PR进一步退步，不继续该尺度/提示/阈值扫描；保留其他前端替换的未知，不把该固定配置失败当作数量范式被证伪。
+- 固定公开先验与随机全类检测头的DIOR适配：当前两臂存在数量数值增益但绝对能力低、召回退步，未达到实用标准。前端识别和筛选缺口已验证，不靠拆提示的小幅子集增益或继续加轮数宣布解决；固定800→1600整图上采样使完整PR进一步退步，不继续该尺度/提示/阈值扫描；固定Swin-B替换虽提高双AP却未达到预定实用条件，其条件训练未进入；停止模型规格扫描，不把该固定配置失败当作数量范式被证伪。真零标签一致性修正的效果仍未知。
