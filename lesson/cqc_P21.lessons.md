@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`、`src/gradient_retention.py`、`src/exact_count.py`、`src/evaluate_exact_count.py`、`src/dior_prior_diagnostic.py`及`src/dior_prior_resolution.py`。来源`ziyu24/cqc_P21@a7b7ff218e2e3e69214e09c4bbab8f46ce2afd65`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`、`src/gradient_retention.py`、`src/exact_count.py`、`src/evaluate_exact_count.py`、`src/dior_prior_diagnostic.py`及`src/dior_prior_resolution.py`。来源`ziyu24/cqc_P21@0272c73be4ab98af7e4d4e770a49d7500e48638b`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -19,6 +19,8 @@
 全类标签一致性修正已完成匹配验证：仅撤销L已知真零类别的伪正例和视觉实例后，准确数量best为6.7101/6.5668点，相对原数量仅增0.4350/0.4339点，未解决低绝对精度；同修正但关闭在线MSE的控制为4.9959/5.0999点。二者正差保留，13类主AP仍低于1点。匹配存在下界对照现已完成，best为6.5234/6.2029；准确数量仅额外增加0.1867/0.3639点，未达实用增量，但类别间存在明显正负抵消。不存在新独立留出或跨种子结论。
 
 用户另行授权仅原1168张L真实OBB的独立阳性对照，保持同一ImageNet初态、原生检测器、12轮和完整采样，U不读标注且全部损失零。开发best/final均为34.0682/33.1671点，相对数量参照高27.3581/26.6004点，证明此DIOR训练栈在可靠监督下可学习；港口和机场等仍弱，不能等同全类问题已解决。真实框和诊断模型不得回流计数方法，数量目标仍未达成。
+
+保持L监督与全部训练语义不变、仅撤去U伪框及视觉项的后续消融，best/final完整开发AP均归零；原数量参照仍为6.7101/6.5668。U的低质量伪监督在此组合中仍有共同支持作用，不能因其有噪声就推断删除更好；这不证明准确数量的独立贡献，也不识别伪框和视觉项各自作用。
 
 ## 实际采用过的方法
 
@@ -213,8 +215,13 @@
 - 宏平均解释与投入边界：准确数量相对存在下界在ship、vehicle、stadium的面积AP分别增加6.0375、6.9951、9.6698点，在baseballfield下降19.9776点；因此小宏差不是所有类别都无作用，也不能把有无控制解释成已穷尽全部数量作用。不得按开发结果逐类挑更好臂拼成新方法。绝对能力很低时，后续应先补齐该数据和训练栈在可靠监督下的可学习性依据；几何往返、GT作预测或另一数据集的阳性结果不能替代本数据上的训练验证。真实框诊断需要独立信息授权，产物不得回流数量方法；该诊断现已获授权完成，其正结果及因果边界见下。
 - 存在消融证据：`ziyu24/cqc_P21@5da28ff15f7a804ae839987926328952948b719f`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`src/dior_presence_control.py`、`src/check_dior_presence_control.py`、`configs/dior_presence_control.json`及`doc/dior_count_execution.md`。唯一新增臂真实双rank完成17544更新，同初态和输入合同、best/final完整开发PR与三个比较独立重放一致，完整续训状态保留；没有新盲集或训练几何读取。
 
-- 独立阳性补证与归因边界：只在原L1168读取真实OBB，U4676仍保留采样但全部损失为零；同初态、原生12轮17544更新和完整2923图20类开发评测，best/final AP07/面积AP为34.0682/33.1671点，平均每类TP500为190.45、宏最高召回53.8475%。相对原数量修正参照增27.3581/26.6004点，否定了此栈在DIOR完全不可学习的笼统解释。但L定位质量、伪框/视觉/数量路径和U监督共同改变，不能指定任一路径为唯一根因；港口AP07仅0.1240点，整体阳性不代表全部类别已解决。后续应保持L与训练语义不变来检验U净作用，不能用真框模型初始化计数方法或把阳性分数当作数量成绩。该U消融尚无性能结果。
+- 独立阳性补证与归因边界：只在原L1168读取真实OBB，U4676仍保留采样但全部损失为零；同初态、原生12轮17544更新和完整2923图20类开发评测，best/final AP07/面积AP为34.0682/33.1671点，平均每类TP500为190.45、宏最高召回53.8475%。相对原数量修正参照增27.3581/26.6004点，否定了此栈在DIOR完全不可学习的笼统解释。但L定位质量、伪框/视觉/数量路径和U监督共同改变，不能指定任一路径为唯一根因；港口AP07仅0.1240点，整体阳性不代表全部类别已解决。随后同L与训练语义的U净作用消融已完成，结果见下；不能用真框模型初始化计数方法或把阳性分数当作数量成绩。
 - 阳性补证来源：`ziyu24/cqc_P21@a7b7ff218e2e3e69214e09c4bbab8f46ce2afd65`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`src/dior_positive_control.py`、`src/check_dior_positive_control.py`、`configs/dior_positive_control.json`及`doc/dior_count_execution.md`。实际图像/真实L加载、同初态、两rank计算和两个端点完整原生PR独立重放一致，完整恢复状态保留；没有新增盲集、U注释或计数训练几何使用。
+
+
+- U净作用干预与失败边界：保持1168张L的数量、伪框、未知区域和视觉实例不变，全部5844图采样及原初始化/12轮不变，只撤去4676张U的11293个伪框和83446个视觉实例，U所有监督梯度为零。完整2923图20类开发集的best/final双AP、平均TP500、宏最高召回均为零，相对原数量best下降6.7101/6.5668双AP点、40个平均TP500及25.5168召回点。best保存输出为空、final只有165框且全未匹配；12次原生验证全零，完整PR重算一致。因此直接删U不是该配置的修复，噪声辅助监督仍可承担冷启动所需共同信号；不把独立真框阳性误读为U必然有害。
+- 后续做法与归因限制：L只剩262图含482个伪正框、691图含2129个视觉实例；ship伪框4个、harbor为0。候选稀疏支持弱空间监督不足的解释，但这些统计不等于GT覆盖或精度，尚未分离定位缺失、数量梯度与伪标签质量。保留原有U参照，停止固定删U方案及其权重/轮数/种子扫描；若继续仅数量研究，应先提出能提供可靠实例定位信号的具体替换及匹配对照，不能用更强监督诊断模型绕过预算，也不能把该负结果扩成所有U机制或数量范式无效。
+- U干预证据：`ziyu24/cqc_P21@0272c73be4ab98af7e4d4e770a49d7500e48638b`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`src/dior_unlabeled_control.py`、`src/check_dior_unlabeled_control.py`、`configs/dior_unlabeled_control.json`及`doc/dior_count_execution.md`。实际图像、L/U变换、同初态、两个rank及两端点完整原生PR独立核验，完整恢复状态保留；仅单seed与开发集，没有新训练几何、U注释或盲集读取。
 
 ## 方法族停止索引
 
@@ -238,4 +245,4 @@
 - 在线候选的独立精确基数似然替代MSE：固定20%协议未追平两份MSE，停止该配置的局部搜索；不外推否定其它概率结构、候选、优化或数量监督。
 - 固定公开先验与随机全类检测头的DIOR适配：当前两臂存在数量数值增益但绝对能力低、召回退步，未达到实用标准。前端识别和筛选缺口已验证，不靠拆提示的小幅子集增益或继续加轮数宣布解决；固定800→1600整图上采样使完整PR进一步退步，不继续该尺度/提示/阈值扫描；固定Swin-B替换虽提高双AP却未达到预定实用条件，其条件训练未进入；停止模型规格扫描，不把该固定配置失败当作数量范式被证伪。真零类别一致性修正已完整训练，只有小幅双AP增量，未解决绝对低分；停止该固定删除修复的局部搜索。共享修正下MSE的正差保留；匹配存在下界对照已完成，准确正数量的宏增量不足实用标准，逐类正负差同时保留，不外推为所有数量作用均无效。
 
-独立真实OBB阳性对照只说明现有DIOR栈具有更强监督下的可学习性，不撤销上述计数配置的失败，不证明U伪监督有害，也不支持继续复杂损失扫描。真实框标签和诊断权重继续隔离于数量方法。
+独立真实OBB阳性对照只说明现有DIOR栈具有更强监督下的可学习性，不撤销上述计数配置的失败，后续固定删除U反而使检测归零，停止直接删U修复及其局部扫描；这也不支持继续复杂损失扫描。真实框标签和诊断权重继续隔离于数量方法。
