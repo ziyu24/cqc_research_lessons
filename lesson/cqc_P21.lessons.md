@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`、`src/gradient_retention.py`、`src/exact_count.py`、`src/evaluate_exact_count.py`、`src/dior_prior_diagnostic.py`及`src/dior_prior_resolution.py`。来源`ziyu24/cqc_P21@24c018c3b265bc92d8f1f2b7599a6a39b5be6832`；已抓取全部远端分支，仅main，无更新更晚次线。
+先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`、`src/gradient_retention.py`、`src/exact_count.py`、`src/evaluate_exact_count.py`、`src/dior_prior_diagnostic.py`及`src/dior_prior_resolution.py`。来源`ziyu24/cqc_P21@5da28ff15f7a804ae839987926328952948b719f`；已抓取全部远端分支，仅main，无更新更晚次线。
 
 ## 项目研究什么
 
@@ -16,7 +16,7 @@
 
 部分数量的后续检验补齐了必要的匹配控制：普通候选概率和MSE配合一对一视觉几何的计数臂best AP07/面积AP/TP@500为59.217/60.769/351，final面积56.616；在完全相同视觉项、候选、初态和日程下，移除全部436图数量后的无数量臂为53.060/52.599/318，final面积49.046。计数best相对匹配无数量增加6.157/8.170点及33个TP@500，final面积增加7.571点，关闭了旧无数量视觉不同的开发集归因缺口；同时仍通过强源参照。然而冻结453图留出上，计数best相对匹配无数量仍增11.814/11.168点及64个TP@500，但计数final面积45.408低于强源48.620，未保住预定联合门槛。预先按开发集选定并冻结的best在该留出相对强源仍增加AP07/面积AP 3.963/4.978点；它是有效的条件性检测收益，不能因final未保留而抹去。历史联合条件失败继续保留，但不等于best无效或20%数量完全未做起来；跨数据、跨种子、机制新颖性及完整项目成功尚未建立，同样不挽回“一对一支持框承载数量并显式约束U”的失败主张。
 
-全类标签一致性修正已完成匹配验证：仅撤销L已知真零类别的伪正例和视觉实例后，准确数量best为6.7101/6.5668点，相对原数量仅增0.4350/0.4339点，未解决低绝对精度；同修正但关闭在线MSE的控制为4.9959/5.0999点。二者正差保留，但不能单凭该差证明准确正数量数值相对类别有无的贡献；13类主AP仍低于1点。不存在新独立留出或跨种子结论。
+全类标签一致性修正已完成匹配验证：仅撤销L已知真零类别的伪正例和视觉实例后，准确数量best为6.7101/6.5668点，相对原数量仅增0.4350/0.4339点，未解决低绝对精度；同修正但关闭在线MSE的控制为4.9959/5.0999点。二者正差保留，13类主AP仍低于1点。匹配存在下界对照现已完成，best为6.5234/6.2029；准确数量仅额外增加0.1867/0.3639点，未达实用增量，但类别间存在明显正负抵消。不存在新独立留出或跨种子结论。
 
 ## 实际采用过的方法
 
@@ -206,8 +206,11 @@
 
 - 可见标签一致性补证：在1168张原计数图上，2371/2853个伪正例、18724/20853个视觉实例属于本图已知真实数量为零的类别；原生数据集仍读入这些标签，数量MSE同时要求对应类概率和为零。准确数量存在及数量损失被优化，不保证其它伪监督已与已知信息一致。两个比例是候选/标签统计，不是有效梯度或AP损失的因果份额；剩余候选也未获正确性保证。全阳性HRSC单类不具有同一多类缺席冲突，因此不能不加检查地继承其辅助监督。
 - 干预验证与失败边界：保持同一数据、公开先验、原生检测器、12轮、双卡和单seed，仅撤销真零类别伪正例及视觉实例，撤销区域进入原未知池，U和正类别不改。准确数量best AP07/面积AP由6.2751/6.1329升至6.7101/6.5668，平均每类TP500增6.95、宏最大召回降0.1169点，未达到事先双AP各+2点；13类主AP仍低于1点，机场、港口、火车站为零。修正存在监督矛盾并不保证恢复缺失正例或明显改善整体检测，停止将该固定删除规则作为低分的充分修复，不扫删除比例或追加训练。它不是零效应证明，也未识别低AP的唯一原因。
-- 数量归因边界：相同修正输入下，保留MSE相对关闭MSE的best为+1.7142/+1.4669双AP点、每类TP500+20.15和宏最大召回+3.9568点，正信号不能抹去；但关闭MSE同时撤去了在线类别存在/缺席和准确数量约束。两条件都已用人工缺席信息清理辅助监督，控制不是无人工标签。正差尚不能证明准确正数量值相对存在信息不可替代；仅使用有无信息的匹配消融仍待运行，不能先写成成功或失败。伪框与视觉项同时修正，也没有分离二者独立因果；开发集适配与单seed不支持独立泛化。
+- 数量归因边界：相同修正输入下，保留MSE相对关闭MSE的best为+1.7142/+1.4669双AP点、每类TP500+20.15和宏最大召回+3.9568点，正信号不能抹去；但关闭MSE同时撤去了在线类别存在/缺席和准确数量约束。两条件都已用人工缺席信息清理辅助监督，控制不是无人工标签。随后完成相同输入/初始化/12轮的存在下界消融：零类仍要求概率和为零，正类只要求至少1，保持原平方损失归约；其best为6.5234/6.2029点。准确数量相对它只增加0.1867/0.3639双AP点、每类TP500增加5.15、宏最高召回增加3.8455点，未达到事先实用增量，不能称正数量值不可替代。该固定松弛不是所有存在监督的最优比较。伪框与视觉项同时修正，也没有分离二者独立因果；开发集适配与单seed不支持独立泛化。
 - 干预证据：`ziyu24/cqc_P21@24c018c3b265bc92d8f1f2b7599a6a39b5be6832`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`src/dior_count_student.py`、`src/dior_label_consistency.py`、`src/check_dior_label_consistency.py`、`configs/dior_label_consistency.json`及`doc/dior_count_execution.md`。两组各17544更新，全部训练输入变换、原图/类别全集、同初态、真实两rank、best/final四份完整开发PR与全部比较独立重算一致；未读训练几何或已解盲留出。存在标签对照的公式反例仅为实现检查，不是性能结果。
+- 宏平均解释与投入边界：准确数量相对存在下界在ship、vehicle、stadium的面积AP分别增加6.0375、6.9951、9.6698点，在baseballfield下降19.9776点；因此小宏差不是所有类别都无作用，也不能把有无控制解释成已穷尽全部数量作用。不得按开发结果逐类挑更好臂拼成新方法。绝对能力很低时，后续应先补齐该数据和训练栈在可靠监督下的可学习性依据；几何往返、GT作预测或另一数据集的阳性结果不能替代本数据上的训练验证。真实框诊断需要独立信息授权，产物不得回流数量方法；该提案尚未执行，不是已验证根因或性能结论。
+- 存在消融证据：`ziyu24/cqc_P21@5da28ff15f7a804ae839987926328952948b719f`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`src/dior_presence_control.py`、`src/check_dior_presence_control.py`、`configs/dior_presence_control.json`及`doc/dior_count_execution.md`。唯一新增臂真实双rank完成17544更新，同初态和输入合同、best/final完整开发PR与三个比较独立重放一致，完整续训状态保留；没有新盲集或训练几何读取。
+
 ## 方法族停止索引
 
 
@@ -228,4 +231,4 @@
 - 视觉一对一掩膜对应承载数量及显式U项：在当前固定匹配阈值、权重和日程下无相对简单MSE、仅几何对应或U消融的实用增量，停止本方案的局部搜索；不外推为所有视觉实例机制失败。
 - 普通MSE计数＋一对一视觉几何：冻结453图上的合法best相对匹配无数量及强源均有真实正收益；final对强源保留失败，不能称历史联合条件通过或普遍稳定泛化。不得用后者抹去前者，也不对已解盲留出搜索模型、阈值、日程或seed。
 - 在线候选的独立精确基数似然替代MSE：固定20%协议未追平两份MSE，停止该配置的局部搜索；不外推否定其它概率结构、候选、优化或数量监督。
-- 固定公开先验与随机全类检测头的DIOR适配：当前两臂存在数量数值增益但绝对能力低、召回退步，未达到实用标准。前端识别和筛选缺口已验证，不靠拆提示的小幅子集增益或继续加轮数宣布解决；固定800→1600整图上采样使完整PR进一步退步，不继续该尺度/提示/阈值扫描；固定Swin-B替换虽提高双AP却未达到预定实用条件，其条件训练未进入；停止模型规格扫描，不把该固定配置失败当作数量范式被证伪。真零类别一致性修正已完整训练，只有小幅双AP增量，未解决绝对低分；停止该固定删除修复的局部搜索。共享修正下MSE的正差保留，准确正数量相对类别有无的独立增量仍未知。
+- 固定公开先验与随机全类检测头的DIOR适配：当前两臂存在数量数值增益但绝对能力低、召回退步，未达到实用标准。前端识别和筛选缺口已验证，不靠拆提示的小幅子集增益或继续加轮数宣布解决；固定800→1600整图上采样使完整PR进一步退步，不继续该尺度/提示/阈值扫描；固定Swin-B替换虽提高双AP却未达到预定实用条件，其条件训练未进入；停止模型规格扫描，不把该固定配置失败当作数量范式被证伪。真零类别一致性修正已完整训练，只有小幅双AP增量，未解决绝对低分；停止该固定删除修复的局部搜索。共享修正下MSE的正差保留；匹配存在下界对照已完成，准确正数量的宏增量不足实用标准，逐类正负差同时保留，不外推为所有数量作用均无效。
