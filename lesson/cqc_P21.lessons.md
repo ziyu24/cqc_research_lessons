@@ -4,6 +4,8 @@
 
 先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`、`src/gradient_retention.py`、`src/exact_count.py`、`src/evaluate_exact_count.py`、`src/dior_prior_diagnostic.py`及`src/dior_prior_resolution.py`。来源`ziyu24/cqc_P21@0272c73be4ab98af7e4d4e770a49d7500e48638b`；已抓取全部远端分支，仅main，无更新更晚次线。
 
+最新定位先验复核来源为`ziyu24/cqc_P21@1d1c00cf9db961cdd28623e1174bc690f90c52cb`；主要实现为`src/dior_instance_proposals.py`，补证及边界见第十六条。来源全部远端分支已抓取，仅main；尚未执行的配对学生训练不作性能裁决。
+
 ## 项目研究什么
 
 部分训练图像只给逐类完整人工数量，其余图像完全无标签，最终学习多实例旋转框检测。原20%协议使用HRSC2016单类：87张计数图、349张无标签图；后续获授权验证436张训练图的全量准确计数阶段，两阶段共用181张开发图、541个船舶实例及固定单种子。计数方法训练不使用隐藏实例位置；独立真实HBox诊断对照获得授权读取87张L的几何，其权重和标签不回流计数方法。当前数量由既有XML统计，未开展新增人工标注；噪声计数尚未验证。DIOR-R全20类已完成20%数量与匹配无数量训练和独立内部留出评测，未达到该固定配置的实用标准；不得沿用早期“多类尚未验证”代替当前结果，也不把内部划分称为标准官方复现。
@@ -21,6 +23,8 @@
 用户另行授权仅原1168张L真实OBB的独立阳性对照，保持同一ImageNet初态、原生检测器、12轮和完整采样，U不读标注且全部损失零。开发best/final均为34.0682/33.1671点，相对数量参照高27.3581/26.6004点，证明此DIOR训练栈在可靠监督下可学习；港口和机场等仍弱，不能等同全类问题已解决。真实框和诊断模型不得回流计数方法，数量目标仍未达成。
 
 保持L监督与全部训练语义不变、仅撤去U伪框及视觉项的后续消融，best/final完整开发AP均归零；原数量参照仍为6.7101/6.5668。U的低质量伪监督在此组合中仍有共同支持作用，不能因其有噪声就推断删除更好；这不证明准确数量的独立贡献，也不识别伪框和视觉项各自作用。
+
+后续固定SAM2全图实例候选与GeoRSCLIP语义排序在同一2923图20类开发集上取得无数量AP07/面积AP 16.2452/14.3326点，旧前端为4.5718/3.5457点。这是明确的定位先验进步，不能外推成数量学生已经从6.7点提高到16.2点。给定开发真实数量后的互斥选配仍只有8285/16800个正确框，微平均精度49.3155%、召回47.8293%；宏精度28.4505%，弱类别仍明显。数量正确不保证被选实例的位置和身份正确，新定位监督能否改善学生尚待训练验证。
 
 ## 实际采用过的方法
 
@@ -223,6 +227,10 @@
 - 后续做法与归因限制：L只剩262图含482个伪正框、691图含2129个视觉实例；ship伪框4个、harbor为0。候选稀疏支持弱空间监督不足的解释，但这些统计不等于GT覆盖或精度，尚未分离定位缺失、数量梯度与伪标签质量。保留原有U参照，停止固定删U方案及其权重/轮数/种子扫描；若继续仅数量研究，应先提出能提供可靠实例定位信号的具体替换及匹配对照，不能用更强监督诊断模型绕过预算，也不能把该负结果扩成所有U机制或数量范式无效。
 - U干预证据：`ziyu24/cqc_P21@0272c73be4ab98af7e4d4e770a49d7500e48638b`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`src/dior_unlabeled_control.py`、`src/check_dior_unlabeled_control.py`、`configs/dior_unlabeled_control.json`及`doc/dior_count_execution.md`。实际图像、L/U变换、同初态、两个rank及两端点完整原生PR独立核验，完整恢复状态保留；仅单seed与开发集，没有新训练几何、U注释或盲集读取。
 
+- 几何优先前端补证与失败命题修正：冻结SAM2生成完整掩膜，GeoRSCLIP按固定20类提示赋分，全部开发图无数量完整PR的AP07/面积AP为16.2452/14.3326点，旧前端为4.5718/3.5457点；平均每类TP500由16.25增至113.6，宏最高召回由4.6586%增至37.9995%。因此旧前端识别与筛选失败不能扩大成所有公开先验均不能提供有用定位。收益属于更强冻结先验，并未证明数量学生或新机制成功。
+- 数量匹配的可靠性边界：按已知开发数量做互斥类别槽匹配，选出16800框中只有8285个正确，整体精度49.3155%、召回47.8293%，宏精度28.4505%。船舶、网球场改善与港口、火车站、风车的低质量并存。数量容量和一对一分配不能把候选错误变成真实实例，强制满足数量可能保留误框；上述候选精度是独立IoU匹配诊断，不能当作无数量可部署检测AP或训练因果。后续仅替换原计数图定位监督、保留U并配对存在控制，分别检查先验收益、学生收益和数量增量；新训练尚无结果，不登记成失败或成功。
+- 前端补证来源：`ziyu24/cqc_P21@1d1c00cf9db961cdd28623e1174bc690f90c52cb`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`src/dior_instance_proposals.py`、`src/check_dior_instance_proposals.py`、`configs/dior_instance_proposals.json`及`doc/reliable_instance_plan.md`。2923份图像输出散列、固定模型身份与两个实际GPU计算记录已核对，三种选配统计及无数量完整原生PR独立重算一致；没有新训练、训练位置或新盲集读取。
+
 ## 方法族停止索引
 
 
@@ -246,3 +254,5 @@
 - 固定公开先验与随机全类检测头的DIOR适配：当前两臂存在数量数值增益但绝对能力低、召回退步，未达到实用标准。前端识别和筛选缺口已验证，不靠拆提示的小幅子集增益或继续加轮数宣布解决；固定800→1600整图上采样使完整PR进一步退步，不继续该尺度/提示/阈值扫描；固定Swin-B替换虽提高双AP却未达到预定实用条件，其条件训练未进入；停止模型规格扫描，不把该固定配置失败当作数量范式被证伪。真零类别一致性修正已完整训练，只有小幅双AP增量，未解决绝对低分；停止该固定删除修复的局部搜索。共享修正下MSE的正差保留；匹配存在下界对照已完成，准确正数量的宏增量不足实用标准，逐类正负差同时保留，不外推为所有数量作用均无效。
 
 独立真实OBB阳性对照只说明现有DIOR栈具有更强监督下的可学习性，不撤销上述计数配置的失败，后续固定删除U反而使检测归零，停止直接删U修复及其局部扫描；这也不支持继续复杂损失扫描。真实框标签和诊断权重继续隔离于数量方法。
+
+SAM2几何候选与GeoRSCLIP语义排序已获得明确先验正证据，不套用旧DINO前端的停止结论；准确数量匹配仍不能保证全类可靠伪标签。向学生转移该定位信号及数量相对存在控制的增量尚未验证。
