@@ -1,6 +1,6 @@
 # 项目状态总表
 
-更新日期：2026-09-21。维护者：B。本页是项目级状态的统一入口，每个精确仓库名只占一行。
+更新日期：2026-09-23。维护者：B。本页是项目级状态的统一入口，每个精确仓库名只占一行。
 
 ## 当前口径
 
@@ -41,6 +41,11 @@
 | P23（`cqc_P23`） | 少量图像保留每个实例、但Point/HBox可能出错，结合大量无标签图像如何学习OBB检测。 | 正在运行 | 2026-09-19 | 按用户指令登记；[问题来源](https://github.com/ziyu24/cqc_research_lessons/blob/1e30234490f59dce9ecc891067110252aa18c643/lesson/cqc_P23.lessons.md)。 |
 | P24（`cqc_P24`） | 在部分弱监督旋转检测中，区分继续学习、刷新监督与暂时跳过的边际收益，降低达到同等检测质量的总计算成本。 | 正在运行 | 2026-09-24 | 三条既有轨迹已延长至19200：固定教师×半量60.2546%，在线全量57.1690%，新增阶段省约13.25%，为单种子局部正信号；固定全量同终点必要对照已交付。自适应与同质量总成本目标未达成，项目继续。[原问题与核验](https://github.com/ziyu24/cqc_P24/blob/109cf0d2f2d3f8994c5edee5dd8807c1cce082ec/lab/discussion.md)；[结果证据](https://github.com/ziyu24/cqc_P24/blob/109cf0d2f2d3f8994c5edee5dd8807c1cce082ec/lab/result.md)。 |
 | P25（`cqc_P25`） | 尚未明确立题；已读README与讨论页仍为初始化模板，不能编造科学问题。 | 失败 | 2026-09-19 | 按用户指令登记；[问题来源](https://github.com/ziyu24/cqc_P25/blob/0949a2bd42193f82439b551dbac7fa6039eebc70/lab/discussion.md)。 |
+| P26（`cqc_P26`） | 待用户确定科学问题、核心路线和成功标准。 | 已创建 | 2026-09-23 | 按用户要求初始化；尚未下达科研任务，无实验结论。[初始项目说明](https://github.com/ziyu24/cqc_P26/blob/a0d25d02fffd012d445266236b40ead808301afa/README.md)。 |
+| P27（`cqc_P27`） | 待用户确定科学问题、核心路线和成功标准。 | 已创建 | 2026-09-23 | 按用户要求初始化；尚未下达科研任务，无实验结论。[初始项目说明](https://github.com/ziyu24/cqc_P27/blob/7d19a91c41b11e9ab586b0ecd8b36f1d3a19a02b/README.md)。 |
+| P28（`cqc_P28`） | 待用户确定科学问题、核心路线和成功标准。 | 已创建 | 2026-09-23 | 按用户要求初始化；尚未下达科研任务，无实验结论。[初始项目说明](https://github.com/ziyu24/cqc_P28/blob/56009d13f2844ae585120ded97e5a4d550888e8c/README.md)。 |
+| P29（`cqc_P29`） | 待用户确定科学问题、核心路线和成功标准。 | 已创建 | 2026-09-23 | 按用户要求初始化；尚未下达科研任务，无实验结论。[初始项目说明](https://github.com/ziyu24/cqc_P29/blob/585430d995912782db7c90be462152d7b7453893/README.md)。 |
+| P30（`cqc_P30`） | 待用户确定科学问题、核心路线和成功标准。 | 已创建 | 2026-09-23 | 按用户要求初始化；尚未下达科研任务，无实验结论。[初始项目说明](https://github.com/ziyu24/cqc_P30/blob/4afdb95df3ffeeb6302c3bfccf1bf201f777bab7/README.md)。 |
 | bgc_obb（`bgc_obb`） | 弱监督旋转检测中，中心与形状参数块的几何梯度冲突能否预测定位错误，并用于实例重加权。 | 失败 | 2026-09-19 | 按用户指令登记；[问题来源](https://github.com/ziyu24/cqc_research_lessons/blob/1e30234490f59dce9ecc891067110252aa18c643/lesson/bgc_obb.lessons.md)。 |
 | cerq（`cerq`） | 不重训检测器时，真值栅格支持、边界与中心证据能否揭示旋转框质量重排空间。 | 失败 | 2026-09-19 | 按用户指令登记；[问题来源](https://github.com/ziyu24/cqc_research_lessons/blob/1e30234490f59dce9ecc891067110252aa18c643/lesson/cerq.lessons.md)。 |
 | cqc_naood（`cqc_naood`） | 旋转框中心、尺度、角度的真值替换及交互能暴露多少可信的AP提升空间，能否转化为部署可见特征的重排收益。 | 失败 | 2026-09-19 | 按用户指令登记；[问题来源](https://github.com/ziyu24/cqc_research_lessons/blob/1e30234490f59dce9ecc891067110252aa18c643/lesson/cqc_naood.lessons.md)。 |
