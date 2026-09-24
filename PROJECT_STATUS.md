@@ -1,6 +1,6 @@
 # 项目状态总表
 
-更新日期：2026-09-23。维护者：B。本页是项目级状态的统一入口，每个精确仓库名只占一行。
+更新日期：2026-09-24。维护者：B。本页是项目级状态的统一入口，每个精确仓库名只占一行。
 
 ## 当前口径
 
@@ -40,7 +40,7 @@
 | P22（`cqc_P22`） | 少量图像中只有部分实例带Point/HBox且位置或类别可能出错、其余图像无标签时，如何学习OBB检测。 | 正在运行 | 2026-09-19 | 按用户指令登记；[问题来源](https://github.com/ziyu24/cqc_P22/blob/52f950da077023611b84d7ce43c682ed1728417a/README.md)。 |
 | P23（`cqc_P23`） | 少量图像保留每个实例、但Point/HBox可能出错，结合大量无标签图像如何学习OBB检测。 | 正在运行 | 2026-09-19 | 按用户指令登记；[问题来源](https://github.com/ziyu24/cqc_research_lessons/blob/1e30234490f59dce9ecc891067110252aa18c643/lesson/cqc_P23.lessons.md)。 |
 | P24（`cqc_P24`） | 在部分弱监督旋转检测中，区分继续学习、刷新监督与暂时跳过的边际收益，降低达到同等检测质量的总计算成本。 | 正在运行 | 2026-09-24 | 三条既有轨迹已延长至19200：固定教师×半量60.2546%，在线全量57.1690%，新增阶段省约13.25%，为单种子局部正信号；固定全量同终点必要对照已交付。自适应与同质量总成本目标未达成，项目继续。[原问题与核验](https://github.com/ziyu24/cqc_P24/blob/109cf0d2f2d3f8994c5edee5dd8807c1cce082ec/lab/discussion.md)；[结果证据](https://github.com/ziyu24/cqc_P24/blob/109cf0d2f2d3f8994c5edee5dd8807c1cce082ec/lab/result.md)。 |
-| P25（`cqc_P25`） | 尚未明确立题；已读README与讨论页仍为初始化模板，不能编造科学问题。 | 失败 | 2026-09-19 | 按用户指令登记；[问题来源](https://github.com/ziyu24/cqc_P25/blob/0949a2bd42193f82439b551dbac7fa6039eebc70/lab/discussion.md)。 |
+| P25（`cqc_P25`） | 没有完整OBB标注源域，仅有部分HBox或Point图像与完全无标签图像，如何学习对训练不可见目标域泛化的旋转检测器。 | 正在运行 | 2026-09-24 | 用户已明确授权展开研究并继续执行；冻结迁移诊断已核验，目标未达成，新机制未验证。此前为未立题占位，非本问题实验失败。[问题与授权](https://github.com/ziyu24/cqc_P25/blob/30a8eef387808eca66b9d58eceef085bfcc1628e/lab/discussion.md)、[结果](https://github.com/ziyu24/cqc_P25/blob/30a8eef387808eca66b9d58eceef085bfcc1628e/lab/result.md)。 |
 | P26（`cqc_P26`） | 待用户确定科学问题、核心路线和成功标准。 | 已创建 | 2026-09-23 | 按用户要求初始化；尚未下达科研任务，无实验结论。[初始项目说明](https://github.com/ziyu24/cqc_P26/blob/a0d25d02fffd012d445266236b40ead808301afa/README.md)。 |
 | P27（`cqc_P27`） | 待用户确定科学问题、核心路线和成功标准。 | 已创建 | 2026-09-23 | 按用户要求初始化；尚未下达科研任务，无实验结论。[初始项目说明](https://github.com/ziyu24/cqc_P27/blob/7d19a91c41b11e9ab586b0ecd8b36f1d3a19a02b/README.md)。 |
 | P28（`cqc_P28`） | 待用户确定科学问题、核心路线和成功标准。 | 已创建 | 2026-09-23 | 按用户要求初始化；尚未下达科研任务，无实验结论。[初始项目说明](https://github.com/ziyu24/cqc_P28/blob/56009d13f2844ae585120ded97e5a4d550888e8c/README.md)。 |
