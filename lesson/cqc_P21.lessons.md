@@ -4,7 +4,7 @@
 
 先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`、`src/gradient_retention.py`、`src/exact_count.py`、`src/evaluate_exact_count.py`、`src/dior_prior_diagnostic.py`及`src/dior_prior_resolution.py`。来源`ziyu24/cqc_P21@0272c73be4ab98af7e4d4e770a49d7500e48638b`；已抓取全部远端分支，仅main，无更新更晚次线。
 
-最新定位监督配对复核来源为`ziyu24/cqc_P21@b39c566717052672fe2e557c4c91d5032f001f36`；主要实现为`src/dior_instance_proposals.py`及`src/dior_instance_student.py`，补证及边界见第十六条。来源全部远端分支已抓取，仅main；只改变在线目标的进一步消融尚未执行，不作性能裁决。
+最新在线数量组成复核来源为`ziyu24/cqc_P21@37db8fe2c90058b35ce19c4c4807ac9cef0754f9`；主要实现为`src/dior_instance_proposals.py`、`src/dior_instance_student.py`及`src/dior_instance_factor.py`，补证及边界见第十六条。来源全部远端分支已抓取，仅main；固定准确空间标签下的在线精确约束为负，空间选配仍有条件正结果。未运行的等密度预算错配对照不作性能裁决。
 
 ## 项目研究什么
 
@@ -24,7 +24,7 @@
 
 保持L监督与全部训练语义不变、仅撤去U伪框及视觉项的后续消融，best/final完整开发AP均归零；原数量参照仍为6.7101/6.5668。U的低质量伪监督在此组合中仍有共同支持作用，不能因其有噪声就推断删除更好；这不证明准确数量的独立贡献，也不识别伪框和视觉项各自作用。
 
-后续固定SAM2全图实例候选与GeoRSCLIP语义排序在同一2923图20类开发集上取得无数量AP07/面积AP 16.2452/14.3326点，旧前端为4.5718/3.5457点。这是明确的定位先验进步。给定开发真实数量后的互斥选配仍只有8285/16800个正确框，微平均精度49.3155%、召回47.8293%；宏精度28.4505%，弱类别仍明显，数量正确不保证被选实例的位置和身份正确。随后仅替换L空间监督、保留U的完整配对训练使数量学生达到12.9281/12.2320点，相对旧数量学生提高6.2180/5.6652点，相对同前端存在控制提高3.2158/3.2809点；这是已验证的数量信息配对正信号。但学生仍比冻结前端低3.3171/2.1006点，比同20%图像真实旋转框监督低21.1401/20.9351点。先验改善、学生改善和完整方法目标必须分别判断，在线MSE与空间选配贡献仍未分离。
+后续固定SAM2全图实例候选与GeoRSCLIP语义排序在同一2923图20类开发集上取得无数量AP07/面积AP 16.2452/14.3326点，旧前端为4.5718/3.5457点。这是明确的定位先验进步。给定开发真实数量后的互斥选配仍只有8285/16800个正确框，微平均精度49.3155%、召回47.8293%；宏精度28.4505%，弱类别仍明显，数量正确不保证被选实例的位置和身份正确。随后仅替换L空间监督、保留U的完整配对训练使数量学生达到12.9281/12.2320点，相对旧数量学生提高6.2180/5.6652点，相对同前端存在控制提高3.2158/3.2809点；这是已验证的数量信息配对正信号。但学生仍比冻结前端低3.3171/2.1006点，比同20%图像真实旋转框监督低21.1401/20.9351点。随后固定准确选配空间标签、仅放宽在线正数量为存在下界，学生达到15.9080/15.1815点：在线精确MSE的条件增量为-2.9799/-2.9495点，准确空间选配相对存在松弛的条件增量为+6.1957/+6.2304点。新学生相对冻结前端主AP低0.3371点、面积AP高0.8489点，但TP500与宏召回仍低，未完整保留其能力；与20%真OBB差18.1602/17.9856点。三格分解不能估计完整交互，5692对95212个空间目标仍混有总伪标签密度的作用，不能宣称正数量独有贡献已识别。先验改善、学生改善和完整方法目标必须分别判断。
 
 ## 实际采用过的方法
 
@@ -232,8 +232,12 @@
 - 前端补证来源：`ziyu24/cqc_P21@1d1c00cf9db961cdd28623e1174bc690f90c52cb`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`src/dior_instance_proposals.py`、`src/check_dior_instance_proposals.py`、`configs/dior_instance_proposals.json`及`doc/reliable_instance_plan.md`。2923份图像输出散列、固定模型身份与两个实际GPU计算记录已核对，三种选配统计及无数量完整原生PR独立重算一致；没有新训练、训练位置或新盲集读取。
 
 - 定位监督转移的正结果与失败边界：原1168张数量图的准确选配产生5692个空间/视觉实例，存在松弛产生95212个；U4676原监督逐项不变，同初始化、原生12轮和单seed。数量学生12.9281/12.2320双AP点优于旧数量6.7101/6.5668及新存在控制9.7123/8.9511，两个比较的TP500与宏最高召回也为正。该正结果修正了“更好候选尚未转成学生收益”的旧未知状态；不能把当前L替换整体登记为失败。更强的“转换后保住冻结前端能力”主张仍失败：相对冻结前端双AP低3.3171/2.1006点、每类TP500少20.75、宏最高召回低4.5803点。
-- 后续做法与因果限制：数量与存在同时改变空间标签、未知区及在线目标，因此3.2158/3.2809点不能指定为MSE独立效果，候选数量差也不证明唯一成因。固定准确数量空间标签，只替换在线正数量约束是可检验的必要组成对照；新臂仍含数量选配信息，不得冒充纯存在控制。三条件比较路径不等于完整四格交互，单seed重复开发集也不是泛化或统计显著性；不能因两臂末轮最好而自动延长或继续扫描。
-- 配对转移证据：`ziyu24/cqc_P21@b39c566717052672fe2e557c4c91d5032f001f36`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`src/dior_instance_student.py`、`src/check_dior_instance_student.py`、`configs/dior_instance_student.json`及`doc/reliable_instance_plan.md`。完整L缓存、全部实际图像及监督身份、U不变、两个实际rank、四端点原生完整PR和完整恢复状态独立核验一致；两臂best均为第12轮，没有训练位置、U注释或新盲集读取。新增单在线目标对照尚无性能结果。
+- 后续做法与因果限制：数量与存在同时改变空间标签、未知区及在线目标，因此3.2158/3.2809点不能指定为MSE独立效果，候选数量差也不证明唯一成因。固定准确数量空间标签、只替换在线正数量约束的必要组成对照现已完成，结果见下；该臂仍含数量选配信息，不得冒充纯存在控制。三条件比较路径不等于完整四格交互，单seed重复开发集也不是泛化或统计显著性；不能因两臂末轮最好而自动延长或继续扫描。
+- 配对转移证据：`ziyu24/cqc_P21@b39c566717052672fe2e557c4c91d5032f001f36`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`src/dior_instance_student.py`、`src/check_dior_instance_student.py`、`configs/dior_instance_student.json`及`doc/reliable_instance_plan.md`。完整L缓存、全部实际图像及监督身份、U不变、两个实际rank、四端点原生完整PR和完整恢复状态独立核验一致；两臂best均为第12轮，没有训练位置、U注释或新盲集读取。新增单在线目标对照现已完成，补证如下。
+
+- 固定空间标签下在线精确约束的反证：同一准确选框、视觉实例、未知区、U监督、初态和12轮日程，只把正类概率和目标从精确数量改为至少一，零类仍为零。完整开发best/final均为15.9080/15.1815双AP、106.70平均TP500、35.1923%宏召回，比精确在线提高2.9799/2.9495双AP点及13.85个平均TP500。因此在此固定空间标签、权重与日程下，在线精确正数量MSE作为额外组件为负；停止其局部搜索，不外推否定HRSC已有数量正结果或全部MSE。
+- 正信号与后续解释边界：固定在线存在目标时，准确空间选配相对存在选配增加6.1957/6.2304双AP点，但L实例总数5692对95212，尚不能分开正确图像数量与伪标签总密度。新学生相对冻结前端AP07/面积AP为-0.3371/+0.8489点、TP500少6.90、宏召回少2.8072点，改善不等于完整保留前端能力。应先做保持预算总量/类别分布/存在信息的对应关系控制；该控制尚未训练，不能算成功或失败。错误预算可能主动伤害，一份固定置换不是统计检验，也不能排除所有稀疏化解释。三格有条件比较路径不等于完整交互，单seed重复开发仍不支持独立泛化。
+- 在线约束补证：`ziyu24/cqc_P21@37db8fe2c90058b35ce19c4c4807ac9cef0754f9`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`src/dior_instance_factor.py`、`src/check_dior_instance_factor.py`、`configs/dior_instance_factor.json`及`doc/reliable_instance_plan.md`。实际输入、共同初态、两个实际计算rank、两端点完整原生PR及有向比较独立重算一致，两份完整恢复模型均为第12轮；没有训练位置、U注释或新盲集读取。
 
 ## 方法族停止索引
 
@@ -259,4 +263,4 @@
 
 独立真实OBB阳性对照只说明现有DIOR栈具有更强监督下的可学习性，不撤销上述计数配置的失败，后续固定删除U反而使检测归零，停止直接删U修复及其局部扫描；这也不支持继续复杂损失扫描。真实框标签和诊断权重继续隔离于数量方法。
 
-SAM2几何候选与GeoRSCLIP语义排序已获得明确先验正证据，向L空间监督转移也已改善数量学生并超过固定存在控制；不套用旧DINO前端的停止结论。学生仍弱于直接冻结前端、数量匹配仍不能保证全类可靠伪标签；停止将这项局部配对收益认定为完整方法目标达成。空间选配与在线数量约束的独立条件作用尚未验证。
+SAM2几何候选与GeoRSCLIP语义排序已获得明确先验正证据，向L空间监督转移也已改善数量学生并超过固定存在控制；不套用旧DINO前端的停止结论。新学生已接近冻结前端主AP且面积AP略高，但TP与召回仍低、全类可靠伪标签仍未建立；停止将局部配对收益认定为完整目标达成。固定准确空间标签下，在线精确正数量MSE已证实为负条件增量，停止该组件局部搜索；准确空间选配的整体条件收益保留，但正确逐图数量与总伪标签密度尚未分离。
