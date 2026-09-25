@@ -153,8 +153,8 @@ HRSC实际方法为ResNet-50截到layer3、单尺度卷积检测头、水平框�
 - 失败命题：在同一新增跨尺度候选上，将重编码 bbox 监督和 centerness 监督分别保留，就能找到一个同时改善整体 AP 与短边目标正确类召回的单项机制，并据此解释联合损失的收益/损害来源。
 - 失败原因：固定 DOTA-v1.5 部分 HBox 监督、共同完整恢复源、单 seed 及3800更新下，仅 bbox 的端点为49.901450% AP50/23.733028%短边召回，仅 centerness为48.930898%/23.807629%；两者均未同时超过全部既有端点。四组合有限差值还出现 bbox 的 AP 在无中心度时为正、在有中心度时为负，而中心度两条件 AP 均为负、短边召回均为正。随后将这两个冻结终点的分类、完整几何和中心度逐项互换：保留联合终点类别/几何而改用bbox终点中心度，AP为49.023181%、短边召回为25.055951%，仍低于bbox终点AP 0.878268个百分点且低于联合终点短边召回0.039787个百分点。预设联合条件未成立，说明这一固定输出反事实也不能把权衡归结为“只换中心度即可修复”。
 - 后续做法：位置伪标签的分项消融或冻结输出诊断都应预先固定比较、共同输入/原生解码及完整 AP 与短边召回联合判据；纯端点必须逐元素复现，另保存逐对象配对增损。只有新的独立比较才可检验其它供体、权重、预算或数据条件，不能用单项趋势继续调参或延训。
-- 边界：这是固定候选映射、原生 PWOOD、重复开发VAL、单条在线轨迹及两个冻结输出终点上的经验负结果；输出互换不识别训练因果，也不否定一般 bbox/centerness监督、排序机制、多尺度学习或其它位置伪标签。有限差值不是显著性、跨seed稳定性或因果归因。
-- 证据：`ziyu24/cqc_P18@fe0ca49d3b97a397febb49dafb32e0c5e407dedb`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r040.recovery.json`、`configs/r041.recovery.json`、`configs/r042.recovery.json`、`src/run_r040.py`、`src/run_r041.py`、`src/run_r042.py`、`src/verify_factorial_summary.py`、`src/verify_r041_outputs.py`、`src/verify_branch_graft.py`、`src/verify_r042_summary.py`、`runs/r041/artifacts/output_diagnostic/summary.json`、`runs/r042/artifacts/branch_graft/summary.json`。来源全部远端分支已抓取并核对，仅main。
+- 边界：这是固定候选映射、原生 PWOOD、重复开发VAL、单条在线轨迹及两个冻结输出终点上的经验负结果；输出互换不识别训练因果，也不否定一般 bbox/centerness监督、排序机制、多尺度学习或其它位置伪标签。后续对固定分支移植的1000次原图簇配对重采样中，整体AP差与短边召回差的95%区间均跨零，故该一次数值联合信号也不能升级为对原图抽样稳健的收益；这不追溯推翻原预设数值端点。有限差值、重采样正差比例都不是显著性、跨seed稳定性或因果归因。
+- 证据：`ziyu24/cqc_P18@fc041e2918bc303939ed643127d1487758394a73`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r040.recovery.json`、`configs/r041.recovery.json`、`configs/r042.recovery.json`、`configs/r043.recovery.json`、`src/run_r040.py`、`src/run_r041.py`、`src/run_r042.py`、`src/run_r043.py`、`src/verify_factorial_summary.py`、`src/verify_r041_outputs.py`、`src/verify_branch_graft.py`、`src/verify_r042_summary.py`、`src/verify_r043.py`、`runs/r041/artifacts/output_diagnostic/summary.json`、`runs/r042/artifacts/branch_graft/summary.json`、`runs/r043/artifacts/image_bootstrap/summary.json`。来源全部远端分支已抓取并核对，仅main。
 
 ## 方法族停止索引
 
