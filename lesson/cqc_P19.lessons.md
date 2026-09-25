@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-来源主线为 `ziyu24/cqc_P19@a2edb8b456eeb1525fa652cae50eb9cf9e294af3`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`和`runs/r013/artifacts/paired_summary.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
+来源主线为 `ziyu24/cqc_P19@0a5b45b762aac7d3aadb3227bd94a38abd1d3225`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`和`runs/r013/artifacts/paired_summary.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
 
 ## 项目研究什么
 
@@ -10,7 +10,7 @@
 
 ## 领域位置与当前结论
 
-PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督未知发现和稀疏known恢复已有相关方法，组合任务关键词不能单独证明创新。现有证据建立了合法known基线及多条局部负结果，尚未建立有效的完整开放世界方法。关于弱几何额外造成语义混淆的当前监督包解释未获得预设支持；这不等于整个科学目标不可能。仅以known正位置训练的独立对象性及高置信负例降权也未形成有效未知发现；其共同匹配子集存在语义改善，不能扩大为全总体成功。冻结CutLER已有真实局部覆盖增益，但简单known过滤仍未建立有效低误报发现；11点AP的零召回格敏感性限制单一AP倍数解释。同源CutLER伪框作为外部对象正支持能带来局部低误报提升，却未过预注册投入门槛；额外伪OBB回归在单种子上不呈稳定全指标收益。固定2×输入提高中大目标与IoU .5低误报发现，但small仍为零且整体门槛未过。完整可训练SAM适配显著提高固定低误报召回与small，但只提高六类中的两类TP，未通过预先固定的类别联合条件；不能把总体增益扩大为可继续投入的路线支持。
+PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督未知发现和稀疏known恢复已有相关方法，组合任务关键词不能单独证明创新。现有证据建立了合法known基线及多条局部负结果，尚未建立有效的完整开放世界方法。关于弱几何额外造成语义混淆的当前监督包解释未获得预设支持；这不等于整个科学目标不可能。仅以known正位置训练的独立对象性及高置信负例降权也未形成有效未知发现；其共同匹配子集存在语义改善，不能扩大为全总体成功。冻结CutLER已有真实局部覆盖增益，但简单known过滤仍未建立有效低误报发现；11点AP的零召回格敏感性限制单一AP倍数解释。同源CutLER伪框作为外部对象正支持能带来局部低误报提升，却未过预注册投入门槛；额外伪OBB回归在单种子上不呈稳定全指标收益。固定2×输入提高中大目标与IoU .5低误报发现，但small仍为零且整体门槛未过。完整可训练SAM适配明显提高固定低误报召回与small，但只提高六类中的两类TP，未通过预先固定的类别联合条件；不能把总体增益扩大为可继续投入的路线支持。
 
 ## 实际采用过的方法
 
@@ -118,11 +118,11 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 
 ## 教训十一：总体低误报增益与类别广度应作为联合投入条件
 
-- 失败命题：在完整训练中，只要未知召回和small目标显著提高、known保持，就足以支持继续扩展一个复合SAM伪框适配方案。
-- 失败原因：相同初态、120000步和单种子两卡比较中，联合SAM适配把10 FP/图unknown召回从216/2876（7.5104%）增至342/2876（11.8915%），small TP从100增至173；联合/原生known mAP仅降0.5057/0.0646个百分点。但六个unknown类中仅storage-tank与soccer-ball-field的TP提高，未达到预先固定的至少三类条件。总体收益因而不能掩盖类别集中，也不能支持把联合包写成已验证路线。
-- 后续做法：复合伪标签适配应固定共同起点、训练预算、输出预算和完整GT评价，同时报告低误报召回、known保持、small和逐类TP；联合条件任一未过即停止该固定设置，不以阈值、训练长度或追加种子追逐通过。
+- 失败命题：在完整训练中，只要未知召回和small目标明显提高、known保持，就足以支持继续扩展一个复合SAM伪框适配方案。
+- 失败原因：相同初态、120000步和单种子两卡比较中，联合SAM适配把10 FP/图unknown召回从216/2876（7.5104%）增至342/2876（11.8915%），small TP从100增至173；联合/原生known mAP仅降0.5057/0.0646个百分点。但六个unknown类中仅storage-tank与soccer-ball-field的TP提高，未达到预先固定的至少三类条件。完整保存匹配回算进一步显示，净增126个由储罐增加136个和其余五类减少10个组成；342个TP中96.20%为储罐。原生known约61.3%，而统一输出约44%，约17个百分点差异涉及候选、预算、单标签及分数共同变化；不能把相对plain降幅小扩大为保住原生部署能力。总体收益因而不能掩盖类别集中，也不能支持把联合包写成已验证路线。
+- 后续做法：复合伪标签适配应固定共同起点、训练预算、输出预算和完整GT评价，同时报告低误报召回、known保持、small和逐类TP；联合条件任一未过即停止该固定设置，不以阈值、训练长度或追加种子追逐通过。同时区分原生辅助输出与统一部署输出，报告同预算性能及类外收益；原生与联合差值未经单因素对照不能全归因于预算。
 - 边界：三项机制作为联合包执行，结果不能归因给动态去重、对象性分工或置信度加权中的任一项。noise臂从32000步恢复，不能把本次单种子结果写成全程逐位等价或跨种子稳定性；结论不否定其他先验、不同机制或项目的完整弱标签增量目标。
-- 证据：`ziyu24/cqc_P19@a2edb8b456eeb1525fa652cae50eb9cf9e294af3`；`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r013/artifacts/paired_summary.json`。
+- 证据：`ziyu24/cqc_P19@0a5b45b762aac7d3aadb3227bd94a38abd1d3225`；`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r013/artifacts/paired_summary.json`。
 
 ## 方法族停止索引
 
