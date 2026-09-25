@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源`lab/discussion.md`确认目标和授权的方法替代，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，视图诊断见`src/p20_view_probe.py`与`src/evaluate_view_probe.py`。最新来源主线`8933c9e59185ea310c6b3a101b48215aba1893b6`，已抓取全部远端分支，仅main。
+先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`。最新来源主线`fb1c47b4eb26622a6f7d6a78e51097a7a71e5f08`，已抓取全部远端分支，仅main。
 
 ## 项目研究什么
 
@@ -10,15 +10,17 @@
 
 ## 领域位置与当前结论
 
-已测试的是授权的PWOOD-inspired HBox初始阶段，原生SPWOOD尚未复现。单种子下两个固定未知评分臂绝对性能很低；完整Point/HBox及弱标注增量范式尚未完成，也未被该具体负结果否定。
+累计证据包括历史PWOOD-inspired HBox对照和本项目稀疏协议下的SPWOOD HBox基线；二者不能混称。SPWOOD在修复师生额外几何视图对应后从共同初始化训练至固定终点，但类别、稀疏抽样与日程不等同作者完整协议，不能称论文完整复现。单种子开放世界绝对性能仍很低；完整Point/HBox及弱标注增量范式尚未完成，也未被具体负结果否定。
 
 后续开发集配对诊断确认known排序能力存在，固定0.5拒识造成巨大损失。已付费HBox正例校准可部分恢复known，但未满足预定联合条件，unknown绝对精度仍很低；不能继续沿用“局部条件成立”的旧摘要。
 
-固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。新的冻结特征前景学习对照尚未产生性能结果，不能写成成功或失败。
+固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。历史PWOOD冻结特征前景学习的歧义忽略臂提高unknown AP，却未同时优于全背景对照的precision，不能称完整联合成功。新SPWOOD密集候选阶段定位尚无结果，不登记为方法证据。
 
 ## 实际采用过的方法
 
 DOTA-v1.0原图固定划分，训练图中20%进入L、L内各known类保留20%非difficult HBox；其余U不提供实例标签。使用PWOOD H2RBox-v2及半监督教师，9个known类、固定单种子和76,800步。预测先按centerness筛选共享候选，再以max-known的固定0.5阈值分known/unknown；比较未知分数centerness与centerness乘(1−max-known)。同权重和几何，原图级固定输出预算；评价采用连续面积旋转AP。
+
+后续同项目协议采用SPWOOD MCLTeacherOneBr/SemiMix1、R50-FPN、真实两rank与固定seed42，保持原生优化器、EMA和全局2L+2U；修复额外几何视图对应后重新训练76,800步。使用两种候选池及训练内付费正例95%保留阈值，冻结终点后进行141张开发图的完整固定读出，不用开发标签选阈值。
 
 ## 教训一：角度规范名称相近，不保证GT矩形拟合算法等价
 
@@ -44,6 +46,8 @@ DOTA-v1.0原图固定划分，训练图中20%进入L、L内各known类保留20%�
 - 边界：这是固定teacher、单种子、训练内已付费HBox正例校准与已用于探索的开发集经验结果。保留known部分恢复的正证据；尚不能识别类间尺度、训练内乐观偏差和HBox匹配的独立贡献，也未否定其他前景学习或弱标注增量。所述候选覆盖只约束固定池，不是所有dense位置的理论上限。
 - 证据：`ziyu24/cqc_P20@d72627321bf004780308de654562041abbdf9fe5`；`lab/result.md`、`lab/failed_methods.md`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`；原联合判据见`ziyu24/cqc_P20@7e8578b08fbb2febaf26b1db5dfe91c4fbd8e971`的`lab/sug.md`。
 
+修复后的SPWOOD基线补证：同池关闭拒识与付费校准的known mAP分别为14.8685%→10.6706%、33.6190%→28.4244%，损失4.1980/5.1946个百分点，仍超过原2点限制；unknown AP仅0.005763%/0.017050%。原始两池rIoU=.5未知覆盖仅43/466和81/466，仍不是全密集位置上限。该证据支持在另一基线身份下限制同一全局阈值命题，不授权否定SPWOOD本体。来源：`ziyu24/cqc_P20@fb1c47b4eb26622a6f7d6a78e51097a7a71e5f08`；`lab/result.md`、`lab/failed_methods.md`、`src/run_spwood_baseline.py`。
+
 ## 教训四：几何区分信号和有效错位对照不保证检测收益
 
 - 失败命题：真实跨视图对应优于错位对应、目标与低重叠候选的几何支持AUC大于随机，即可将几何支持直接作为unknown评分乘子并获得检测收益。
@@ -52,9 +56,18 @@ DOTA-v1.0原图固定划分，训练图中20%进入L、L内各known类保留20%�
 - 边界：本次低重叠候选占基线unknown误检77,551/81,416，但低重叠仅指与数据集标注rIoU<0.1，不能视为所有候选的真实背景标签。结果约束固定单seed、已探索开发集和直接评分策略；保留真实对应优于错位、known部分恢复的正证据，不否定几何学习或完整开放世界范式。
 - 证据：`ziyu24/cqc_P20@8933c9e59185ea310c6b3a101b48215aba1893b6`；`lab/result.md`、`lab/failed_methods.md`、`src/p20_view_probe.py`、`src/evaluate_view_probe.py`、`configs/view_probe.json`。
 
+## 教训五：共享输入不保证教师学生密集一致性的空间对应
+
+- 失败命题：教师和学生拿到同一无标签图像，便可直接按相同密集索引比较其预测，无需检查网络内部额外增强。
+- 失败原因：固定SPWOOD源码在两次forward内部独立采样旋转、翻转或缩放，并将原图与额外视图共同送入损失；原图索引对应，额外视图索引却不一定表示同一位置。执行作者detector/head/loss原生控制流的反例中，4对原图对应、4对额外视图不对应。正常训练和非零损失均不能验证这种监督语义。
+- 后续做法：检查进入损失的真实张量及坐标对应，而不止检查输入图或配置。项目内配对额外视图随机状态后，同样8对原生损失输入全部对应；保持其他训练语义，从共同初始化重新取得合法基线，受影响旧轨迹仅用于追溯。
+- 边界：该反例否定特定调用路径的自动对应假设，不证明作者论文结果无效，也没有独立测量它对实际AP的净效应。修复后的低开放世界分数只限制已测试读出；不能据此否定全部半监督、Point或类增量机制。
+- 证据：`ziyu24/cqc_P20@fb1c47b4eb26622a6f7d6a78e51097a7a71e5f08`；`src/check_spwood_semantics.py`、`src/check_p20_shared_geometry.py`、`src/p20_spwood_runtime.py`、`lab/result.md`、`doc/spwood_sources.md`。
+
 ## 方法族停止索引
 
 - 不再将不同GT拟合函数的替换称作纯角度规范修正；使用原拟合与正面积保留规则。
 - 当前固定候选/拒识组合没有提供可用检测性能。未停止整个Open-SPWOOD研究；尚未评估的Point、增量与后续组合不能登记为失败。
 - 全局训练内正例阈值未达到预定known保持条件；不再将其部分恢复宣称为联合成功，不以当前低精度unknown预测直接支持自训练。
 - 固定跨视图几何乘子及其known恢复组合未满足局部或联合条件；不再用几何AUC或优于错位替代检测收益，未训练的前景策略不登记为失败。
+- 不再以共享原始输入推定内部增强后的密集对应；受影响旧训练结果不作为正确基线，新修复结果仍须独立评价科学目标。
