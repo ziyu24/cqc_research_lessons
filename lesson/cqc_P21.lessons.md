@@ -4,7 +4,7 @@
 
 先读来源仓库`README.md`与`lab/discussion.md`了解监督边界，再读`lab/result.md`的候选归因与实际检测结果；实现重点为`src/count_data.py`、`src/roi_model.py`、`src/roi_selection.py`、`src/count_odr_model.py`、`src/evaluate_cutler.py`、`src/audit_count_likelihood_result.py`、`src/prepare_count_points.py`、`src/point_backend.py`、`src/grounded_background.py`、`src/reliable_count.py`、`src/count_weight_student.py`、`src/audit_count_weight_result.py`、`src/instance_set.py`、`src/instance_set_student.py`、`src/instance_set_followup.py`、`src/count_objectives.py`、`src/evaluate_count_objectives.py`、`src/diagnose_count_retention.py`、`src/instance_identity.py`、`src/evaluate_instance_identity.py`、`src/geometry_control.py`、`src/frozen_heldout.py`、`src/gradient_retention.py`、`src/exact_count.py`、`src/evaluate_exact_count.py`、`src/dior_prior_diagnostic.py`及`src/dior_prior_resolution.py`。来源`ziyu24/cqc_P21@0272c73be4ab98af7e4d4e770a49d7500e48638b`；已抓取全部远端分支，仅main，无更新更晚次线。
 
-最新完整流程存在控制复核来源为`ziyu24/cqc_P21@e2e72207678cc21f3a51d7f7027848e9eee8c51b`；实现为`src/dior_teacher_presence.py`、`src/dior_teacher_update.py`和`src/dior_teacher_runtime.py`，只读重放入口为`src/audit_dior_teacher_result.py`。补证及边界见第十六条。来源全部远端分支已抓取，仅main；数量选配的EMA完整流程相对二值存在EMA有明确实用增量，但空间目标密度不同，准确图像数量对应仍未独立识别。在线U替换超过固定U、共同源与冻结前端的正结果，以及此前固定U下等密度对应未达标准的负结果均保留。
+最新同密度EMA对应控制复核来源为`ziyu24/cqc_P21@20816bc5dec350c4d22207b121d49c78988a3b8c`；实现为`src/dior_teacher_budget.py`、`src/dior_teacher_update.py`和`src/dior_teacher_runtime.py`，只读重放入口为`src/audit_dior_teacher_result.py`。补证及边界见第十六条。来源全部远端分支已抓取，仅main；准确EMA相对冻结部分错配只高0.9542/1.4257双AP点，未达预设实用对应标准。数量选配对存在EMA的大优势与在线U替换正结果仍保留，但不能全部归因准确逐图对应，也不证明稀疏化为唯一原因或两者等价。
 
 ## 项目研究什么
 
@@ -28,7 +28,7 @@
 
 ## 实际采用过的方法
 
-最新在线教师配对在同一2923图20类开发集上取得best AP07/面积AP为26.5049/26.2194点，超过同阶段固定U的20.8954/19.7627点、共同源的15.9080/15.1815点及冻结前端的16.2452/14.3326点；平均每类TP500与宏最高召回也通过原条件。final为26.3992/26.1248点，未出现末轮坍塌。两臂从同一数量选框学生的完整状态开始，保留L监督与视觉项，共同使用相同增强和L/U归一化；主臂以EMA教师的密集分类、框回归与软中心度监督替换固定U监督，各新增12轮，单seed42。该结果证明此具体U监督替换有实际价值，不能把源模型到新结果的全部增量归因于EMA或准确数量，也不是跨种子、独立泛化或创新性证据；存在信息控制现已补齐，完整流程双AP优势为13.4753/13.7686点，但准确对应与密度作用尚未分离；外部框/文本/掩膜监督仍须披露。
+最新在线教师配对在同一2923图20类开发集上取得best AP07/面积AP为26.5049/26.2194点，超过同阶段固定U的20.8954/19.7627点、共同源的15.9080/15.1815点及冻结前端的16.2452/14.3326点；平均每类TP500与宏最高召回也通过原条件。final为26.3992/26.1248点，未出现末轮坍塌。两臂从同一数量选框学生的完整状态开始，保留L监督与视觉项，共同使用相同增强和L/U归一化；主臂以EMA教师的密集分类、框回归与软中心度监督替换固定U监督，各新增12轮，单seed42。该结果证明此具体U监督替换有实际价值，不能把源模型到新结果的全部增量归因于EMA或准确数量，也不是跨种子、独立泛化或创新性证据；存在信息控制现已补齐，完整流程双AP优势为13.4753/13.7686点，但后续固定等密度部分错配下，准确对应的双AP增量未达实用标准，不能把完整优势等同对应机制；外部框/文本/掩膜监督仍须披露。
 
 全20类DIOR适配从ImageNet骨干和随机全类头开始，以共同DINO/SAM先验训练数量/无数量两臂；12轮合法开发best在预冻结内部留出上比较。随后固定开发全集进行原始900查询、类别聚合、SAM、mask NMS和阈值的分阶段评价，并在预定64图对照四种提示读出，均不回流训练；完整证据支持前端已有识别与筛选缺口，不支持把它单独归因于数量目标。
 
@@ -255,8 +255,12 @@
 - 在线补证来源：`ziyu24/cqc_P21@6acc4b93f34c28a626be9b2e06fe671860e2053e`；`lab/result.md`、`lab/discussion.md`、`configs/dior_teacher_update.json`、`src/dior_teacher_update.py`、`src/dior_teacher_runtime.py`及`src/audit_dior_teacher_result.py`。四端点完整原生PR、十二次验证选优、真实双rank、共同完整初始化、EMA更新和恢复状态均独立核验；未新增标注、预训练或盲集访问。
 
 - 完整流程存在控制补证：仅用原L的0/1存在标签与对应存在选框，从其原12轮模型完整初始化，再接相同12轮EMA；控制始终未从准确数量模型继承状态。存在EMA的best/final均为13.0296/12.4508双AP点、89.00平均每类TP500、31.9128%宏最高召回；准确数量EMA best为26.5049/26.2194、146.70、41.1129%。准确减存在为13.4753/13.7686双AP点、57.70平均TP500及9.2000召回点，通过原实用条件。两完整流程同原始初始化与12+12轮预算，证明该固定数量选配完整流程相对这份存在流程有实际优势。
-- 归因边界与后续做法：此差值是新增对照下的比较，数量模型本身未又提高13点。L空间/视觉目标5692对95212，初段学成状态也不同，故大差值不能单独识别准确数量对应或唯一稀疏化原因；控制不代表所有存在监督方法。早先固定U等密度错配的小差异继续有效，不能用新存在控制将其覆盖。应在同一EMA阶段保持原固定错配和密度，补齐必要对应控制；不重新置换、扫参数或加种子追门槛。单seed、复用开发集和公开框/文本/掩膜先验仍限制独立泛化与创新性主张。
-- 存在流程补证来源：`ziyu24/cqc_P21@e2e72207678cc21f3a51d7f7027848e9eee8c51b`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`configs/dior_teacher_presence.json`、`src/dior_teacher_presence.py`、`src/check_dior_teacher_presence.py`及`src/audit_dior_teacher_result.py`。原始输入、372项纯存在源初始化、两rank计算、12次原生选优、两端点完整PR和EMA恢复均独立重放一致；没有新训练几何、U数量或盲集读取。新等密度EMA控制尚无结果。
+- 归因边界与后续做法：此差值是新增对照下的比较，数量模型本身未又提高13点。L空间/视觉目标5692对95212，初段学成状态也不同，故大差值不能单独识别准确数量对应或唯一稀疏化原因；控制不代表所有存在监督方法。早先固定U等密度错配的小差异继续有效，不能用新存在控制将其覆盖。保持原固定错配和密度的同EMA对应控制现已完成，实用对应主张未通过，详见下方；不重新置换、扫参数或加种子追门槛。单seed、复用开发集和公开框/文本/掩膜先验仍限制独立泛化与创新性主张。
+- 存在流程补证来源：`ziyu24/cqc_P21@e2e72207678cc21f3a51d7f7027848e9eee8c51b`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`configs/dior_teacher_presence.json`、`src/dior_teacher_presence.py`、`src/check_dior_teacher_presence.py`及`src/audit_dior_teacher_result.py`。原始输入、372项纯存在源初始化、两rank计算、12次原生选优、两端点完整PR和EMA恢复均独立重放一致；没有新训练几何、U数量或盲集读取。同密度EMA控制的后续反证如下。
+
+- 同密度在线流程的对应反证：沿用原那一份部分错配及其完整初段模型，保留5692个L空间/视觉目标、每类总量、数量向量多重集、真实类别存在和U，仅接入与准确流程相同的12轮EMA阶段。错配best为25.5507/24.7937双AP点、141.50平均每类TP500和40.1252%宏召回；准确减错配只有0.9542/1.4257双AP点、5.20个TP和0.9877个召回点，双AP未达到预设各2点。final方向相同但亦不足实用幅度，训练、原生选优与完整PR均正常，因此不能用工程完成或正方向微差宣称该对应主张成功。
+- 失败原因、后续做法与边界：错配EMA对存在EMA仍高12.5211/12.3429双AP点，说明此前约13点的完整流程差大部分在此固定部分错配下仍保留；大存在对照差不能替代准确对应的必要证据。停止该控制族的置换、种子、阈值、EMA或轮数搜索，保留26.5049/26.2194的实际检测能力及教师替换正结果。此控制只改变806/1168图且仍用数量分布/类别存在，不是无数量部署基线，不证明等价、显著性或稀疏化的唯一因果，更不否定HRSC既有数量正结果及一般数量命题。复用开发集与单seed的限制不因控制完成而消失。
+- 对应补证来源：`ziyu24/cqc_P21@20816bc5dec350c4d22207b121d49c78988a3b8c`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`configs/dior_teacher_budget.json`、`src/dior_teacher_budget.py`、`src/check_dior_teacher_budget.py`及`src/audit_dior_teacher_result.py`。固定输入、完整初态、两个实际计算rank、十二次验证选优、两端点完整PR及EMA/续训状态独立重放一致；没有新置换、训练真位置、U数量或新盲集访问。另行交付的既有模型复用内部留出评测尚无结果，不作性能或泛化结论。
 
 ## 方法族停止索引
 
@@ -284,4 +288,4 @@
 
 SAM2几何候选与GeoRSCLIP语义排序已获得明确先验正证据，向L空间监督转移也已改善数量学生并超过固定存在控制；不套用旧DINO前端的停止结论。固定U阶段学生曾接近冻结前端主AP且面积AP略高，但TP与召回仍低、全类可靠伪标签未建立；该阶段的局部配对收益不能认定为完整目标达成，后续EMA补证另列。固定准确空间标签下，在线精确正数量MSE已证实为负条件增量，停止该组件局部搜索；准确空间选配的整体条件收益保留。等密度部分错配下正确逐图预算的整体增量未达实用标准，停止把全部配对收益归因于准确对应；不据此宣称等价、唯一稀疏化原因或数量一般命题失败。
 
-固定准确选框与在线存在条件下，单独移除额外视觉几何项未改善学生，也未完整保留冻结前端；停止该固定简化及局部系数搜索。它不等价于删U，不否定其它监督更新机制或数量一般命题。随后EMA更新U已同时超过匹配固定U、共同源及冻结前端，应保留该明确正结果；前述学生能力不足的判断仅适用于已失败固定配置，不能覆盖新方法。完整数量选配相对已测试存在EMA流程的实用优势已成立；准确图像数量对应的独立作用仍未知，不用通用教师收益或不同伪标签密度的大差值冒充新数量机制。
+固定准确选框与在线存在条件下，单独移除额外视觉几何项未改善学生，也未完整保留冻结前端；停止该固定简化及局部系数搜索。它不等价于删U，不否定其它监督更新机制或数量一般命题。随后EMA更新U已同时超过匹配固定U、共同源及冻结前端，应保留该明确正结果；前述学生能力不足的判断仅适用于已失败固定配置，不能覆盖新方法。完整数量选配相对已测试存在EMA流程的实用优势已成立；固定等密度部分错配在同EMA下仍未支持预设实用准确对应增量，停止该控制族搜索；不把结论扩成等价、唯一稀疏化原因或一般数量命题无效，也不用通用教师收益或不同伪标签密度的大差值冒充新数量机制。
