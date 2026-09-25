@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源项目的 `lab/discussion.md` 确认监督和目标隔离条件，再读 `lab/result.md`、`doc/r001_review.json` 的固定预测证据，随后读 `doc/r002_review.json`，检查 `src/review_transfer.py` 与 `src/review_components.py` 的PR、覆盖和固定配对干预核验。新增共同初态尺度续训的全量原生PR重放见 `doc/r003_review.json`、`src/review_scale_control.py`。已抓取来源全部远端分支，仅main；此文不代表其他项目的审核或新颖性裁决。
+先读来源项目的 `lab/discussion.md` 确认监督和目标隔离条件，再读 `lab/result.md`、`doc/r001_review.json` 的固定预测证据，随后读 `doc/r002_review.json`，检查 `src/review_transfer.py` 与 `src/review_components.py` 的PR、覆盖和固定配对干预核验。新增共同初态尺度续训及两流位置消融的全量原生PR重放见 `doc/r003_review.json`、`doc/r005_review.json`、`src/review_scale_control.py`。已抓取来源全部远端分支，仅main；此文不代表其他项目的审核或新颖性裁决。
 
 ## 项目研究什么
 
@@ -16,7 +16,7 @@ PWOOD提供半监督与弱监督的技术底座，尚需检验未见域及弱几
 
 先复用HBox的原生PWOOD与图像角度约束、无标签损失开/关组成的四份固定最终教师，保留原预测分数、NMS和完整负图；在源域及一个训练未见的诊断域比较VOC07 AP、连续PR面积、最高召回、独立GT覆盖和共同可定位对象的几何。这部分没有新增训练。进一步在相同post-NMS预测上固定候选/GT配对，执行中心、尺寸、角度及其组合的真值替换，报告完整GT分母下的覆盖、PR和尺寸分组。原生匹配与逐对象干预已全量重放；原始候选IoU的独立实现仍只核验固定图像样本，不把抽样检查说成全量独立算子重现。
 
-随后从同一24k完整学生、EMA、优化器与RNG状态各续训8k，比较固定1024与256/512/1024等概率源域尺度；两流共同改变，采样、损失和EMA等保持一致。HRSC源域VOC07 AP50/AP75增量为+8.491/+8.809个百分点，DIOR-R诊断域为+4.089/+1.172；后者连续AP50/AP75也提高+4.358/+2.162，排除了仅靠VOC07格点改善的解释。两臂完整预测、全部PR、尺寸支持及原图身份已重放核验，固定终点受保护。尚不能区分HBox直接监督与无标签缩放的独立贡献；后续两项分流消融只有冻结计划，尚无训练结果。单种子、原生worker重启、历史源OBB开发和DIOR研究暴露的边界保留。来源：`ziyu24/cqc_P25@f2d3c0a1755a854c2b63715a61adf0841806c93d`，`lab/result.md`、`configs/scale_control.json`、`doc/r003_review.json`。[尺度续训结果与边界](https://github.com/ziyu24/cqc_P25/blob/f2d3c0a1755a854c2b63715a61adf0841806c93d/lab/result.md)。本次补充正证据，不新增失败教训。
+随后从同一24k完整学生、EMA、优化器与RNG状态各续训8k，比较固定1024与256/512/1024等概率源域尺度；两流共同改变，采样、损失和EMA等保持一致。HRSC源域VOC07 AP50/AP75增量为+8.491/+8.809个百分点，DIOR-R诊断域为+4.089/+1.172；后者连续AP50/AP75也提高+4.358/+2.162，排除了仅靠VOC07格点改善的解释。两臂完整预测、全部PR、尺寸支持及原图身份已重放核验，固定终点受保护。随后补齐仅HBox流多尺度和仅无标签流多尺度，两者诊断域AP50/AP75分别为14.215/9.997与12.100/9.407；两流同时多尺度为15.550/10.366。合法HBox监督端的尺度覆盖贡献较大；加入无标签缩放的主指标增量未超过预定描述幅度，但连续AP与召回仍有正增量，不能称零效应或等效。四格始终保留无标签学习，缩放位置消融不能被推广成无标签学习无用。新增两臂的完整初态、终点、实际双卡计算、全量原图及PR已独立重放核验；下一步一致性筛选及等配额置信度/随机对照只是已交付实验，没有方法结果。单种子、原生worker重启、历史源OBB开发和DIOR研究暴露的边界保留。来源：`ziyu24/cqc_P25@4d6024673013b3a137d9749e92ffea2103ff74bc`，`lab/result.md`、`configs/scale_control.json`、`configs/scale_split.json`、`doc/r003_review.json`、`doc/r005_review.json`。[尺度续训及位置消融](https://github.com/ziyu24/cqc_P25/blob/4d6024673013b3a137d9749e92ffea2103ff74bc/lab/result.md)。本次补充实际处理结果及归因边界，不新增失败教训。
 
 ## 教训一：低召回时严格VOC07 AP反转不能独立证明几何迁移退化
 
