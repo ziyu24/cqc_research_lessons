@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源的`README.md`和`lab/discussion.md`确认原问题及当前边界，再读`lab/result.md`的早期训练、六组对照、组合验证与共同成熟状态三动作窗口；代码依据为`src/interventions.py`、`src/train_learning.py`、`src/summarize_factorial.py`及`src/summarize_actions.py`。当前只核实单种子局部窗口，尚未证明同质量总训练成本下降。
+先读来源的`README.md`和`lab/discussion.md`确认原问题及当前边界，再读`lab/result.md`的早期训练、六组对照、组合验证、共同成熟状态三动作及较早共同状态的教师来源×计算量比较；代码依据为`src/interventions.py`、`src/train_learning.py`、`src/summarize_factorial.py`、`src/summarize_actions.py`和`src/summarize_early_refresh.py`。当前只核实单种子局部窗口，尚未证明同质量总训练成本下降。
 
 ## 项目研究什么
 
@@ -25,8 +25,8 @@
 - 失败命题：无监督启用前后验证增幅很小，就可认为无监督分支没有价值并全部删除。
 - 失败原因：跨阶段验证同时受模型成熟度与训练历史影响，没有识别删分支的反事实。原6400至9600步AP50仅增加约0.0774个百分点；但同一9600状态之后的3200步中，全量达到57.9061%，全部关闭仅49.9330%，少7.9731个百分点。短期纵向平台与无监督局部学习价值并不等价。成熟状态窗口中暂停为58.6367%，继续旧监督60.8289%，进一步提供2.1922个百分点的局部保留价值。
 - 后续做法：用同一完整父状态、相同输入和优化步窗口作同期保留/删除对照，先报告质量代价及完整命令成本，再判断是否值得选择性少算。不能只看损失低或相邻验证点接近。
-- 边界：这是固定HRSC、单种子和两个选定窗口的经验负证据，不证明所有阶段都必须全量无监督，也不否定选择性调度。训练恢复的多worker增强不承诺逐位重放；不把数值差声称为统计显著。
-- 证据：`ziyu24/cqc_P24@af29514ed1563741ab52eb2c6d067dca74f68910`；`lab/result.md`、`lab/failed_methods.md`、`configs/learning.json`、`configs/decision_full.json`、`configs/decision_skip_unsup.json`、`src/interventions.py`。
+- 边界：这是固定HRSC、单种子和有限选定窗口的经验负证据。补充共同12800父态的6400步窗口后，暂停终点52.0781%，旧教师半量60.2546%，仍保留8.1765个百分点的局部差；不能据此证明所有阶段都必须全量无监督，也不否定选择性调度。训练恢复的多worker增强不承诺逐位重放；不把数值差声称为统计显著。
+- 证据：`ziyu24/cqc_P24@b530f160df60502ef671ecb3f93cd82586ae92f4`；`lab/result.md`、`lab/failed_methods.md`、`configs/learning.json`、`configs/decision_full.json`、`configs/decision_skip_unsup.json`、`configs/early_skip.json`、`src/interventions.py`。
 
 ## 教训二：教师固定与计算削减的单项观察不能直接相加
 
@@ -34,7 +34,7 @@
 - 失败原因：在线全量、在线半量、固定全量和固定半量AP50分别为57.9061%、57.2685%、59.2594%、57.5868%。固定教师在全量条件提高1.3533个百分点，在半量条件只提高0.3183个百分点；AP尺度交互为−1.0350个百分点。组合窗口省时约13.35%，仍比在线全量低0.3193个百分点。固定全量较高但成本几乎不变，不能独立算作加速成果。
 - 后续做法：对共同可用的部件补齐因素组合，同时报告各单项、组合、质量差和完整成本。延长后较强固定全量对照已补齐，末点半量仅高0.3881个百分点，而前两点分别低1.6726、1.2172。共同成熟状态的继续旧监督、更新预测器与暂关无监督窗口差现已核实，应继续区分这些动作收益与跨历史轨迹差，避免把不同历史轨迹差异当作当前动作价值；不能事后把小质量差改叫零差异、设宽松非劣界限或从稀疏验证点插值精确同质量时间。
 - 边界：组合是在看到前三格后选择的单种子探索；负交互只描述首窗口AP尺度上的非加性，不证明统计负协同、机制因果、稳定性或整个联合决策路线失败。后续组合达到60.2546%，应修正“尚无质量优势”的阶段性判断；补齐固定全量后，19200的交互为+0.0703个百分点，仍是单种子描述量，不证明交互存在或不存在；共同成熟状态的动作试验已完成，边界见下一条。规律与随机半量保留的样本和增强也不同，不能纯归因为时间间隔；新增阶段及9600之后省时不等于包含共同前缀的端到端加速。
-- 证据：`ziyu24/cqc_P24@af29514ed1563741ab52eb2c6d067dca74f68910`；`lab/result.md`、`lab/failed_methods.md`、`doc/unsup_value.md`、`doc/continuation.md`、`configs/decision_frozen_periodic_half.json`、`src/interventions.py`、`src/summarize_factorial.py`。
+- 证据：`ziyu24/cqc_P24@b530f160df60502ef671ecb3f93cd82586ae92f4`；`lab/result.md`、`lab/failed_methods.md`、`doc/unsup_value.md`、`doc/continuation.md`、`configs/decision_frozen_periodic_half.json`、`configs/early_reuse_full.json`、`src/interventions.py`、`src/summarize_factorial.py`、`src/summarize_early_refresh.py`。补充同12800父态后旧教师半量相对全量末点高0.0540个百分点、完整6400步命令省13.5291%；这保留近似质量和局部成本的正信号，不建立非劣或包含共同前缀的同质量节省。
 
 ## 教训三：教师自身检测质量不能替代更新监督的教学收益
 
@@ -42,7 +42,7 @@
 - 失败原因：旧9600预测器自身历史AP50为50.3498%，当前19200教师为60.2546%；但从同一19200学生/在线EMA/优化器完整状态出发，在相同规律半量和3200步窗口中，继续旧预测器的终点为60.8289%，换为当前教师后固定为60.2086%，低0.6203个百分点且完整命令成本几乎相同。教师自身检测排序与该窗口教学结果排序相反，代理质量不等于对当前学生的增量效用。
 - 后续做法：在共同学生状态和相同计算安排下比较继续旧监督、刷新和暂停，分别记录窗口质量差与实际成本；小差值先核查给定模型的图像组成敏感性，不直接设计“更高教师AP就刷新”的规则，也不把合法验证GT信号当作无标签样本可部署信号。
 - 边界：除成熟窗口外，较早共同12800父态中半量刷新差从+0.1531变为−0.4622个百分点、全量刷新差从+1.3147变为−1.7195；简单刷新规则在两种计算量下都受经验反例限制。仍只有单种子、两个父态和有限窗口；不声称统计显著、普遍刷新有害或旧教师永远优于新教师。固定模型逐一删图的成熟窗口差和配对重采样边界仍只描述图像组成敏感性。未识别差异原因，不能归因于监督噪声或陈旧性；自适应分配路线及同质量总成本仍未知。
-- 证据：`ziyu24/cqc_P24@187e8d06dc4452821eb5432d01c2063e3bfd768c`；`lab/result.md`、`lab/failed_methods.md`、`configs/action_skip.json`、`configs/action_reuse.json`、`configs/action_refresh.json`、`configs/early_refresh.json`、`configs/early_refresh_full.json`、`src/summarize_actions.py`、`src/summarize_early_refresh.py`、`src/interventions.py`。
+- 证据：`ziyu24/cqc_P24@b530f160df60502ef671ecb3f93cd82586ae92f4`；`lab/result.md`、`lab/failed_methods.md`、`configs/action_skip.json`、`configs/action_reuse.json`、`configs/action_refresh.json`、`configs/early_refresh.json`、`configs/early_refresh_full.json`、`src/summarize_actions.py`、`src/summarize_early_refresh.py`、`src/interventions.py`。较早共同父态的四臂原始更新、两次验证、完整权重及历史半量参照已独立复算；刷新全量从59.3446%降到58.4812%是轨迹事实，尚不能断言已识别退化原因。
 
 ## 方法族停止索引
 
