@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`。最新来源主线`7dfdf21168a5eb817d3578d7eee528ae3fd055a0`，已抓取全部远端分支，仅main。
+先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`。最新来源主线`2317b6f7c79cee7a617ef5dbcff7cda690b870cf`，已抓取全部远端分支，仅main。
 
 ## 项目研究什么
 
@@ -14,7 +14,7 @@
 
 后续开发集配对诊断确认known排序能力存在，固定0.5拒识造成巨大损失。已付费HBox正例校准可部分恢复known，但未满足预定联合条件，unknown绝对精度仍很低；不能继续沿用“局部条件成立”的旧摘要。
 
-固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。历史PWOOD冻结特征前景学习的歧义忽略臂提高unknown AP，却未同时优于全背景对照的precision，不能称完整联合成功。SPWOOD密集候选阶段定位确认筛选大量丢失已有几何覆盖，同时密集框也有缺口。后续同头前置/后置学习评分已有真实AP/P/R增量，前置更强；但绝对precision仍极低、同池known保持失败，不能将局部进步升级为完整成功。新的局部质量监督尚无结果。
+固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。历史PWOOD冻结特征前景学习的歧义忽略臂提高unknown AP，却未同时优于全背景对照的precision，不能称完整联合成功。SPWOOD密集候选阶段定位确认筛选大量丢失已有几何覆盖，同时密集框也有缺口。后续同头前置/后置学习评分已有真实AP/P/R增量，前置更强；但绝对precision仍极低、同池known保持失败，不能将局部进步升级为完整成功。局部HBox包络质量与同样本二值目标的配对比较现已完成并独立复算：连续目标提高unknown AP/P/R却降低known mAP，两种局部目标均未满足原联合条件。显式区域特征的后续对照尚无性能结果，不登记为成功或失败。
 
 ## 实际采用过的方法
 
@@ -25,6 +25,8 @@ DOTA-v1.0原图固定划分，训练图中20%进入L、L内各known类保留20%�
 冻结同一SPWOOD终点，额外导出全部有效密集框与既定两种tile-topk，冻结后才按原生旋转IoU计算逐阶段GT覆盖及互斥首次损失。固定容量、NMS和阈值，不训练、选优或生成带隐藏GT的训练标签。
 
 进一步只用2,267个付费HBox匹配正例和312,831个假设负例训练一个普通前景MLP，固定12轮216步；相同头分别在密集筛选之前和旧候选池之后介入，保留known-product流及全部容量、NMS、阈值。比较两处介入的完整AP/P/R及各自同池known-only，不把未匹配候选称为真实背景。
+
+又固定同一SPWOOD表示，将负例范围限制到付费可见HBox内部的4,340个低匹配候选，框外候选不参与该局部损失；两个头使用相同2,267正例、索引、初态、二值交叉熵形式和216步。唯一目标差异是二值membership对照与最大可见HBox包络IoU软目标；两臂均于筛选前评分，沿用原known流、阈值及预算。局部低匹配仍可能包含漏标对象，包络IoU不是旋转IoU真值。
 
 ## 教训一：角度规范名称相近，不保证GT矩形拟合算法等价
 
@@ -74,6 +76,14 @@ SPWOOD上的补证：同一个普通前景头前置使用，将unknown AP/P/R从
 - 边界：该反例否定特定调用路径的自动对应假设，不证明作者论文结果无效，也没有独立测量它对实际AP的净效应。修复后的低开放世界分数只限制已测试读出；不能据此否定全部半监督、Point或类增量机制。
 - 证据：`ziyu24/cqc_P20@fb1c47b4eb26622a6f7d6a78e51097a7a71e5f08`；`src/check_spwood_semantics.py`、`src/check_p20_shared_geometry.py`、`src/p20_spwood_runtime.py`、`lab/result.md`、`doc/spwood_sources.md`。
 
+## 教训六：弱框包络质量不等于旋转定位质量，unknown增量不能抵消known代价
+
+- 失败命题：在付费弱框局部区域，用包络IoU连续目标替代相同样本的二值目标，即可提供兼顾unknown检测和known保持的独立质量学习增量。
+- 失败原因：相反角度的旋转框可以有相同HBox包络，该监督对旋转质量不可辨识。经验对照中连续目标相对二值目标的unknown AP/P/R分别增加0.011478/0.010444/1.502146个百分点，但known mAP下降0.655576点，违反预先固定的保持条件；两种局部头相对各自同池known-only仍损失7.3509/7.3857点。角度不可辨识是代理的结构限制，但这些数字没有单独证明它是性能失败的唯一原因。
+- 后续做法：用同样本、同初态和同日程的二值对照隔离目标变化，保留正向unknown增量及其known代价，同时报告同池参照、绝对AP和误检组成。不能将“框内”当成可信背景认证，也不能将包络质量改名为旋转IoU。固定开发对照结束后不靠阈值、容量或训练长度扫描规避联合失败。
+- 边界：本经验负结果只限制冻结SPWOOD特征、付费known局部采样及包络代理；不否定一般质量学习、OLN、区域特征、Point或弱标注增量。连续目标的unknown AP为0.137505%，二值为0.126027%，都仍极低。低重叠FP较少不能独立证明负例污染已解决，也不支持跨种子稳定性。
+- 证据：`ziyu24/cqc_P20@2317b6f7c79cee7a617ef5dbcff7cda690b870cf`；`src/p20_local_quality.py`、`src/check_local_quality.py`、`src/foreground_probe.py`、`src/run_local_quality.py`、`configs/local_quality.json`、`lab/result.md`、`lab/failed_methods.md`。
+
 ## 方法族停止索引
 
 - 不再将不同GT拟合函数的替换称作纯角度规范修正；使用原拟合与正面积保留规则。
@@ -81,3 +91,4 @@ SPWOOD上的补证：同一个普通前景头前置使用，将unknown AP/P/R从
 - 全局训练内正例阈值未达到预定known保持条件；不再将其部分恢复宣称为联合成功，不以当前低精度unknown预测直接支持自训练。
 - 固定跨视图几何乘子及其known恢复组合未满足局部或联合条件；不再用几何AUC或优于错位替代检测收益，未训练的前景策略不登记为失败。
 - 不再以共享原始输入推定内部增强后的密集对应；受影响旧训练结果不作为正确基线，新修复结果仍须独立评价科学目标。
+- 局部HBox包络质量未提供满足known保持的独立增量；不继续用该开发集扫描代理参数，也不把该有限负结果扩展为一般几何质量学习失败。
