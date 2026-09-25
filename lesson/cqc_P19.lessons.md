@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-来源主线为 `ziyu24/cqc_P19@00074b711cd664a53beed43e6accb56bc4bb8943`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`和`runs/r013/artifacts/paired_summary.json`；固定known优先部署的完整记录复核见`doc/r014_review.json`、`src/read_r014_evidence.py`与`lab/result.md`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
+来源主线为 `ziyu24/cqc_P19@13f4bf52f1a291f46e6140a49640b8112eda2994`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`和`runs/r013/artifacts/paired_summary.json`；固定known优先部署的完整记录复核见`doc/r014_review.json`、`src/read_r014_evidence.py`与`lab/result.md`；同一冻结学生完整解码到最终池的支持追踪见`doc/r015_review.json`、`src/read_r015_evidence.py`与`src/diagnose_r015.py`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
 
 ## 项目研究什么
 
@@ -10,7 +10,7 @@
 
 ## 领域位置与当前结论
 
-PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督未知发现和稀疏known恢复已有相关方法，组合任务关键词不能单独证明创新。现有证据建立了合法known基线及多条局部负结果，尚未建立有效的完整开放世界方法。关于弱几何额外造成语义混淆的当前监督包解释未获得预设支持；这不等于整个科学目标不可能。仅以known正位置训练的独立对象性及高置信负例降权也未形成有效未知发现；其共同匹配子集存在语义改善，不能扩大为全总体成功。冻结CutLER已有真实局部覆盖增益，但简单known过滤仍未建立有效低误报发现；11点AP的零召回格敏感性限制单一AP倍数解释。同源CutLER伪框作为外部对象正支持能带来局部低误报提升，却未过预注册投入门槛；额外伪OBB回归在单种子上不呈稳定全指标收益。固定2×输入提高中大目标与IoU .5低误报发现，但small仍为零且整体门槛未过。完整可训练SAM适配明显提高固定低误报召回与small，但只提高六类中的两类TP，未通过预先固定的类别联合条件；不能把总体增益扩大为可继续投入的路线支持。 随后冻结普通端点、不训练的known优先统一部署，将known mAP50从44.3514%提高至53.9312%，同时unknown实际TP由216到223，small100到102、非储罐23到24，通过其预设部署主条件。这是有效基线进展，距原生known仍7.3785个百分点；未知桥和篮球场仍零检出，不构成完整方法或推翻复合适配的失败边界。
+PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督未知发现和稀疏known恢复已有相关方法，组合任务关键词不能单独证明创新。现有证据建立了合法known基线及多条局部负结果，尚未建立有效的完整开放世界方法。关于弱几何额外造成语义混淆的当前监督包解释未获得预设支持；这不等于整个科学目标不可能。仅以known正位置训练的独立对象性及高置信负例降权也未形成有效未知发现；其共同匹配子集存在语义改善，不能扩大为全总体成功。冻结CutLER已有真实局部覆盖增益，但简单known过滤仍未建立有效低误报发现；11点AP的零召回格敏感性限制单一AP倍数解释。同源CutLER伪框作为外部对象正支持能带来局部低误报提升，却未过预注册投入门槛；额外伪OBB回归在单种子上不呈稳定全指标收益。固定2×输入提高中大目标与IoU .5低误报发现，但small仍为零且整体门槛未过。完整可训练SAM适配明显提高固定低误报召回与small，但只提高六类中的两类TP，未通过预先固定的类别联合条件；不能把总体增益扩大为可继续投入的路线支持。 随后冻结普通端点、不训练的known优先统一部署，将known mAP50从44.3514%提高至53.9312%，同时unknown实际TP由216到223，small100到102、非储罐23到24，通过其预设部署主条件。这是有效基线进展，距原生known仍7.3785个百分点；未知桥和篮球场仍零检出，不构成完整方法或推翻复合适配的失败边界。 全量冻结解码进一步表明，约1.14亿有效框对unknown的几何支持为2633/2876，最终仅1198；不能继续把大部分末端缺失解释为网络完全没有框，也不能把巨大候选池的覆盖当可部署召回。
 
 ## 实际采用过的方法
 
@@ -37,6 +37,8 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 从同一ImageNet初态完整训练普通SAM伪框臂和动态SAM去重/浅深对象性分工/置信度接纳加权的联合适配臂，各120000步、单种子、2卡；统一300旋转框预算输出known与unknown，并完成完整GT配对评价。
 
 - 冻结完整训练的普通学生，以原生known优先、unknown补剩余名额建立同300预算输出及known-only对照，零新训练和先验。完整458图/26943GT和两卡计算记录通过保存产物复核；没有重做全量模型前向或独立旋转IoU，基线已通过部署主判据。
+
+- 同一冻结学生完整前向458图/5297窗口，记录全部解码至最终unknown的九阶段逐GT最大IoU；原生末端重放张量与已保存plain逐位一致。按完整GT复核类别、尺度及首次支持损失，未新增训练或改变正式输出。
 
 ## 教训一：成功匹配对象间的高区分度不能替代完整未知发现
 
@@ -83,8 +85,8 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 失败命题：只要修好known拒识或重新打分就能解决全部未知发现；或者把某阶段丢失的对象数视为移除该阶段能恢复的收益。
 - 失败原因：冻结外部提案转框后的未知覆盖从NMS前1094个，经NMS、300预算、known过滤降为861、607、605，低误报实际只检出62个。NMS前已缺1782/2876个合格框，小目标缺1131/1312，最终低误报小目标检出为0。known过滤只额外丢2个，而10 FP/图下低重叠背景代理占3881/4580。候选外缺失与候选内误报同时存在；放宽NMS或预算还会改变后续竞争，不能直接把233和254当可恢复效果。
 - 后续做法：从完整GT逐一追踪支持、去重、预算、过滤与固定误报输出，同时拆分known混淆、定位不足和低重叠代理。根据最早可观测损失选择可证伪干预，并用同先验、同候选及完整检测结果验证；几何支持上限不能当作可达精度或独立定位原因。
-- 边界：前端统计起于mask转框之后；原mask和窗口截断前结果不可得，不能区分网络、截断与转换的单独作用。窗口上限频繁命中不证明扩大上限有用，低重叠代理不等于可作为负标签的真背景。 后续学生部署的最终unknown池覆盖1198/2876，其中975个有支持未在主操作点检出，1678个无最终支持；这种已经过topk/NMS/预算的池不能称作网络筛选前输出。最终覆盖比旧输出少7个而主操作点TP多7个，证明两种量不能互代；4546/4576个低重叠FP仍只做代理。上述只约束固定模型、数据及流水线，保留已覆盖目标的排序改善空间和外部对象支持的局部正收益；没有裁决尚未执行的学习方案。
-- 证据：`ziyu24/cqc_P19@00074b711cd664a53beed43e6accb56bc4bb8943`（新增部署边界：`doc/r014_review.json`、`src/read_r014_evidence.py`）；原前端证据`ziyu24/cqc_P19@efc93e40d558490f488963ec445669a78bc70633`；`doc/r008_review.json`、`src/read_r008_evidence.py`、`src/analyze_r008.py`、`lab/result.md`、`lab/failed_methods.md`。
+- 边界：早期CutLER统计起于mask转框之后；原mask和窗口截断前结果不可得，不能区分其网络、截断与转换的单独作用。窗口上限频繁命中不证明扩大上限有用，低重叠代理不等于可作为负标签的真背景。 后续学生部署的最终unknown池覆盖1198/2876，其中975个有支持未在主操作点检出，1678个无最终支持；这种已经过topk/NMS/预算的池不能称作网络筛选前输出。最终覆盖比旧输出少7个而主操作点TP多7个，证明两种量不能互代；4546/4576个低重叠FP仍只做代理。 同一学生完整解码后，约1.14亿有效框覆盖2633/2876个unknown（91.55%），经两个topk、NMS和300预算分别首次损失664、156、592；语义和最后known/余量规则合计只丢23。桥从有效解码281/423降到最终0，小目标从1110/1312降至433，但桥仍有142个、小目标202个在原始池无合格支持。因此须收缩“主要没有生成框”的解释，同时保留定位与选择的混合瓶颈；巨大多对一候选池不证明定位已解决、好排序存在或可达91.55%检出。上述只约束固定模型、数据及流水线，保留已覆盖目标的排序改善空间和外部对象支持的局部正收益；没有裁决尚未执行的学习方案。
+- 证据：`ziyu24/cqc_P19@13f4bf52f1a291f46e6140a49640b8112eda2994`（完整筛选前支持：`doc/r015_review.json`、`src/read_r015_evidence.py`、`src/diagnose_r015.py`）；`ziyu24/cqc_P19@00074b711cd664a53beed43e6accb56bc4bb8943`（部署边界：`doc/r014_review.json`、`src/read_r014_evidence.py`）；原前端证据`ziyu24/cqc_P19@efc93e40d558490f488963ec445669a78bc70633`；`doc/r008_review.json`、`src/read_r008_evidence.py`、`src/analyze_r008.py`、`lab/result.md`、`lab/failed_methods.md`。
 
 ## 教训七：同源外部对象正支持的局部增益不等于达到低误报投入标准，伪几何需以全指标检验
 
