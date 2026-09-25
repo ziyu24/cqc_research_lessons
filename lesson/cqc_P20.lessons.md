@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`。最新来源主线`fb1c47b4eb26622a6f7d6a78e51097a7a71e5f08`，已抓取全部远端分支，仅main。
+先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`。最新来源主线`73d497cf00cbbdea5413a4574590133d9bf137a1`，已抓取全部远端分支，仅main。
 
 ## 项目研究什么
 
@@ -14,13 +14,15 @@
 
 后续开发集配对诊断确认known排序能力存在，固定0.5拒识造成巨大损失。已付费HBox正例校准可部分恢复known，但未满足预定联合条件，unknown绝对精度仍很低；不能继续沿用“局部条件成立”的旧摘要。
 
-固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。历史PWOOD冻结特征前景学习的歧义忽略臂提高unknown AP，却未同时优于全背景对照的precision，不能称完整联合成功。新SPWOOD密集候选阶段定位尚无结果，不登记为方法证据。
+固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。历史PWOOD冻结特征前景学习的歧义忽略臂提高unknown AP，却未同时优于全背景对照的precision，不能称完整联合成功。SPWOOD密集候选阶段定位现已确认筛选大量丢失已有几何覆盖，但密集框也有缺口；这是诊断证据，没有新的检测AP收益。后续前景学习尚无结果。
 
 ## 实际采用过的方法
 
 DOTA-v1.0原图固定划分，训练图中20%进入L、L内各known类保留20%非difficult HBox；其余U不提供实例标签。使用PWOOD H2RBox-v2及半监督教师，9个known类、固定单种子和76,800步。预测先按centerness筛选共享候选，再以max-known的固定0.5阈值分known/unknown；比较未知分数centerness与centerness乘(1−max-known)。同权重和几何，原图级固定输出预算；评价采用连续面积旋转AP。
 
 后续同项目协议采用SPWOOD MCLTeacherOneBr/SemiMix1、R50-FPN、真实两rank与固定seed42，保持原生优化器、EMA和全局2L+2U；修复额外几何视图对应后重新训练76,800步。使用两种候选池及训练内付费正例95%保留阈值，冻结终点后进行141张开发图的完整固定读出，不用开发标签选阈值。
+
+冻结同一SPWOOD终点，额外导出全部有效密集框与既定两种tile-topk，冻结后才按原生旋转IoU计算逐阶段GT覆盖及互斥首次损失。固定容量、NMS和阈值，不训练、选优或生成带隐藏GT的训练标签。
 
 ## 教训一：角度规范名称相近，不保证GT矩形拟合算法等价
 
@@ -47,6 +49,8 @@ DOTA-v1.0原图固定划分，训练图中20%进入L、L内各known类保留20%�
 - 证据：`ziyu24/cqc_P20@d72627321bf004780308de654562041abbdf9fe5`；`lab/result.md`、`lab/failed_methods.md`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`；原联合判据见`ziyu24/cqc_P20@7e8578b08fbb2febaf26b1db5dfe91c4fbd8e971`的`lab/sug.md`。
 
 修复后的SPWOOD基线补证：同池关闭拒识与付费校准的known mAP分别为14.8685%→10.6706%、33.6190%→28.4244%，损失4.1980/5.1946个百分点，仍超过原2点限制；unknown AP仅0.005763%/0.017050%。原始两池rIoU=.5未知覆盖仅43/466和81/466，仍不是全密集位置上限。该证据支持在另一基线身份下限制同一全局阈值命题，不授权否定SPWOOD本体。来源：`ziyu24/cqc_P20@fb1c47b4eb26622a6f7d6a78e51097a7a71e5f08`；`lab/result.md`、`lab/failed_methods.md`、`src/run_spwood_baseline.py`。
+
+密集框与筛选补证：同一终点141图、466个unknown在rIoU=.5的覆盖为密集框349、两topk并集246、两原图池并集109、最终混合池59、活动unknown仍59。已覆盖的349个中有290个被筛选丢失，故旧小池覆盖不能冒充密集几何上限；117个密集缺失（其中bridge仅覆盖21/108）又排除“全是筛选”的单因解释。原图池及混合池阶段均包含NMS与容量作用，当前统计不能拆分其因果贡献。末两阶段覆盖相同也不证明拒识与分数排序对AP无影响：GT-wise存在性、一对一TP和完整PR是不同评价量。后续应在同预算下比较实际学习评分的不同介入位置，并保留几何缺口与漏标负例污染边界，不把诊断改称可部署收益。来源：`ziyu24/cqc_P20@73d497cf00cbbdea5413a4574590133d9bf137a1`；`lab/result.md`、`lab/failed_methods.md`、`src/p20_proposal_audit.py`、`src/run_proposal_audit.py`。
 
 ## 教训四：几何区分信号和有效错位对照不保证检测收益
 
