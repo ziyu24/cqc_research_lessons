@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源项目的 `lab/discussion.md` 确认监督和目标隔离条件，再读 `lab/result.md`、`doc/r001_review.json` 的固定预测证据，随后读 `doc/r002_review.json`，检查 `src/review_transfer.py` 与 `src/review_components.py` 的PR、覆盖和固定配对干预核验。新增共同初态尺度续训及两流位置消融的全量原生PR重放见 `doc/r003_review.json`、`doc/r005_review.json`、`doc/r006_review.json`、`src/review_scale_control.py`；新增冻结信号审计为`doc/r007_review.json`、`src/review_weak_reliability.py`；固定弱质量校准的独立系数、折外分数与选择重放为`doc/r008_review.json`、`src/review_weak_calibration.py`。已抓取来源全部远端分支，仅main；此文不代表其他项目的审核或新颖性裁决。
+先读来源项目的 `lab/discussion.md` 确认监督和目标隔离条件，再读 `lab/result.md`、`doc/r001_review.json` 的固定预测证据，随后读 `doc/r002_review.json`，检查 `src/review_transfer.py` 与 `src/review_components.py` 的PR、覆盖和固定配对干预核验。新增共同初态尺度续训及两流位置消融的全量原生PR重放见 `doc/r003_review.json`、`doc/r005_review.json`、`doc/r006_review.json`、`src/review_scale_control.py`；新增冻结信号审计为`doc/r007_review.json`、`src/review_weak_reliability.py`；固定弱质量校准的独立系数、折外分数与选择重放为`doc/r008_review.json`、`src/review_weak_calibration.py`。跨尺度供体选择与完整质量/支持重放见`doc/r009_review.json`、`src/review_cross_scale_geometry.py`。已抓取来源全部远端分支，仅main；此文不代表其他项目的审核或新颖性裁决。
 
 ## 项目研究什么
 
@@ -22,7 +22,9 @@ PWOOD提供半监督与弱监督的技术底座，尚需检验未见域及弱几
 
 已有源训练87图/259个HBox的两冻结终点×三尺度观察进一步检查手工信号：包络一致性对随机的图等权候选质量平均提高0.03111，对置信度只提高0.00218；后续终点的小尺度条件虽提高候选平均质量，却比两个对照少22/259个对象支持。真值BBox排序参照仍更好，不代表无需标签的信号能够学会。全522行候选、分层选择/权重及全对象分母已完整重放，并由独立加权算术核对；预定正/负规则都未触发，结论仍未定，停止同一手工信号的追加训练，不否定一般可靠性路线。固定画布的小尺度含大量padding候选，训练内弱标注与同轨迹终点也限制外推；不据候选质量改进宣称对象覆盖、OBB方向、U或目标泛化改善。来源：`ziyu24/cqc_P25@5bc8594842788e9dba0ddd09c9479ea886cc8d41`，`lab/result.md`、`doc/r007_review.json`、`src/review_weak_reliability.py`。[完整冻结诊断和独立审计](https://github.com/ziyu24/cqc_P25/blob/5bc8594842788e9dba0ddd09c9479ea886cc8d41/lab/result.md)。固定弱标签线性校准随后完成，见下段；此观察本身仍不等同零效应证明。
 
-进一步用同一弱标签全集做按原图三折的固定质量校准：只在较早模型的另两折拟合，标准化仅取拟合侧；同图其它尺度与后来模型均保持在对应留出侧。分类/centerness、预测包络尺寸和FPN层的岭回归，与额外加入教师/学生包络一致性的模型，均保留原候选及半数配额。后者相对置信度的早/晚模型质量平均增量仅0.00350/0.00852，均未达预定实用幅度；前者也未通过。完整系数、341,821个折外分数、全部选择和对象支持已独立重算一致，实际每次拟合和评分两卡、原图折隔离及完整分母均已核验。按原条件停止这两个固定评分器的检测器训练投入，不继续特征/正则/折数/种子搜索；这不是HBox无信息或一般可靠性路线失败。来源：`ziyu24/cqc_P25@2c7d84dad181f5a17786fe684d1f695f3a5d633a`，`lab/result.md`、`lab/failed_methods.md`、`doc/r008_review.json`、`src/run_weak_calibration.py`。[实际校准结果与停止边界](https://github.com/ziyu24/cqc_P25/blob/2c7d84dad181f5a17786fe684d1f695f3a5d633a/lab/result.md)。独立的跨尺度几何搬运仅完成输入和反例检查，尚无正式性能结果，不列为方法证据。
+进一步用同一弱标签全集做按原图三折的固定质量校准：只在较早模型的另两折拟合，标准化仅取拟合侧；同图其它尺度与后来模型均保持在对应留出侧。分类/centerness、预测包络尺寸和FPN层的岭回归，与额外加入教师/学生包络一致性的模型，均保留原候选及半数配额。后者相对置信度的早/晚模型质量平均增量仅0.00350/0.00852，均未达预定实用幅度；前者也未通过。完整系数、341,821个折外分数、全部选择和对象支持已独立重算一致，实际每次拟合和评分两卡、原图折隔离及完整分母均已核验。按原条件停止这两个固定评分器的检测器训练投入，不继续特征/正则/折数/种子搜索；这不是HBox无信息或一般可靠性路线失败。来源：`ziyu24/cqc_P25@2c7d84dad181f5a17786fe684d1f695f3a5d633a`，`lab/result.md`、`lab/failed_methods.md`、`doc/r008_review.json`、`src/run_weak_calibration.py`。[实际校准结果与停止边界](https://github.com/ziyu24/cqc_P25/blob/2c7d84dad181f5a17786fe684d1f695f3a5d633a/lab/result.md)。
+
+随后固定原低尺度全部候选、权重与padding，用同教师高尺度供体替换几何；候选必须满足包络重叠和原位置可编码条件，分别用最大重叠与最高原生置信选择，无供体则回退。最高置信规则在较早模型的图等权HBox质量均值提高0.05918，在已有多尺度终点只提高0.01487；最大重叠对应为0.02468/0.00711。两个规则覆盖保护通过，但均未达到对更强模型预声明的实用幅度，且最大重叠平均低于置信规则0.02113。全部选择和完整GT统计已独立重放一致，停止这两个固定供体规则的检测器训练及局部规则搜索；保留较早模型的正差，不推断质量信息为零。来源：`ziyu24/cqc_P25@2b42a6fcb24b907b0fa05283fc630f47bc3569ba`，`lab/result.md`、`lab/failed_methods.md`、`doc/r009_review.json`、`src/cross_scale_geometry_core.py`。[供体规则实际结果及独立核验](https://github.com/ziyu24/cqc_P25/blob/2b42a6fcb24b907b0fa05283fc630f47bc3569ba/lab/result.md)。原生无标签框回归的同起点删除/保留训练对照已交付，尚无性能结果，不计作成功或失败。
 
 ## 教训一：低召回时严格VOC07 AP反转不能独立证明几何迁移退化
 
@@ -48,6 +50,14 @@ PWOOD提供半监督与弱监督的技术底座，尚需检验未见域及弱几
 - 边界：这是固定线性特征族的经验负结果和投入停止，不是证明信息为零或所有可靠性方法无效。仅新评分器按图留出，底座已经训练过这些图；因此仍不是未见源图、U或目标域泛化。HBox不验证OBB方向，候选支持不等于AP；已有普通多尺度的积极结果保留。
 - 证据：`ziyu24/cqc_P25@2c7d84dad181f5a17786fe684d1f695f3a5d633a`；`lab/result.md`、`lab/failed_methods.md`、`doc/r008_review.json`、`src/weak_calibration_core.py`、`src/review_weak_calibration.py`。[来源结果](https://github.com/ziyu24/cqc_P25/blob/2c7d84dad181f5a17786fe684d1f695f3a5d633a/lab/result.md)、[完整独立重算](https://github.com/ziyu24/cqc_P25/blob/2c7d84dad181f5a17786fe684d1f695f3a5d633a/doc/r008_review.json)。
 
+## 教训四：旧基线上的质量改进，不能替代必要强基线和简单规则上的增量
+
+- 失败命题：从高分辨率视图搬运的几何在较早模型上改善伪框，且不损失对象支持，就足以继续投入训练；最大几何重叠也是更有价值的供体选择。
+- 失败原因：已有多尺度终点的候选质量和可改进空间与较早模型不同，早期模型的正差不能替代对当前完整基线的直接比较，也不能把两终点差异唯一归因于尺度增强。固定供体规则在较早模型有正差，但在多尺度终点未达事先规定的实用幅度；最大重叠又低于简单置信选择。几何合法、覆盖保护和实用额外收益是不同条件。
+- 后续做法：保留相同候选身份、权重和完整GT分母，分别报告旧/强基线上的处理效应，再与简单选择规则比较。对未达预声明条件的固定组合停止训练投入，不通过改变供体尺度或对应阈值追求阳性，也不抹去其局部正值。
+- 边界：这是固定对应规则在训练已见HBox上的经验负结果和投入停止，不是一般跨尺度几何无效或零信息证明。HBox质量不检验OBB方向、无标签图像或目标域，候选覆盖不是检测AP；两个同轨迹模型也不是独立重复。普通多尺度已有检测收益仍成立。
+- 证据：`ziyu24/cqc_P25@2b42a6fcb24b907b0fa05283fc630f47bc3569ba`；`lab/result.md`、`lab/failed_methods.md`、`doc/r009_review.json`、`src/run_cross_scale_geometry.py`、`src/review_cross_scale_geometry.py`。[实际结果](https://github.com/ziyu24/cqc_P25/blob/2b42a6fcb24b907b0fa05283fc630f47bc3569ba/lab/result.md)、[完整选择与统计重放](https://github.com/ziyu24/cqc_P25/blob/2b42a6fcb24b907b0fa05283fc630f47bc3569ba/doc/r009_review.json)。
+
 ## 方法族停止索引
 
 | 方法或解释族 | 当前限制 | 没有被否定的范围 |
@@ -55,3 +65,4 @@ PWOOD提供半监督与弱监督的技术底座，尚需检验未见域及弱几
 | 仅以严格VOC07 AP反转推断几何退化 | 停止这种单指标推断；须补充PR与对象几何证据 | PWOOD、图像几何先验、分量可靠性研究和原DG问题均未因此整体停止 |
 | 以最终匹配接近独立覆盖排除排序，或将阈值无支持唯一归因候选生成 | 停止跨估计量和网络分支的推断；须检查完整PR及条件几何 | 普通尺度增强已有单链路正证据；排序学习、弱几何可靠性和原DG目标仍未验证成功 |
 | 固定可观察几何/置信特征的线性弱质量校准 | 两种已测试评分器的折外收益不足，停止其检测器训练及局部搜索投入 | 真值排序信息、其它可观察特征族、几何目标改进及一般弱监督DG仍未被整体否定 |
+| 固定高分辨率供体的最大重叠或最高置信对应 | 当前多尺度模型上的增益不足，停止两规则的训练及局部尺度/阈值/对应搜索 | 较早模型的正质量差、其它几何机制及一般弱监督DG均未被整体否定 |
