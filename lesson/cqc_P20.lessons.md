@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`。最新来源主线`f91c744d73fcb70aa61e85ea03eec2bde49690b3`，已抓取全部远端分支，仅main。
+先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`。最新来源主线`444d37f4970e2ddb6071903304861f82acbe8580`，已抓取全部远端分支，仅main。
 
 ## 项目研究什么
 
@@ -14,7 +14,7 @@
 
 后续开发集配对诊断确认known排序能力存在，固定0.5拒识造成巨大损失。已付费HBox正例校准可部分恢复known，但未满足预定联合条件，unknown绝对精度仍很低；不能继续沿用“局部条件成立”的旧摘要。
 
-固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。历史PWOOD冻结特征前景学习的歧义忽略臂提高unknown AP，却未同时优于全背景对照的precision，不能称完整联合成功。SPWOOD密集候选阶段定位确认筛选大量丢失已有几何覆盖，同时密集框也有缺口。后续同头前置/后置学习评分已有真实AP/P/R增量，前置更强；但绝对precision仍极低、同池known保持失败，不能将局部进步升级为完整成功。局部HBox包络质量与同样本二值目标的配对比较现已完成并独立复算：连续目标提高unknown AP/P/R却降低known mAP，两种局部目标均未满足原联合条件。显式区域特征的固定对照也已完成，较单点的known与unknown主要指标均退步；同预算的密集负例总体替换也已完成并独立重算，较旧池单点头退步，未满足联合条件。Point邻居删除的组件诊断仅完成输入和反例检查，尚无完整效应结果，不能登记为成功或失败。
+固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。历史PWOOD冻结特征前景学习的歧义忽略臂提高unknown AP，却未同时优于全背景对照的precision，不能称完整联合成功。SPWOOD密集候选阶段定位确认筛选大量丢失已有几何覆盖，同时密集框也有缺口。后续同头前置/后置学习评分已有真实AP/P/R增量，前置更强；但绝对precision仍极低、同池known保持失败，不能将局部进步升级为完整成功。局部HBox包络质量与同样本二值目标的配对比较现已完成并独立复算：连续目标提高unknown AP/P/R却降低known mAP，两种局部目标均未满足原联合条件。显式区域特征的固定对照也已完成，较单点的known与unknown主要指标均退步；同预算的密集负例总体替换也已完成并独立重算，较旧池单点头退步，未满足联合条件。Point邻居删除组件诊断现已完成：固定人工协方差下，129例中最近邻删除31例同时改变目标方差和未归约协方差输入梯度，最远删除0例。完整输入、254份逐图结果及387次原生计算已独立复核；这支持有限组件依赖，不证明有害监督、类别缺失独立因果或检测收益。真实Point基线的输入与原生CPU路径已完成交付前检查，尚无训练性能。
 
 ## 实际采用过的方法
 
@@ -74,6 +74,8 @@ SPWOOD上的补证：同一个普通前景头前置使用，将unknown AP/P/R从
 - 边界：本次低重叠候选占基线unknown误检77,551/81,416，但低重叠仅指与数据集标注rIoU<0.1，不能视为所有候选的真实背景标签。结果约束固定单seed、已探索开发集和直接评分策略；保留真实对应优于错位、known部分恢复的正证据，不否定几何学习或完整开放世界范式。
 - 证据：`ziyu24/cqc_P20@8933c9e59185ea310c6b3a101b48215aba1893b6`；`lab/result.md`、`lab/failed_methods.md`、`src/p20_view_probe.py`、`src/evaluate_view_probe.py`、`configs/view_probe.json`。
 
+Point组件的补充边界：上述近/远删除在同一图像、目标和人工diag(1024,256)协方差下，保留原full点数为归一化分母；目标方差与未归约梯度共同变化排除了“只改归约分母”的解释，但它们是协方差输入梯度，不是网络参数梯度。最密集付费切片/最小ID目标、删除类别未配对、HBox中心投影及未增强图像限制外推；不能把预期邻居依赖解释为监督有害，也不能把overlap少一项pair当创新。来源：`ziyu24/cqc_P20@444d37f4970e2ddb6071903304861f82acbe8580`；`src/probe_point_geometry.py`、`src/check_point_geometry.py`、`src/p20_spwood_losses.py`、`lab/result.md`、`lab/discussion.md`。
+
 ## 教训五：共享输入不保证教师学生密集一致性的空间对应
 
 - 失败命题：教师和学生拿到同一无标签图像，便可直接按相同密集索引比较其预测，无需检查网络内部额外增强。
@@ -98,6 +100,14 @@ SPWOOD上的补证：同一个普通前景头前置使用，将unknown AP/P/R从
 - 边界：本实验同时改变旧分数/NMS选择条件和几何重复度，不能把差值独立归因于其中某一项；也没有证明负例污染、简单负例比例或表示能力是唯一原因。只约束冻结SPWOOD单点表示、等量均匀密集抽样和该固定读出，不否定所有总体匹配、端到端前景学习、Point或增量范式。单seed不支持稳定性推断。
 - 证据：`ziyu24/cqc_P20@f91c744d73fcb70aa61e85ea03eec2bde49690b3`；`src/p20_dense_negatives.py`、`src/check_dense_negatives.py`、`src/run_region_features.py`、`configs/dense_negatives.json`、`lab/result.md`、`lab/failed_methods.md`。
 
+## 教训八：可见实例总数相同，不保证弱监督输入条件相同
+
+- 失败命题：Point与HBox使用相同付费ID、可见实例数也相同，即可把二者当作仅几何损失不同的严格消融；清单中不可见实例可直接归因于切片可见率。
+- 失败原因：同一2658个paid、2646个可见实例下，独立Point中心入片与HBox中心/70%面积入片产生5488/5336次切片标注和1801/1830个空标切片，训练中的实例暴露并不相同；minAreaRect中心也不必等于HBox极值中点。12个不可见实例实际均为一张原图中的发布标注中心越界，非简单切片面积过滤。官网原ZIP完整图像/标注与固定数据SHA一致，反过来断言本机错配也无依据。
+- 后续做法：分别核对付费ID、实际可见ID、逐切片出现次数、中心定义及加载后张量；真正Point只导出中心/类别，不沿用HBox尺寸或其筛选隐性信息。对不可见样本逐项区分原图外标注、切片过滤与加载丢失，追溯发布源后才解释机制；保持冻结输入和明确差集，不猜测缩放/夹边或静默改标。
+- 边界：这些输入差异否定严格单因素归因，不意味着不能比较两种弱标签基线；原发布异常也不自动使全部历史结果无效。该检查没有测出这些因素对AP的独立影响，真实Point训练尚无指标，不能登记Point方法失败或将异常称为unknown低AP的已识别根因。
+- 证据：`ziyu24/cqc_P20@444d37f4970e2ddb6071903304861f82acbe8580`；`src/p20_protocol.py`、`src/p20_dataset.py`、`src/check_point_protocol.py`、`src/check_dota_source.py`、`src/run_point_baseline.py`、`lab/result.md`、`lab/failed_methods.md`。
+
 ## 方法族停止索引
 
 - 不再将不同GT拟合函数的替换称作纯角度规范修正；使用原拟合与正面积保留规则。
@@ -109,3 +119,5 @@ SPWOOD上的补证：同一个普通前景头前置使用，将unknown AP/P/R从
 - 固定同层7×7区域池化相对同预算单点头退步，结束该表示对照，不以较弱旧参照或网格/尺度扫描延续；一般区域学习和其他负例总体仍属不同待验证条件。
 
 - 固定等量均匀密集负例替换未优于旧池单点头，结束该替换及其开发集扫描；不能把输入总体更接近部署评分范围直接称为更可靠负监督。
+
+- 不再以相同付费/可见实例总数声称Point/HBox严格单因素；原发布异常只明确列差集和解释边界，不擅改数据，也不把未完成的Point训练登记为失败。
