@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`。最新来源主线`2317b6f7c79cee7a617ef5dbcff7cda690b870cf`，已抓取全部远端分支，仅main。
+先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`。最新来源主线`1230672025a0b8a3bef04b82f52d0c09dec88cf4`，已抓取全部远端分支，仅main。
 
 ## 项目研究什么
 
@@ -14,7 +14,7 @@
 
 后续开发集配对诊断确认known排序能力存在，固定0.5拒识造成巨大损失。已付费HBox正例校准可部分恢复known，但未满足预定联合条件，unknown绝对精度仍很低；不能继续沿用“局部条件成立”的旧摘要。
 
-固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。历史PWOOD冻结特征前景学习的歧义忽略臂提高unknown AP，却未同时优于全背景对照的precision，不能称完整联合成功。SPWOOD密集候选阶段定位确认筛选大量丢失已有几何覆盖，同时密集框也有缺口。后续同头前置/后置学习评分已有真实AP/P/R增量，前置更强；但绝对precision仍极低、同池known保持失败，不能将局部进步升级为完整成功。局部HBox包络质量与同样本二值目标的配对比较现已完成并独立复算：连续目标提高unknown AP/P/R却降低known mAP，两种局部目标均未满足原联合条件。显式区域特征的后续对照尚无性能结果，不登记为成功或失败。
+固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。历史PWOOD冻结特征前景学习的歧义忽略臂提高unknown AP，却未同时优于全背景对照的precision，不能称完整联合成功。SPWOOD密集候选阶段定位确认筛选大量丢失已有几何覆盖，同时密集框也有缺口。后续同头前置/后置学习评分已有真实AP/P/R增量，前置更强；但绝对precision仍极低、同池known保持失败，不能将局部进步升级为完整成功。局部HBox包络质量与同样本二值目标的配对比较现已完成并独立复算：连续目标提高unknown AP/P/R却降低known mAP，两种局部目标均未满足原联合条件。显式区域特征的固定对照也已完成，较单点的known与unknown主要指标均退步；后续密集负例总体对照尚无性能结果，不登记为成功或失败。
 
 ## 实际采用过的方法
 
@@ -27,6 +27,8 @@ DOTA-v1.0原图固定划分，训练图中20%进入L、L内各known类保留20%�
 进一步只用2,267个付费HBox匹配正例和312,831个假设负例训练一个普通前景MLP，固定12轮216步；相同头分别在密集筛选之前和旧候选池之后介入，保留known-product流及全部容量、NMS、阈值。比较两处介入的完整AP/P/R及各自同池known-only，不把未匹配候选称为真实背景。
 
 又固定同一SPWOOD表示，将负例范围限制到付费可见HBox内部的4,340个低匹配候选，框外候选不参与该局部损失；两个头使用相同2,267正例、索引、初态、二值交叉熵形式和216步。唯一目标差异是二值membership对照与最大可见HBox包络IoU软目标；两臂均于筛选前评分，沿用原known流、阈值及预算。局部低匹配仍可能包含漏标对象，包络IoU不是旋转IoU真值。
+
+随后以同一普通前景头、原正负样本/初态和216步，将单点输入替换为预测OBB在原始生成层的7×7双线性格点均值；仍为256维、同一冻结卷积图，图外零扩展，不学习RoI变换或添加OBB监督。原known-product流、前置评分、预算及阈值保持。完整开放/known-only指标均独立重算一致。
 
 ## 教训一：角度规范名称相近，不保证GT矩形拟合算法等价
 
@@ -45,6 +47,8 @@ DOTA-v1.0原图固定划分，训练图中20%进入L、L内各known类保留20%�
 - 证据：`ziyu24/cqc_P20@fe3634cbaf2dfa94b23527786f6d2a3b5ad9c51e`；`src/audit_frozen_result.py`、`src/evaluate_open_spwood.py`、`configs/open_spwood_t1.json`、`lab/result.md`、`lab/failed_methods.md`。
 
 SPWOOD上的补证：同一个普通前景头前置使用，将unknown AP/P/R从0.017050%/0.077787%/12.6609%提高到0.142495%/0.154421%/25.9657%，同时优于后置的0.106615%/0.122659%/19.3133%。这是可保留的真实增量，但121个TP伴随78,236个FP，其中74,599个与非difficult GT的旋转IoU<.1；既不能用相对倍数宣称系统可用，也不能因整体不达标抹去前置增量。低重叠不等于可信背景，尚未识别负例污染、表示或定位质量的独立因果。来源：`ziyu24/cqc_P20@7dfdf21168a5eb817d3578d7eee528ae3fd055a0`；`lab/result.md`、`lab/failed_methods.md`、`src/run_learned_proposals.py`、`src/evaluate_open_spwood.py`。
+
+区域输入的补充边界：在同样本、同头、同初态和训练量下，将单点特征换为上述固定区域池化，unknown AP/P/R从0.142495%/0.154421%/25.9657%退为0.024143%/0.084086%/13.5193%，known mAP从31.6457%退为28.7076%；相对自身known-only仍损失7.2159点。显式加入候选框区域条件不保证更有效的前景表示，单点卷积输入原本也有感受野。该负结果不能被“仍略优于最初hybrid”掩盖，也不能推断所有区域学习无效；未独立识别平均池化、错误几何或负例污染各自的因果。不在已探索开发集继续扫描网格/尺度规避此固定对照。来源：`ziyu24/cqc_P20@1230672025a0b8a3bef04b82f52d0c09dec88cf4`；`src/p20_region_features.py`、`src/run_region_features.py`、`configs/region_features.json`、`lab/result.md`、`lab/failed_methods.md`。
 
 ## 教训三：总体正例保留不保证分类别检测保持，更不能替代完整联合标准
 
@@ -92,3 +96,4 @@ SPWOOD上的补证：同一个普通前景头前置使用，将unknown AP/P/R从
 - 固定跨视图几何乘子及其known恢复组合未满足局部或联合条件；不再用几何AUC或优于错位替代检测收益，未训练的前景策略不登记为失败。
 - 不再以共享原始输入推定内部增强后的密集对应；受影响旧训练结果不作为正确基线，新修复结果仍须独立评价科学目标。
 - 局部HBox包络质量未提供满足known保持的独立增量；不继续用该开发集扫描代理参数，也不把该有限负结果扩展为一般几何质量学习失败。
+- 固定同层7×7区域池化相对同预算单点头退步，结束该表示对照，不以较弱旧参照或网格/尺度扫描延续；一般区域学习和其他负例总体仍属不同待验证条件。
