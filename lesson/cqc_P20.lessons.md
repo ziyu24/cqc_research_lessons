@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`，分数语义与非互斥读出见`src/p20_hbox_scores.py`与`src/p20_hbox_routing.py`。最新来源主线`005073306288494dae12e8d217b0cf47179a926d`，已抓取全部远端分支，仅main。
+先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`，分数语义与非互斥读出见`src/p20_hbox_scores.py`与`src/p20_hbox_routing.py`。最新来源主线`9fb28d783598880ceb024caed2e54a18331409e0`，已抓取全部远端分支，仅main。
 
 ## 项目研究什么
 
@@ -16,7 +16,7 @@
 
 固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。历史PWOOD冻结特征前景学习的歧义忽略臂提高unknown AP，却未同时优于全背景对照的precision，不能称完整联合成功。SPWOOD密集候选阶段定位确认筛选大量丢失已有几何覆盖，同时密集框也有缺口。后续同头前置/后置学习评分已有真实AP/P/R增量，前置更强；但绝对precision仍极低、同池known保持失败，不能将局部进步升级为完整成功。局部HBox包络质量与同样本二值目标的配对比较现已完成并独立复算：连续目标提高unknown AP/P/R却降低known mAP，两种局部目标均未满足原联合条件。显式区域特征的固定对照也已完成，较单点的known与unknown主要指标均退步；同预算的密集负例总体替换也已完成并独立重算，较旧池单点头退步，未满足联合条件。Point邻居删除组件诊断现已完成：固定人工协方差下，129例中最近邻删除31例同时改变目标方差和未归约协方差输入梯度，最远删除0例。完整输入、254份逐图结果及387次原生计算已独立复核；这支持有限组件依赖，不证明有害监督、类别缺失独立因果或检测收益。真实Point基线的输入与原生CPU路径已完成交付前检查，尚无训练性能。
 
-最新冻结读出对照不含梯度训练：统一混合候选中的对象性分数，再允许拒识候选同时提交原known标签。known mAP恢复到36.1897%，unknown AP仍仅0.149349%，同池known损失仍3.0216点，原联合条件失败。局部恢复不支持已解决HBox或已形成创新方法。此前已交付的Point长训已撤回且未执行，不将它计为训练失败；后续仅正例统计模型尚未执行，不登记性能结论。
+最新冻结读出对照不含梯度训练：统一混合候选中的对象性分数，再允许拒识候选同时提交原known标签，known mAP恢复到36.1897%。随后仅用相同付费正例解析拟合的单一对角高斯使unknown AP从0.149349%升至0.657104%，known mAP为36.2417%，但固定操作点precision下降、TP仍121、同池known损失仍2.9696点；原局部与联合条件失败。局部恢复和排序增益不支持已解决HBox或已形成创新方法。此前Point长训已撤回且未执行，不将它计为训练失败；同一高斯用于筛选前的部署仅已交付，尚无性能结果。
 
 ## 实际采用过的方法
 
@@ -55,6 +55,8 @@ DOTA-v1.0原图固定划分，训练图中20%进入L、L内各known类保留20%�
 SPWOOD上的补证：同一个普通前景头前置使用，将unknown AP/P/R从0.017050%/0.077787%/12.6609%提高到0.142495%/0.154421%/25.9657%，同时优于后置的0.106615%/0.122659%/19.3133%。这是可保留的真实增量，但121个TP伴随78,236个FP，其中74,599个与非difficult GT的旋转IoU<.1；既不能用相对倍数宣称系统可用，也不能因整体不达标抹去前置增量。低重叠不等于可信背景，尚未识别负例污染、表示或定位质量的独立因果。来源：`ziyu24/cqc_P20@7dfdf21168a5eb817d3578d7eee528ae3fd055a0`；`lab/result.md`、`lab/failed_methods.md`、`src/run_learned_proposals.py`、`src/evaluate_open_spwood.py`。
 
 区域输入的补充边界：在同样本、同头、同初态和训练量下，将单点特征换为上述固定区域池化，unknown AP/P/R从0.142495%/0.154421%/25.9657%退为0.024143%/0.084086%/13.5193%，known mAP从31.6457%退为28.7076%；相对自身known-only仍损失7.2159点。显式加入候选框区域条件不保证更有效的前景表示，单点卷积输入原本也有感受野。该负结果不能被“仍略优于最初hybrid”掩盖，也不能推断所有区域学习无效；未独立识别平均池化、错误几何或负例污染各自的因果。不在已探索开发集继续扫描网格/尺度规避此固定对照。来源：`ziyu24/cqc_P20@1230672025a0b8a3bef04b82f52d0c09dec88cf4`；`src/p20_region_features.py`、`src/run_region_features.py`、`configs/region_features.json`、`lab/result.md`、`lab/failed_methods.md`。
+
+第二条的一类评分补证：原2,267个付费匹配正例在256维L2归一化特征上估计均值和无偏逐维方差，固定exp(−标准化平方距离均值)替换unknown项，known继续用旧MLP；不使用负例、不改变候选、拒识和实际条数。unknown AP提高0.507755个百分点，同5%召回处precision从0.611933%升至5.095541%，说明高分端排序有真实增量；但固定.05操作点precision从0.194740%降至0.191981%，FP增加893，原条件仍失败。不同分数的尺度与完整排序是不同评价对象，不能只用单点否定全部排序价值，也不能事后选新阈值改判成功。known正例存在类别选择偏差，模型族与负例使用同时变化，不能由此识别负例污染的独立因果或称无偏前景估计。来源：`ziyu24/cqc_P20@9fb28d783598880ceb024caed2e54a18331409e0`；`src/p20_positive_gaussian.py`、`src/run_positive_gaussian.py`、`src/audit_positive_gaussian.py`、`lab/result.md`、`lab/failed_methods.md`。
 
 ## 教训三：总体正例保留不保证分类别检测保持，更不能替代完整联合标准
 
@@ -137,3 +139,5 @@ Point组件的补充边界：上述近/远删除在同一图像、目标和人�
 - 不再以相同付费/可见实例总数声称Point/HBox严格单因素；原发布异常只明确列差集和解释边界，不擅改数据，也不把未完成的Point训练登记为失败。
 
 - 固定分数统一和非互斥读出保留局部正结果，但联合条件仍失败；结束这些读出的阈值、配额、倍率及训练扫描，不以重复输出或较弱参照规避known损失，也不据此重启已撤回Point长训。
+
+- 固定末端正例高斯保留AP及高分端排序增益，但操作点precision与known保持未达联合条件；停止其参数、阈值和训练扫描。筛选前部署属于改变候选的待验证作用位置，不能把未执行结果当作成功或以它撤销末端对照失败。
