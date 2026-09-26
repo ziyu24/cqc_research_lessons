@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-来源主线为 `ziyu24/cqc_P19@d70f96c2be3df0c1461253474561c054409e7134`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`和`runs/r013/artifacts/paired_summary.json`；固定known优先部署的完整记录复核见`doc/r014_review.json`、`src/read_r014_evidence.py`与`lab/result.md`；同一冻结学生完整解码到最终池的支持追踪见`doc/r015_review.json`、`src/read_r015_evidence.py`与`src/diagnose_r015.py`；固定学生对象性×原生centerness的质量读出见`configs/r016.json`、`src/r016_core.py`、`src/evaluate_r016.py`和`doc/r016_review.json`、`src/read_r016_evidence.py`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
+来源主线为 `ziyu24/cqc_P19@d2653439a0160c261543647ac379aabd750991f3`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`和`runs/r013/artifacts/paired_summary.json`；固定known优先部署的完整记录复核见`doc/r014_review.json`、`src/read_r014_evidence.py`与`lab/result.md`；同一冻结学生完整解码到最终池的支持追踪见`doc/r015_review.json`、`src/read_r015_evidence.py`与`src/diagnose_r015.py`；固定学生对象性×原生centerness的质量读出见`configs/r016.json`、`src/r016_core.py`、`src/evaluate_r016.py`和`doc/r016_review.json`、`src/read_r016_evidence.py`。固定SAM伪框IoU质量目标的实际端点、完整保存匹配与覆盖复核见`doc/r017_review.json`、`src/read_r017_evidence.py`及`configs/r017.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
 
 ## 项目研究什么
 
@@ -10,7 +10,7 @@
 
 ## 领域位置与当前结论
 
-PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督未知发现和稀疏known恢复已有相关方法，组合任务关键词不能单独证明创新。现有证据建立了合法known基线及多条局部负结果，尚未建立有效的完整开放世界方法。关于弱几何额外造成语义混淆的当前监督包解释未获得预设支持；这不等于整个科学目标不可能。仅以known正位置训练的独立对象性及高置信负例降权也未形成有效未知发现；其共同匹配子集存在语义改善，不能扩大为全总体成功。冻结CutLER已有真实局部覆盖增益，但简单known过滤仍未建立有效低误报发现；11点AP的零召回格敏感性限制单一AP倍数解释。同源CutLER伪框作为外部对象正支持能带来局部低误报提升，却未过预注册投入门槛；额外伪OBB回归在单种子上不呈稳定全指标收益。固定2×输入提高中大目标与IoU .5低误报发现，但small仍为零且整体门槛未过。完整可训练SAM适配明显提高固定低误报召回与small，但只提高六类中的两类TP，未通过预先固定的类别联合条件；不能把总体增益扩大为可继续投入的路线支持。随后冻结普通端点、不训练的known优先统一部署，将known mAP50从44.3514%提高至53.9312%，同时unknown实际TP由216到223，small100到102、非储罐23到24，通过其预设部署主条件。这是有效基线进展，距原生known仍7.3785个百分点；未知桥和篮球场仍零检出，不构成完整方法或推翻复合适配的失败边界。全量冻结解码进一步表明，约1.14亿有效框对unknown的几何支持为2633/2876，最终仅1198；不能继续把大部分末端缺失解释为网络完全没有框，也不能把巨大候选池的覆盖当可部署召回。随后在同一学生上固定乘入原生centerness的质量分数，从最早topk前使用反而将10-FP检出从223降至58、small从102降至0；已覆盖对象的分数重排不是默认有效的未知发现改进。
+PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督未知发现和稀疏known恢复已有相关方法，组合任务关键词不能单独证明创新。现有证据建立了合法known基线及多条局部负结果，尚未建立有效的完整开放世界方法。关于弱几何额外造成语义混淆的当前监督包解释未获得预设支持；这不等于整个科学目标不可能。仅以known正位置训练的独立对象性及高置信负例降权也未形成有效未知发现；其共同匹配子集存在语义改善，不能扩大为全总体成功。冻结CutLER已有真实局部覆盖增益，但简单known过滤仍未建立有效低误报发现；11点AP的零召回格敏感性限制单一AP倍数解释。同源CutLER伪框作为外部对象正支持能带来局部低误报提升，却未过预注册投入门槛；额外伪OBB回归在单种子上不呈稳定全指标收益。固定2×输入提高中大目标与IoU .5低误报发现，但small仍为零且整体门槛未过。完整可训练SAM适配明显提高固定低误报召回与small，但只提高六类中的两类TP，未通过预先固定的类别联合条件；不能把总体增益扩大为可继续投入的路线支持。随后冻结普通端点、不训练的known优先统一部署，将known mAP50从44.3514%提高至53.9312%，同时unknown实际TP由216到223，small100到102、非储罐23到24，通过其预设部署主条件。这是有效基线进展，距原生known仍7.3785个百分点；未知桥和篮球场仍零检出，不构成完整方法或推翻复合适配的失败边界。全量冻结解码进一步表明，约1.14亿有效框对unknown的几何支持为2633/2876，最终仅1198；不能继续把大部分末端缺失解释为网络完全没有框，也不能把巨大候选池的覆盖当可部署召回。随后在同一学生上固定乘入原生centerness的质量分数，从最早topk前使用反而将10-FP检出从223降至58、small从102降至0；已覆盖对象的分数重排不是默认有效的未知发现改进。进一步只适配对象分支到同源SAM伪框IoU目标仍使低误报TP降至181、small降至70，未通过必要参照条件；没有运行二值续训控制，不能作两个训练目标的比较归因。
 
 ## 实际采用过的方法
 
@@ -41,6 +41,8 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 同一冻结学生完整前向458图/5297窗口，记录全部解码至最终unknown的九阶段逐GT最大IoU；原生末端重放张量与已保存plain逐位一致。按完整GT复核类别、尺度及首次支持损失，未新增训练或改变正式输出。
 
 - 在同一冻结学生、known优先统一输出和300框预算下，固定以原生centerness与SAM对象分数的平方根乘积替换unknown排序；比较只重排末端集合的控制和从层内topk前生效的主臂，完整评估未知低误报、类别、尺度、known保持与阶段覆盖，未训练或搜索分数公式。
+
+- 从受保护普通端点完整状态出发，仅训练257个对象分支参数6000步，用停止梯度的预测框与既有SAM伪框旋转IoU作正目标，保留原三项BCE、采样、优化器和EMA。两卡单种子完整458图评价后，必要冻结参照失败，按预定条件跳过二值控制；完整保存匹配及GT账本复核，未重做GPU前向或独立旋转IoU。
 
 ## 教训一：成功匹配对象间的高区分度不能替代完整未知发现
 
@@ -138,15 +140,15 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 边界：原生centerness不保证校准为unknown定位质量或背景概率；结论限于该plain端点、平方根乘积、DOTA开发集和单种子冻结读出，不否定其他训练型质量信号。保留早期large TP13→42，以及末池重排非储罐24→30、三类改善的局部结果，不能写成所有类别或整条PR曲线均劣化；它们仍未过完整联合条件。阶段覆盖不隔离移除topk/NMS/预算的因果收益。保存张量和汇总已全量核验，未重做模型前向或独立旋转IoU。
 - 证据：`ziyu24/cqc_P19@d70f96c2be3df0c1461253474561c054409e7134`；`doc/r016_review.json`、`src/read_r016_evidence.py`、`configs/r016.json`、`configs/r016.recovery.json`、`src/r016_core.py`、`src/evaluate_r016.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r016/artifacts/summary/metrics.json`。
 
-## 方法族停止索引
-
 ## 教训十三：同源伪框IoU软质量目标不能默认改善低误报发现
 
 - 失败命题：在冻结表示与框几何、既有SAM缓存和原训练状态不变时，只把SAM正位置的对象性目标由二值1改为停止梯度的预测框—伪框旋转IoU，就会比冻结known-first部署提高跨类、跨尺度的低误报unknown发现。
-- 失败原因：同一plain端点、6000步、单种子和两卡下，该软质量目标在458开发图/5297窗口的10 FP/图点为181/2876 unknown TP（6.2935%），低于冻结参照223/2876（7.7538%）；small从102降至70，非储罐TP未超过24，严格改善类别不足三。known原生和部署输出逐位相等，故失败不是known保护失效。预设必要参照门槛已失败，匹配binary控制未运行，不能把结果写成两个训练目标的比较归因。
+- 失败原因：同一plain端点、6000步、单种子和两卡下，该软质量目标在458开发图/5297窗口的10 FP/图点为181/2876 unknown TP（6.2935%），低于冻结参照223/2876（7.7538%）；small从102降至70，非储罐TP未超过24，仅棒球场严格改善；新增14、丢失56个unknown。虽然学生框几何参数冻结，重排后的最终unknown支持仍从1198降至1152、small支持433降至389，不能将冻结几何等同于最终候选不变。known原生和部署输出逐位相等，故失败不是known保护失效。预设必要参照门槛已失败，匹配binary控制未运行，不能把结果写成两个训练目标的比较归因。
 - 后续做法：质量目标适配须先固定共同起点、训练状态、候选链、完整GT和known保护，再以低误报TP、small、非主导类别及known等价的联合条件裁决；必要参照失败时停止该固定适配，不通过扫描软目标形式、阈值、学习率、步数、预算或种子挽救。
 - 边界：该证据只约束此SAM伪框IoU软目标、257参数对象分支、该DOTA开发集和单种子固定预算；不否定其他质量学习、真实几何监督或原弱标签开放世界问题。三次身份序列化续接错误均未重跑已完成训练，工程退出不作为科学负证据。
-- 证据：`ziyu24/cqc_P19@72a72fbeb45c14971643be931b551ad9ca7bbd9b`；`lab/result.md`、`lab/failed_methods.md`、`configs/r017.json`、`configs/r017.recovery.json`、`src/train_r017.py`、`src/evaluate_r017.py`、`src/run_r017.py`、`runs/r017/artifacts/eval_quality/summary/metrics.json`、`runs/r017/artifacts/paired_summary.json`。
+- 证据：`ziyu24/cqc_P19@d2653439a0160c261543647ac379aabd750991f3`；`doc/r017_review.json`、`src/read_r017_evidence.py`、`lab/result.md`、`lab/failed_methods.md`、`configs/r017.json`、`configs/r017.recovery.json`、`src/train_r017.py`、`src/evaluate_r017.py`、`src/run_r017.py`、`runs/r017/artifacts/eval_quality/summary/metrics.json`、`runs/r017/artifacts/paired_summary.json`。
+
+## 方法族停止索引
 
 | 方法或解释 | 当前证据支持的停止边界 | 仍未裁决 |
 | --- | --- | --- |
