@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`，分数语义与非互斥读出见`src/p20_hbox_scores.py`与`src/p20_hbox_routing.py`。最新来源主线`1cd3fe4485fd160c4d2e23e63079ea50c9477930`，已抓取全部远端分支，仅main。
+先读来源`lab/discussion.md`确认SPWOOD主线，再读`lab/result.md`的修正指标与候选诊断；几何依据在`src/p20_geometry.py`、`src/check_geometry.py`，拒识与校准在`src/evaluate_open_spwood.py`、`src/p20_calibration.py`、`src/calibrate_open_spwood.py`，师生对应反例见`src/check_spwood_semantics.py`与`src/check_p20_shared_geometry.py`，分数语义与非互斥读出见`src/p20_hbox_scores.py`与`src/p20_hbox_routing.py`。最新来源主线`62576cd16675761c14758b6d3fb73b072fa418b3`，已抓取全部远端分支，仅main。
 
 ## 项目研究什么
 
@@ -16,7 +16,7 @@
 
 固定旋转视图的真实几何一致性有描述性区分信号，但直接重加权及其known恢复组合均未提升unknown AP。历史PWOOD冻结特征前景学习的歧义忽略臂提高unknown AP，却未同时优于全背景对照的precision，不能称完整联合成功。SPWOOD密集候选阶段定位确认筛选大量丢失已有几何覆盖，同时密集框也有缺口。后续同头前置/后置学习评分已有真实AP/P/R增量，前置更强；但绝对precision仍极低、同池known保持失败，不能将局部进步升级为完整成功。局部HBox包络质量与同样本二值目标的配对比较现已完成并独立复算：连续目标提高unknown AP/P/R却降低known mAP，两种局部目标均未满足原联合条件。显式区域特征的固定对照也已完成，较单点的known与unknown主要指标均退步；同预算的密集负例总体替换也已完成并独立重算，较旧池单点头退步，未满足联合条件。Point邻居删除组件诊断现已完成：固定人工协方差下，129例中最近邻删除31例同时改变目标方差和未归约协方差输入梯度，最远删除0例。完整输入、254份逐图结果及387次原生计算已独立复核；这支持有限组件依赖，不证明有害监督、类别缺失独立因果或检测收益。真实Point基线的输入与原生CPU路径已完成交付前检查，尚无训练性能。
 
-最新冻结读出对照不含梯度训练：统一混合候选中的对象性分数，再允许拒识候选同时提交原known标签，known mAP恢复到36.1897%。随后仅用相同付费正例解析拟合的单一对角高斯使unknown AP从0.149349%升至0.657104%，known mAP为36.2417%，但固定操作点precision下降、TP仍121、同池known损失仍2.9696点；原局部与联合条件失败。局部恢复和排序增益不支持已解决HBox或已形成创新方法。此前Point长训已撤回且未执行，不将它计为训练失败；同一高斯前移至密集top-k和NMS后，unknown TP由121降至120、AP由0.657104%降至0.511256%，known mAP降至34.8401%；该固定尝试也失败，已结束其局部扫描。当前没有新增训练任务，不将完整项目登记结束。
+最新冻结读出对照不含梯度训练：统一混合候选中的对象性分数，再允许拒识候选同时提交原known标签，known mAP恢复到36.1897%。随后仅用相同付费正例解析拟合的单一对角高斯使unknown AP从0.149349%升至0.657104%，known mAP为36.2417%，但固定操作点precision下降、TP仍121、同池known损失仍2.9696点；原局部与联合条件失败。局部恢复和排序增益不支持已解决HBox或已形成创新方法。此前Point长训已撤回且未执行，不将它计为训练失败；同一高斯前移至密集top-k和NMS后，unknown TP由121降至120、AP由0.657104%降至0.511256%，known mAP降至34.8401%；该固定尝试也失败，已结束其局部扫描。当前没有新增训练任务，不将完整项目登记结束。新增公开开放世界作者权重参照的交付，尚无新性能结果；输入身份反例不能当作检测方法收益。
 
 ## 实际采用过的方法
 
@@ -126,6 +126,14 @@ Point组件的补充边界：上述近/远删除在同一图像、目标和人�
 - 边界：统一分数的局部增益不能证明旧MLP是充分或无偏前景估计，也不能识别假设负例污染的独立因果。后续非互斥虽再恢复known，仍未过联合条件；数据仅单seed、已探索开发集，不支持泛化或跨种子稳定性。这些有限负结果不否定SPWOOD、其他前景学习或弱标注增量。
 - 证据：`ziyu24/cqc_P20@005073306288494dae12e8d217b0cf47179a926d`；`src/p20_hbox_scores.py`、`src/run_hbox_score_consistency.py`、`src/p20_hbox_routing.py`、`lab/result.md`、`lab/failed_methods.md`。
 
+## 教训十：公开基准名单相同，不保证模型输入与评测真值身份一致
+
+- 失败命题：使用作者发布的测试名单、模型和评测器，就自动保证完整且一一对应的基准复现；不同数据源的数字文件名可统一转成整数ID。
+- 失败原因：实际公开名单10246行包含9119个不同字符串ID，却仅有9058个不同整数ID。VOC与COCO的61对不同图片在整数化后重名，loader取最后文件而evaluator取第一GT，形成错配；重复输入又会在去重GT的评测中产生额外FP。对两个不同图像ID各给一条正确预测的合成反例，原最终precision为0.5，保持完整字符串后为1.0。数量接近、同一名单或正常载入不保证评测有效。
+- 后续做法：在正式推理前固定来源名单、完整字符串ID或数据源命名空间，分别检查原记录、多重性、加载后全集、跨划分交叉及GT/图像映射；每图处理一次，零预测图仍在完整总体中。沿用原检测器和匹配语义，仅修身份及空预测；修复后的口径必须单独报告，不能调参追旧表格或把数据修复收益冒充新检测机制。
+- 边界：已验证的是特定公开版本的数据映射缺陷与合成反例，未独立重跑作者训练或真实完整检测；不能据此否定论文数值真实性、DPOD方法有效性，或将所有开放世界实现判错。使用作者完整框权重建立独立参照，也不等同已复现本项目弱框/稀疏预算。
+- 证据：`ziyu24/cqc_P20@62576cd16675761c14758b6d3fb73b072fa418b3`；`src/p20_dpod_reference.py`、`src/check_dpod_reference.py`、`configs/dpod_reference.json`、`doc/paper_reading.md`、`lab/result.md`。公开源为`HelloHeeju/SA-OWOD@eb90da8402c9fa3ee10c3841a2ef4d6fd17c60d8`的`core/pascal_voc.py`、`core/pascal_voc_evaluation.py`及`datasets/ImageSets/Main/test.txt`。
+
 ## 方法族停止索引
 
 - 不再将不同GT拟合函数的替换称作纯角度规范修正；使用原拟合与正面积保留规则。
@@ -143,3 +151,5 @@ Point组件的补充边界：上述近/远删除在同一图像、目标和人�
 - 固定分数统一和非互斥读出保留局部正结果，但联合条件仍失败；结束这些读出的阈值、配额、倍率及训练扫描，不以重复输出或较弱参照规避known损失，也不据此重启已撤回Point长训。
 
 - 固定末端正例高斯保留AP及高分端排序增益，但操作点precision与known保持未达联合条件；停止其参数、阈值和训练扫描。同一参数的筛选前部署现已出现净TP和主要性能退步，结束该固定尝试及局部扫描；保留末端排序正信号，不改写为整个前景学习或SPWOOD范式失败。
+
+- 不再用整数化后发生跨数据源别名的输入/GT映射宣称有效复现；数据身份修复后的参照须标明口径差异，尚无性能的作者权重复核不登记为方法成功或失败。
