@@ -2,11 +2,9 @@
 
 ## 快速阅读路径
 
-来源主线为 `ziyu24/cqc_P19@d2653439a0160c261543647ac379aabd750991f3`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`和`runs/r013/artifacts/paired_summary.json`；固定known优先部署的完整记录复核见`doc/r014_review.json`、`src/read_r014_evidence.py`与`lab/result.md`；同一冻结学生完整解码到最终池的支持追踪见`doc/r015_review.json`、`src/read_r015_evidence.py`与`src/diagnose_r015.py`；固定学生对象性×原生centerness的质量读出见`configs/r016.json`、`src/r016_core.py`、`src/evaluate_r016.py`和`doc/r016_review.json`、`src/read_r016_evidence.py`。固定SAM伪框IoU质量目标的实际端点、完整保存匹配与覆盖复核见`doc/r017_review.json`、`src/read_r017_evidence.py`及`configs/r017.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
+来源主线为 `ziyu24/cqc_P19@ab02c58b18cb76d48d2371114aba29e50f973669`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`和`runs/r013/artifacts/paired_summary.json`；固定known优先部署的完整记录复核见`doc/r014_review.json`、`src/read_r014_evidence.py`与`lab/result.md`；同一冻结学生完整解码到最终池的支持追踪见`doc/r015_review.json`、`src/read_r015_evidence.py`与`src/diagnose_r015.py`；固定学生对象性×原生centerness的质量读出见`configs/r016.json`、`src/r016_core.py`、`src/evaluate_r016.py`和`doc/r016_review.json`、`src/read_r016_evidence.py`。固定SAM伪框IoU质量目标的实际端点、完整保存匹配与覆盖复核见`doc/r017_review.json`、`src/read_r017_evidence.py`及`configs/r017.json`。固定PF-RPN＋SAM及两个控制的完整复核见`doc/r018_review.json`、`src/read_r018_evidence.py`和`runs/r018/artifacts/paired_summary.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
 
 ## 项目研究什么
-
-本轮更新来源为 `ziyu24/cqc_P19@9d4b1dfc3dddb4e70ef018acc01140a61e276261`：固定PF-RPN提案、SAM OBB、PF水平框与SAM自动掩码控制的证据见 `configs/r018.json`、`src/run_r018.py`、`doc/r018_execution.md` 和 `runs/r018/artifacts/paired_summary.json`。
 
 项目研究在少量图像只提供known类别点/HBox标签、其余图像无标签的情况下，如何检测known和unknown的旋转框，区分未学好的known与真正新类别，并在新类弱标签揭示后增量学习。当前实验仅使用HBox，不能继承为点监督或完整增量结果。
 
@@ -157,10 +155,10 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 ## 教训十四：强外部提案的总量增益不能替代冻结 small 保持条件
 
 - 失败命题：独立检测预训练的提案经强分割模型细化后，只要总体低误报 unknown 检出、非主导类别和既有 known 输出改善，就足以把该组合视作可继续投入的开放世界方法。
-- 失败原因：在固定458开发图、5297窗口、300总框和10 FP/图下，PF-RPN＋SAM OBB 的 unknown TP 为303/2876，高于冻结 known-first 的223；non-tank为66对24，五个类别严格增加，known逐位相等。但 small TP 从102降至3，故完整联合条件失败。它对相同PF水平框控制的303对245、small 3对2，以及对匹配SAM自动掩码控制的303对59，只说明这条外部强先验链内的相对表现，不能抵消相对冻结部署的小目标退化。
+- 失败原因：在固定458开发图、5297窗口、300总框和10 FP/图下，PF-RPN＋SAM OBB 的 unknown TP 为303/2876，高于冻结 known-first 的223；non-tank为66对24，五个类别严格增加，known逐位相等。但 small TP 从102降至3，故完整联合条件失败。它对相同PF水平框控制的303对245、small 3对2，以及对匹配SAM自动掩码控制的303对59，只说明这条外部强先验链内的相对表现，不能抵消相对冻结部署的小目标退化。完整复核显示主输出新增274、丢失194、与原部署共有29个低误报检出；其窗口上限后small支持277/1312、末池155而实际仅3个TP，支持和排序不足并存，不能唯一归因分割转换、known排除或NMS。
 - 后续做法：评估强外部对象/分割先验时，将预训练来源和成本单列，固定输入、known输出、预算、完整GT与低误报并列规则；同时以总体、small、非主导类别和known等价的预注册联合条件裁决。若任一条件失败，停止该固定前端，而不是通过提示、尺寸、阈值、预算或种子搜索补救。
-- 边界：结果仅约束这组PF-RPN权重、SAM OBB转换、固定水平框/AMG控制和该DOTA开发协议；不证明PF-RPN或SAM一般无效，也不否定其他独立对象先验。PF＋SAM相对水平框的差异不隔离可迁移的SAM因果收益，更不能冒充项目内弱监督创新。
-- 证据：`ziyu24/cqc_P19@9d4b1dfc3dddb4e70ef018acc01140a61e276261`；`lab/result.md`、`lab/failed_methods.md`、`configs/r018.json`、`configs/r018.recovery.json`、`src/run_r018.py`、`doc/r018_execution.md`、`runs/r018/artifacts/paired_summary.json`。
+- 边界：结果仅约束这组PF-RPN权重、SAM OBB转换、固定水平框/AMG控制和该DOTA开发协议；不证明PF-RPN或SAM一般无效，也不否定其他独立对象先验。PF＋SAM相对水平框的差异不隔离可迁移的SAM因果收益，更不能冒充项目内弱监督创新。两源分别在各自10-FP点的497个对象并集，只说明描述性互补，不是共同FP/框预算的部署召回、可达上界或融合已成功。完整保存匹配和汇总已核验，未重新前向或独立旋转IoU。
+- 证据：`ziyu24/cqc_P19@ab02c58b18cb76d48d2371114aba29e50f973669`；`doc/r018_review.json`、`src/read_r018_evidence.py`、`lab/result.md`、`lab/failed_methods.md`、`configs/r018.json`、`configs/r018.recovery.json`、`src/run_r018.py`、`doc/r018_execution.md`、`runs/r018/artifacts/paired_summary.json`。
 
 ## 方法族停止索引
 
