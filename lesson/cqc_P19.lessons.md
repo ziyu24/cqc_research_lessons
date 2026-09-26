@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-来源主线为 `ziyu24/cqc_P19@13f4bf52f1a291f46e6140a49640b8112eda2994`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`和`runs/r013/artifacts/paired_summary.json`；固定known优先部署的完整记录复核见`doc/r014_review.json`、`src/read_r014_evidence.py`与`lab/result.md`；同一冻结学生完整解码到最终池的支持追踪见`doc/r015_review.json`、`src/read_r015_evidence.py`与`src/diagnose_r015.py`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
+来源主线为 `ziyu24/cqc_P19@0c3e6a8ee9d6ea296c17633f744704cad5b35b20`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`和`runs/r013/artifacts/paired_summary.json`；固定known优先部署的完整记录复核见`doc/r014_review.json`、`src/read_r014_evidence.py`与`lab/result.md`；同一冻结学生完整解码到最终池的支持追踪见`doc/r015_review.json`、`src/read_r015_evidence.py`与`src/diagnose_r015.py`；固定学生对象性×原生centerness的质量读出见`configs/r016.json`、`src/r016_core.py`、`src/evaluate_r016.py`和`runs/r016/artifacts/summary/metrics.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
 
 ## 项目研究什么
 
@@ -10,7 +10,7 @@
 
 ## 领域位置与当前结论
 
-PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督未知发现和稀疏known恢复已有相关方法，组合任务关键词不能单独证明创新。现有证据建立了合法known基线及多条局部负结果，尚未建立有效的完整开放世界方法。关于弱几何额外造成语义混淆的当前监督包解释未获得预设支持；这不等于整个科学目标不可能。仅以known正位置训练的独立对象性及高置信负例降权也未形成有效未知发现；其共同匹配子集存在语义改善，不能扩大为全总体成功。冻结CutLER已有真实局部覆盖增益，但简单known过滤仍未建立有效低误报发现；11点AP的零召回格敏感性限制单一AP倍数解释。同源CutLER伪框作为外部对象正支持能带来局部低误报提升，却未过预注册投入门槛；额外伪OBB回归在单种子上不呈稳定全指标收益。固定2×输入提高中大目标与IoU .5低误报发现，但small仍为零且整体门槛未过。完整可训练SAM适配明显提高固定低误报召回与small，但只提高六类中的两类TP，未通过预先固定的类别联合条件；不能把总体增益扩大为可继续投入的路线支持。 随后冻结普通端点、不训练的known优先统一部署，将known mAP50从44.3514%提高至53.9312%，同时unknown实际TP由216到223，small100到102、非储罐23到24，通过其预设部署主条件。这是有效基线进展，距原生known仍7.3785个百分点；未知桥和篮球场仍零检出，不构成完整方法或推翻复合适配的失败边界。 全量冻结解码进一步表明，约1.14亿有效框对unknown的几何支持为2633/2876，最终仅1198；不能继续把大部分末端缺失解释为网络完全没有框，也不能把巨大候选池的覆盖当可部署召回。
+PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督未知发现和稀疏known恢复已有相关方法，组合任务关键词不能单独证明创新。现有证据建立了合法known基线及多条局部负结果，尚未建立有效的完整开放世界方法。关于弱几何额外造成语义混淆的当前监督包解释未获得预设支持；这不等于整个科学目标不可能。仅以known正位置训练的独立对象性及高置信负例降权也未形成有效未知发现；其共同匹配子集存在语义改善，不能扩大为全总体成功。冻结CutLER已有真实局部覆盖增益，但简单known过滤仍未建立有效低误报发现；11点AP的零召回格敏感性限制单一AP倍数解释。同源CutLER伪框作为外部对象正支持能带来局部低误报提升，却未过预注册投入门槛；额外伪OBB回归在单种子上不呈稳定全指标收益。固定2×输入提高中大目标与IoU .5低误报发现，但small仍为零且整体门槛未过。完整可训练SAM适配明显提高固定低误报召回与small，但只提高六类中的两类TP，未通过预先固定的类别联合条件；不能把总体增益扩大为可继续投入的路线支持。随后冻结普通端点、不训练的known优先统一部署，将known mAP50从44.3514%提高至53.9312%，同时unknown实际TP由216到223，small100到102、非储罐23到24，通过其预设部署主条件。这是有效基线进展，距原生known仍7.3785个百分点；未知桥和篮球场仍零检出，不构成完整方法或推翻复合适配的失败边界。全量冻结解码进一步表明，约1.14亿有效框对unknown的几何支持为2633/2876，最终仅1198；不能继续把大部分末端缺失解释为网络完全没有框，也不能把巨大候选池的覆盖当可部署召回。随后在同一学生上固定乘入原生centerness的质量分数，从最早topk前使用反而将10-FP检出从223降至58、small从102降至0；已覆盖对象的分数重排不是默认有效的未知发现改进。
 
 ## 实际采用过的方法
 
@@ -39,6 +39,8 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 冻结完整训练的普通学生，以原生known优先、unknown补剩余名额建立同300预算输出及known-only对照，零新训练和先验。完整458图/26943GT和两卡计算记录通过保存产物复核；没有重做全量模型前向或独立旋转IoU，基线已通过部署主判据。
 
 - 同一冻结学生完整前向458图/5297窗口，记录全部解码至最终unknown的九阶段逐GT最大IoU；原生末端重放张量与已保存plain逐位一致。按完整GT复核类别、尺度及首次支持损失，未新增训练或改变正式输出。
+
+- 在同一冻结学生、known优先统一输出和300框预算下，固定以原生centerness与SAM对象分数的平方根乘积替换unknown排序；比较只重排末端集合的控制和从层内topk前生效的主臂，完整评估未知低误报、类别、尺度、known保持与阶段覆盖，未训练或搜索分数公式。
 
 ## 教训一：成功匹配对象间的高区分度不能替代完整未知发现
 
@@ -128,6 +130,14 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 边界：三项机制作为联合包执行，结果不能归因给动态去重、对象性分工或置信度加权中的任一项。noise臂从32000步恢复，不能把本次单种子结果写成全程逐位等价或跨种子稳定性；结论不否定其他先验、不同机制或项目的完整弱标签增量目标。 同一plain端点后续known优先部署的+9.5798个百分点known收益及unknown/small/非储罐不降，是应保留的正结果；它只改变联合输出，不能逆向证明失败训练包有效，也不能将部署增益归因给未经分离的单一筛选步骤。
 - 证据：`ziyu24/cqc_P19@00074b711cd664a53beed43e6accb56bc4bb8943`；`doc/r014_review.json`、`src/read_r014_evidence.py`；原训练复核来源`ziyu24/cqc_P19@0a5b45b762aac7d3aadb3227bd94a38abd1d3225`；`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r013/artifacts/paired_summary.json`。
 
+## 教训十二：已覆盖未知对象的centerness重排不默认改善低误报发现
+
+- 失败命题：将冻结学生的对象分数与同位置原生centerness以固定乘积质量分数结合，并在候选截断前使用，就能在同一预算下保留known并提高unknown低误报检出。
+- 失败原因：同一458开发图、5297窗口、完整2876个unknown和每图300框下，主早期读出保持known mAP50为53.9312%，但10 FP/图unknown TP由known优先参照的223降至58，small TP由102降至0，非储罐TP由24降至22，六类中仅两类TP增加。只重排参照末端unknown集合的控制也仅80 TP、small为0，说明已有框的分数重排不能被假定为安全改进。
+- 后续做法：对质量或定位分数的读出，固定候选、known输出、预算、完整GT分母及同分FP规则，分别检验末端重排和早期选择；同时报告低误报TP、small、非主导类别、known保持和配对新增/丢失。任一联合条件失败即停止该固定读出，不扫描幂指数、阈值或预算寻找通过点。
+- 边界：原生centerness来自known训练，既非unknown定位质量也非背景概率；结论限于该plain端点、平方根乘积、DOTA开发集和单种子冻结读出，不否定其他训练型质量信号或已授权外机制。阶段覆盖不隔离移除topk/NMS/预算的因果收益。
+- 证据：`ziyu24/cqc_P19@0c3e6a8ee9d6ea296c17633f744704cad5b35b20`；`configs/r016.json`、`configs/r016.recovery.json`、`src/r016_core.py`、`src/evaluate_r016.py`、`lab/result.md`、`lab/failed_methods.md`、`runs/r016/artifacts/summary/metrics.json`。
+
 ## 方法族停止索引
 
 | 方法或解释 | 当前证据支持的停止边界 | 仍未裁决 |
@@ -142,5 +152,6 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 | 固定2×输入尺度适配 | 当前单一放大未同时满足低误报绝对/增幅及small条件，不追加尺度、阈值或预算搜索 | 其他前端、真实多尺度训练及新授权策略 |
 | 固定SAM自动掩码 | 当前高前端覆盖未转化为低误报和small收益，不扫描网格、阈值、预算或训练挽救 | 其他独立对象先验及新授权协议 |
 | 完整可训练SAM复合伪框适配 | 当前总体增益未满足类别广度联合条件，不扫阈值、步数或种子挽救 | 其他独立机制、先验及完整弱标签增量 |
+| 冻结学生对象分数×原生centerness质量读出 | 当前固定早期重排降低低误报与small，不扫描公式、阈值或预算挽救 | 训练型质量信号及其他授权机制 |
 
 这些是实现与解释范围内的边界，不是项目STOP指令或跨项目否决规则。
