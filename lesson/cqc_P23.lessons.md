@@ -38,6 +38,8 @@
 
 保持相同SAM joint监督、从完整公共初态将原生无标签损失置零的两臂完成后，开启减关闭的带噪合法best/终点AP50/AP75分别为+3.098/+19.080、+10.038/+18.665点，干净为+8.431/+3.219、+8.224/+.202点，均满足预设必要条件。这补齐了固定方法下的无标签实用增量，不能用旧SPA交互失败抹去此正结果。启用前两个时点仍有非零轨迹差，故不能称逐bit反事实、统计显著性或纯训练因果；角度消融失败与公开掩码预训练边界保留。
 
+进一步固定SAM joint及无标签学习，只删除SPA损失贡献、保留其前向与选样，从共同完整初态训练24000步后，带噪合法best/终点相对完整方法的AP50/AP75为−.187/−1.191、−.554/−1.807点，严格指标均未满足预设实用容差。固定删减没有通过，干净臂按必要条件未运行，不能补写其性能；这不撤销完整物理监督与无标签学习的既有正结果，也不构成SPA普遍必要性或统计非劣结论。
+
 ## 实际采用过的方法
 
 完成文献与公开代码核查后，使用PWOOD HBox在HRSC单类上进行干净/带噪标签与无标签损失0/1的四组训练。固定一个种子、87张全实例弱标图、259实例中77个离线固定几何扰动，其余349张无标签；比较24000步teacher在181张val上的AP50/VOC07。保留原生EMA、优化器和采样，24000步只是原生日程前缀。论文表格与本项目实测分别记录，不能称完整复现。
@@ -215,7 +217,8 @@
 - 后续做法：对复合几何监督保留相同信息、相同前向值而改变梯度路径的机制对照，分别裁决总体性能与组件增量；同时报告合法选优和固定终点，保留完整PR及严格匹配。后续围绕原问题补齐相同外部监督下的无标签开关控制，不能将SAM相对SPA的全部增益直接称为无标签学习贡献，也不靠调角度权重追逐消融通过。
 - 边界：仅固定公开SAM物理目标、归一化GWD、PWOOD+SPA、单种子HRSC合成HBox和24000步前缀；不证明角度梯度普遍有害，也不构成零效应、统计显著性或创新性证明。共同完整初态不保证后续CUDA/worker逐bit配对，多轮探索val与额外公开掩码监督限制仍在。同SAM的无标签开关必要对照现已完成且支持实用增量；这修正其此前未知状态，不补救角度路径的独立归因，也不证明整个公开组件组合具有新颖性。
 - 证据：`ziyu24/cqc_P23@409d45c383e09aabc75e261dd085ea5863b78a41`，`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`configs/sam_rotation.json`、`src/sam_rotation_head.py`、`src/execute_sam_rotation.py`、`src/audit_sam_rotation.py`；[来源复核](https://github.com/ziyu24/cqc_P23/blob/409d45c383e09aabc75e261dd085ea5863b78a41/lab/result.md)。来源全部远端分支仅main；实际输入、五份配置、20份完整PR与十份模型/恢复状态已核验，审查只读重算，没有新增训练。训练日志有每臂两设备真实前反向，但物理GPU UUID快照未覆盖全部训练子进程，不能将父进程记录冒充逐臂独立观测。
-- 补充证据：`ziyu24/cqc_P23@dfde7fa7282c53b81f89a0a626c5a7a0b10da91a`，`lab/result.md`、`lab/discussion.md`、`configs/sam_unlabel.json`、`src/execute_sam_unlabel.py`、`src/sam_unlabel_runtime.py`、`src/audit_sam_unlabel.py`；[无标签控制复核](https://github.com/ziyu24/cqc_P23/blob/dfde7fa7282c53b81f89a0a626c5a7a0b10da91a/lab/result.md)。来源全部远端分支仅main；八份完整PR、独立原图全集、两条轨迹及四份完整状态均已只读核验与重算，没有新训练。计数差异是置信度截断口径，不是AP公式错误；待执行的SPA损失移除没有效果结论。
+- 补充证据：`ziyu24/cqc_P23@dfde7fa7282c53b81f89a0a626c5a7a0b10da91a`，`lab/result.md`、`lab/discussion.md`、`configs/sam_unlabel.json`、`src/execute_sam_unlabel.py`、`src/sam_unlabel_runtime.py`、`src/audit_sam_unlabel.py`；[无标签控制复核](https://github.com/ziyu24/cqc_P23/blob/dfde7fa7282c53b81f89a0a626c5a7a0b10da91a/lab/result.md)。来源全部远端分支仅main；八份完整PR、独立原图全集、两条轨迹及四份完整状态均已只读核验与重算，没有新训练。计数差异是置信度截断口径，不是AP公式错误。
+- 删减边界及证据：完整物理GWD可反传角度，不代表已有SPA角度辅助项自然冗余。删除该项后带噪两选择口径的AP75均未满足保持条件，完整PR终点TP75从363降为355；不能把该差仅归因于排序或角度。仅限制当前固定删除，不证明普遍必要性，不继续局部调权。`ziyu24/cqc_P23@cd53090ecff021854907385ebce1465cff24f132`，`lab/result.md`、`lab/failed_methods.md`、`configs/sam_spa_ablation.json`、`src/sam_spa_ablation.py`、`src/execute_sam_spa_ablation.py`、`src/audit_sam_spa_ablation.py`；[删减独立复核](https://github.com/ziyu24/cqc_P23/blob/cd53090ecff021854907385ebce1465cff24f132/lab/result.md)。来源全部远端分支仅main；四份完整多边形PR、输入、轨迹、零SPA反向梯度和完整恢复状态通过只读核验；未新增训练，未把跳过的干净臂写成负结果。
 
 ## 方法族停止索引
 
@@ -223,7 +226,7 @@
 
 固定三提示边界区间训练未通过带噪合法best的严格指标必要条件，按预定规则停止其剩余直接目标与干净臂；保留大幅AP50增益、终点双指标增益及严格TP增加，不把该固定候选失败升级为SAM来源无效，也不改选优或换号延续同一候选。
 
-完整物理GWD的joint与detached均通过原总体性能条件，保留两者正结果；停止把joint的角度路径额外优势写成已验证主张，不据消融失败停止整个物理监督路线。joint的无标签实用增量已通过同信息控制，旧区间停止不因此解除；尚未执行的组件删除不作性能裁决。
+完整物理GWD的joint与detached均通过原总体性能条件，保留两者正结果；停止把joint的角度路径额外优势写成已验证主张，不据消融失败停止整个物理监督路线。joint的无标签实用增量已通过同信息控制，旧区间停止不因此解除；固定SPA损失删除未通过带噪保持条件，停止本固定简化候选，干净效果仍未知。
 
 固定同状态锚点中心均值参照亦未通过原梯度、同范数方向对照与干净保真，不再调该参照或由其直接训练。该输出空间负结果不构成所有教师一致性或梯度方法族停止。
 
