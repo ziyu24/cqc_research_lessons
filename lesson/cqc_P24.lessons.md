@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源的`README.md`和`lab/discussion.md`确认原问题及当前边界，再读`lab/result.md`的早期训练、六组对照、组合验证、共同成熟状态三动作、较早共同状态的教师来源×计算量比较、固定模型图像组成及跨增强方向诊断；代码依据为`src/interventions.py`、`src/train_learning.py`、`src/summarize_factorial.py`、`src/summarize_actions.py`、`src/summarize_early_refresh.py`、`src/validation_sensitivity.py`、`src/probe_action_signals.py`、`src/summarize_signal_transfer.py`、`src/budget_allocation.py`和`src/summarize_budget_actions.py`。当前只核实单种子局部窗口，尚未证明同质量总训练成本下降。
+先读来源的`README.md`和`lab/discussion.md`确认原问题及当前边界，再读`lab/result.md`的早期训练、六组对照、组合验证、共同成熟状态三动作、较早共同状态的教师来源×计算量比较、固定模型图像组成及跨增强方向诊断；代码依据为`src/interventions.py`、`src/train_learning.py`、`src/summarize_factorial.py`、`src/summarize_actions.py`、`src/summarize_early_refresh.py`、`src/validation_sensitivity.py`、`src/probe_action_signals.py`、`src/summarize_signal_transfer.py`、`src/budget_allocation.py`、`src/summarize_budget_actions.py`、`src/audit_budget_actions.py`和`src/summarize_budget_full.py`。当前只核实单种子局部窗口，尚未证明同质量总训练成本下降。
 
 ## 项目研究什么
 
@@ -12,7 +12,7 @@
 
 使用公开PWOOD教师—学生实现，在固定HRSC2016的44张HBox弱标注、392张无标签输入上研究；合法验证为181图541框，旋转IoU0.5、VOC07 AP50。保留16类头的ship列、原生监督几何学习与EMA，单种子42。四卡全局batch12不等价于作者双卡配置，不能称完整作者复现。
 
-全部关闭无监督的简单策略有明显局部负证据；固定教师×规律半量的延长窗口出现局部正信号，但同质量总成本、跨种子稳定性、收敛速度或创新尚未成立。共同19200父态后三动作中，继续旧监督60.8289%，高于暂停58.6367%及换当前教师后固定60.2086%。较早12800共同父态四格中，刷新相对旧教师从16000正差变为19200负差；后续从当前教师全量的16000完整best同恢复继续3200步，保留当前教师59.6546%，回退旧教师59.1183%。这不支持固定的“旧/新总是更好”规则；排序差不能单独归因于当前状态或恢复路径。固定状态跨增强诊断表明：上一视图余弦与下一视图余弦在六个状态×教师格的Spearman为.42—.51，按上一视图余弦固定选半数图均优于同配额哈希选择；低无监督loss的固定规则在六格均低于哈希。B已回查两视图实际输入、权重、完整逐图记录和两rank证据，独立重算全部选择集合及标量统计一致，未重做GPU梯度。该结果先是缓存方向排序的必要正信号；随后在同一19200父态、固定9600教师、相同每步四选二预算的真实3200步训练中，缓存余弦选择终点61.4982%，高于无信息哈希60.4413% 1.0569点。它是一次局部训练AP正结果，但缓存采集成本计入后累计命令时间仍高于哈希，未比较全量，也不是净省时或可部署控制策略。已抓取来源全部远端分支，仅有main，无更新更晚次线；不审计其他项目。
+全部关闭无监督的简单策略有明显局部负证据；固定教师×规律半量的延长窗口出现局部正信号，但同质量总成本、跨种子稳定性、收敛速度或创新尚未成立。共同19200父态后三动作中，继续旧监督60.8289%，高于暂停58.6367%及换当前教师后固定60.2086%。较早12800共同父态四格中，刷新相对旧教师从16000正差变为19200负差；后续从当前教师全量的16000完整best同恢复继续3200步，保留当前教师59.6546%，回退旧教师59.1183%。这不支持固定的“旧/新总是更好”规则；排序差不能单独归因于当前状态或恢复路径。固定状态跨增强诊断表明：上一视图余弦与下一视图余弦在六个状态×教师格的Spearman为.42—.51，按上一视图余弦固定选半数图均优于同配额哈希选择；低无监督loss的固定规则在六格均低于哈希。B已回查两视图实际输入、权重、完整逐图记录和两rank证据，独立重算全部选择集合及标量统计一致，未重做GPU梯度。该结果先是缓存方向排序的必要正信号；随后在同一19200父态、固定9600教师、相同每步四选二预算的真实3200步训练中，缓存余弦选择终点61.4982%，高于无信息哈希60.4413% 1.0569点。它是一次局部训练AP正结果。后续原始复核已核实真实训练/验证全集、两卡四逻辑rank、完整出现流与恢复边界、四份完整权重及全部统计，保存报告逐字段一致；没有重新推理。两臂有效训练各只有一条完整轨迹。缓存采集成本计入后累计命令时间仍高于哈希，未比较全量，也不是净省时或可部署控制策略。匹配全量对照只已交付，尚无新结果；复用两半量，不改变原科学目标。已抓取来源全部远端分支，仅有main，无更新更晚次线；不审计其他项目。
 
 ## 实际采用过的方法
 
@@ -58,7 +58,7 @@
 - 失败原因：在三个固定学生状态和旧/当前两种教师的全部六格中，按上一视图loss最低固定选196/392图，在下一视图的监督—无监督梯度内积总和均低于同配额哈希对照，差为−3.157至−12.469；而同样预先固定的上一视图余弦高规则在六格均高于对照。原始无监督loss的“容易”不等于与监督目标方向一致。
 - 后续做法：将loss、置信、方向记录分开评估；在真正部署前先固定输入时点、配额和比较目标，用后继视图或合法独立目标验证，并计入取得缓存信号及教师预测的成本。
 - 边界：这是使用已训练HBox梯度作局部参照、一个数据集、一个训练seed、两个预定增强视图和固定模型的方向诊断。它不证明低loss对AdamW更新、未来AP或所有半监督框架有害，也不证明上一视图余弦已是可部署最优规则；当次余弦参考不可提前取得。匹配半量预算的真实训练对照已显示候选比哈希高1.0569点；但只有一个事后选定父态、单seed、一个窗口和HRSC，未比较全量或端到端成本，不能推断跨种子、长期漂移、净节省或最优性。
-- 证据：`ziyu24/cqc_P24@fd54b5c17048694b47901c5ff2870c514624dced`；`lab/result.md`、`lab/discussion.md`、`configs/action_signal_transfer.json`、`configs/budget_hash_half.json`、`configs/budget_cached_half.json`、`src/probe_action_signals.py`、`src/summarize_signal_transfer.py`、`src/budget_allocation.py`、`src/summarize_budget_actions.py`。
+- 证据：`ziyu24/cqc_P24@36c098d75c94f71f353b19738c15b2897732ca9c`；`lab/result.md`、`lab/discussion.md`、`configs/action_signal_transfer.json`、`configs/budget_hash_half.json`、`configs/budget_cached_half.json`、`src/probe_action_signals.py`、`src/summarize_signal_transfer.py`、`src/budget_allocation.py`、`src/summarize_budget_actions.py`、`src/audit_budget_actions.py`。
 
 ## 方法族停止索引
 
