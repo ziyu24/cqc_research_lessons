@@ -69,6 +69,14 @@
 - 边界：这识别的是本固定模型/视图下的评分定义依赖，不证明两份训练结果的AP变化由此造成。两轮实际训练使用同一旧冻结评分，四卡新评分只是重放诊断；不能以发现分组问题为由撤销缓存选样的四卡负结果、宣称新评分有效或自动重训。仍保留原单seed、事后父态、局部窗口与未保存完整梯度向量的限制。
 - 证据：`ziyu24/cqc_P24@63b515332712d491ca8c52851b7df81ee448fea3`；`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`configs/reference_grouping.json`、`src/probe_action_signals.py`、`src/action_signal_support.py`、`src/summarize_reference_grouping.py`、`src/audit_reference_grouping.py`、`configs/budget_cached_half.json`、`configs/budget_four_cached_half.json`。
 
+## 教训七：同额外视图预算的自适应复习必须超过固定周期，才能归因给信号
+
+- 失败命题：只要用历史几何残差和回访年龄改变额外弱视图的复习时机，就已证明自适应分配优于固定周期并获得同质量加速。
+- 失败原因：在同一19200完整父态、四卡、单种子和3200步窗口中，固定周期与自适应均严格执行1632次完整几何步、1568次原视图步。自适应相对周期的AP50仅高0.0234个百分点（60.9805%对60.9571%），且相对完整视图61.2209%仍低0.2404点；两半量臂分别仅缩短阶段命令15.70%与14.98%。自适应与周期的动作在1648步不同，故这点差也不能归因给残差/年龄信号而非排列。
+- 后续做法：固定完整、固定周期和同预算自适应的共同父态、视图配额、输入流、动作记录和全部成本；仅当自适应在匹配比较中有可复核优势，才讨论信号作用。先报告完整视图质量代价和阶段成本，不把阶段节省改写为全程同质量加速。
+- 边界：这是一个HRSC、PWOOD、单seed和局部成熟状态窗口；未设可接受下降阈值，不能称两半量臂非劣。自适应的AP75较高但不是选优指标，不能替代AP50；不证明几何残差一般无用，也不支持跨seed、完整训练或新颖性结论。
+- 证据：`ziyu24/cqc_P24@09c92bf1e88bd9c59e2284f3b472be4e063a9b50`；`lab/result.md`、`lab/discussion.md`、`configs/geometry_periodic_half.json`、`configs/geometry_full.json`、`configs/geometry_adaptive_half.json`、`src/geometry_revisit.py`、`src/summarize_geometry.py`、`runs/r017/artifacts/geometry/geometry_comparison.json`。
+
 ## 方法族停止索引
 
 - 全部关闭无监督而声称本窗口质量不损失：被本配置经验结果限制；不可外推为所有减少计算方案失败。
