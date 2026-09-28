@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源项目的 `lab/discussion.md` 确认监督和目标隔离条件，再读 `lab/result.md`、`doc/r001_review.json` 的固定预测证据，随后读 `doc/r002_review.json`，检查 `src/review_transfer.py` 与 `src/review_components.py` 的PR、覆盖和固定配对干预核验。新增共同初态尺度续训及两流位置消融的全量原生PR重放见 `doc/r003_review.json`、`doc/r005_review.json`、`doc/r006_review.json`、`src/review_scale_control.py`；新增冻结信号审计为`doc/r007_review.json`、`src/review_weak_reliability.py`；固定弱质量校准的独立系数、折外分数与选择重放为`doc/r008_review.json`、`src/review_weak_calibration.py`。跨尺度供体选择与完整质量/支持重放见`doc/r009_review.json`、`src/review_cross_scale_geometry.py`。原生U回归删除的完整预测重算见`doc/r010_review.json`及`src/review_scale_control.py`；四域冻结输出的覆盖、类别、排序和几何分解见`lab/result.md`、`src/closedset_diagnostic.py`。已抓取来源全部远端分支，仅main；此文不代表其他项目的审核或新颖性裁决。
+先读来源项目的 `lab/discussion.md` 确认监督和目标隔离条件，再读 `lab/result.md`、`doc/r001_review.json` 的固定预测证据，随后读 `doc/r002_review.json`，检查 `src/review_transfer.py` 与 `src/review_components.py` 的PR、覆盖和固定配对干预核验。新增共同初态尺度续训及两流位置消融的全量原生PR重放见 `doc/r003_review.json`、`doc/r005_review.json`、`doc/r006_review.json`、`src/review_scale_control.py`；新增冻结信号审计为`doc/r007_review.json`、`src/review_weak_reliability.py`；固定弱质量校准的独立系数、折外分数与选择重放为`doc/r008_review.json`、`src/review_weak_calibration.py`。跨尺度供体选择与完整质量/支持重放见`doc/r009_review.json`、`src/review_cross_scale_geometry.py`。原生U回归删除的完整预测重算见`doc/r010_review.json`及`src/review_scale_control.py`；四域冻结输出的覆盖、类别、排序和几何分解见`lab/result.md`、`doc/r013_full_pool_audit.json`、`src/review_r013_full_pool.py`。已抓取来源全部远端分支，仅main；此文不代表其他项目的审核或新颖性裁决。
 
 ## 项目研究什么
 
@@ -28,7 +28,7 @@ PWOOD提供半监督与弱监督的技术底座，尚需检验未见域及弱几
 
 随后从同一完整初态、同一设备环境固定续训，只删除或保留原生无标签bbox项，其余无标签分类/centerness和角度detach不变。删除相对保留的源域VOC07 AP50/AP75为+4.898/+0.657点，诊断域为−1.179/+0.090点；双方均未通过预声明目标增益及源域保护的联合条件。目标连续AP50/AP75也降低1.352/0.123点，但最高召回提高2.652/2.493点，严格小目标支持从463增至935；因此负AP不能替代全部几何/对象支持退化的判断。两臂完整状态、实际双卡干预、全部原图和四份完整原生PR/尺寸支持已独立重放一致。停止该固定bbox删除/保留的局部系数、步数和种子搜索，不推断零作用或全部无标签学习失败。来源：`ziyu24/cqc_P25@0ca20fa3dc6e50ddfc092e553384646a2a1dc5cf`，`lab/result.md`、`lab/failed_methods.md`、`doc/r010_review.json`、`configs/u_regression_ablation.json`。[实际删除对照及原生重算](https://github.com/ziyu24/cqc_P25/blob/0ca20fa3dc6e50ddfc092e553384646a2a1dc5cf/lab/result.md)。未选候选的原生背景分类惩罚删除只完成代码/原生反例交付，尚无训练结果，不计作性能证据。
 
-当前已按用户指定扩展为完整DOTA源域、约20%切片所属原图提供全部四类HBox、其余图像完全无标签，完成原生固定长程基线。源内及三目标的原预测身份与PR算术已核验，飞机局部迁移较好、车辆低召回和严格定位弱同时成立，尚无新机制增益。随后四域逐GT诊断的算术虽可重现，却在最终分数上额外筛选，候选总体与正式AP不同；此前以高分子集代表全部保留输出的瓶颈解释须撤回或收窄，详见教训六。原生AP、数量容量及旧高分条件观察保留，全池修复入口已交付，尚无完整新诊断结果。来源：`ziyu24/cqc_P25@a590224b9fb2a10348b37c281854526a63c3388c`，`lab/result.md`、`doc/r013_review.json`、`doc/closedset_pool_review.json`。[候选总体独立复核与修正](https://github.com/ziyu24/cqc_P25/blob/a590224b9fb2a10348b37c281854526a63c3388c/lab/result.md)。上述旧背景项删除“尚无训练结果”仅对应当时提交，其完成结果以当前来源为准。
+当前已按用户指定扩展为完整DOTA源域、约20%切片所属原图提供全部四类HBox、其余图像完全无标签，完成原生固定长程基线。源内及三目标的原预测身份与PR算术已核验，飞机局部迁移较好、车辆低召回和严格定位弱同时成立，尚无新机制增益。四域逐GT诊断先因最终分数二次筛选而只代表高分子集；同号修复后，326185条全输出记录、两卡证据、分组/干预算术和支持不低于原生TP的约束均通过。SODA小车、FAIR大车与HRSC的短板结构仍不同，但精确支持、错类和几何规模以修正值为准。来源：`ziyu24/cqc_P25@42527222cfdcda95d19636bf74feb921ed20bc99`，`lab/result.md`、`doc/r013_full_pool_audit.json`、`src/review_r013_full_pool.py`。[全输出修正结果](https://github.com/ziyu24/cqc_P25/blob/42527222cfdcda95d19636bf74feb921ed20bc99/lab/result.md)。上述旧背景项删除“尚无训练结果”仅对应当时提交，其完成结果以当前来源为准。
 
 ## 教训一：低召回时严格VOC07 AP反转不能独立证明几何迁移退化
 
@@ -77,8 +77,16 @@ PWOOD提供半监督与弱监督的技术底座，尚需检验未见域及弱几
 - 失败命题：检测器配置分数阈值为0.05，因此在缓存最终框上再筛0.05不会改变候选池；该支持和几何分解可以直接与正式AP对应。
 - 失败原因：原生实现先筛分类分数，再乘centerness，合法最终输出可以低于0.05。二次筛选后，四域13类的独立同类支持均低于原生真实检出数，违反同池支持应覆盖全部TP的约束。SODA小车旧支持9811而原生TP为15802，FAIR大车728而TP为1614。HRSC8315个输出中3848个被二次筛掉；原生CPU重算全池支持553、筛后546，前者与原生TP一致，直接确认总体混用。
 - 后续做法：追踪实际分数构成及筛选顺序，诊断全部正式输出时不重复应用最终分数阈值。用“独立同类支持不得小于同IoU原生TP”检验总体一致性；旧高分子集以条件观察保留，与全池结果分别报告覆盖、错类、资格和几何变化，不能混在一条瓶颈因果链中。
-- 边界：原生AP/PR和全输出数量容量仍有效，SODA小车的数量容量约15.91%仍是保留输出层面的限制。旧分组/几何算术未被否定，但只能解释高分子集；此前全输出异质瓶颈的具体规模和几何空间尚待重算。修复诊断不改变模型阈值或输出，不等于训练方法改善；post-NMS支持、GT oracle与可部署收益仍须区分。
-- 证据：`ziyu24/cqc_P25@a590224b9fb2a10348b37c281854526a63c3388c`；`doc/r013_review.json`、`doc/closedset_pool_review.json`、`src/closedset_diagnostic.py`、`src/check_closedset_diagnostic.py`。[全部旧统计与候选总体检查](https://github.com/ziyu24/cqc_P25/blob/a590224b9fb2a10348b37c281854526a63c3388c/doc/r013_review.json)、[原生反例与修复检查](https://github.com/ziyu24/cqc_P25/blob/a590224b9fb2a10348b37c281854526a63c3388c/doc/closedset_pool_review.json)。
+- 边界：原生AP/PR和全输出数量容量仍有效，SODA小车的数量容量约15.91%仍是保留输出层面的限制。旧分组/几何算术未被否定，但只能解释高分子集；全池修复已经完成，修正了具体规模而未改变模型阈值或输出。它仍不等于训练方法改善；post-NMS支持、GT oracle与可部署收益须区分。
+- 证据：`ziyu24/cqc_P25@42527222cfdcda95d19636bf74feb921ed20bc99`；`doc/r013_review.json`、`doc/closedset_pool_review.json`、`doc/r013_full_pool_audit.json`、`src/review_r013_full_pool.py`。[候选总体错误](https://github.com/ziyu24/cqc_P25/blob/42527222cfdcda95d19636bf74feb921ed20bc99/doc/closedset_pool_review.json)、[全输出修正结果](https://github.com/ziyu24/cqc_P25/blob/42527222cfdcda95d19636bf74feb921ed20bc99/lab/result.md)。
+
+## 教训七：多域同类低分不能直接归并为一个可训练瓶颈
+
+- 失败命题：多个目标域的车辆类同时低分，说明它们共享一个主导几何或分类缺陷，可以从宏观AP直接选择单一训练机制。
+- 失败原因：同一冻结模型的全输出逐GT分解显示短板结构不同。SODA small-vehicle仅22419/185510个GT有同类IoU≥.1支持，逐图数量容量上限也只有29514，全部几何替换在全GT上增加3.518点；FAIR large-vehicle的同类/任意类IoU≥.5支持为1614/2467，其中853个只有错类支持；HRSC ship的中心加尺寸替换增加33.795点，而单独角度仅2.280点。SODA large-vehicle、HRSC、FAIR large-vehicle和ship还分别保留28.847、23.739、16.755和14.538点固定分配排序差。宏观低分相似不代表候选保留、类别通道、排序和定位分量相同。
+- 后续做法：在提出机制前，固定模型和输出，按域/类别同时报告完整GT分母、分阈值同类/任意类支持、逐图数量容量、完整PR排序差及同配对几何分量，并按尺寸/长宽比分层。候选机制必须给出不使用目标GT的训练时信号，明确针对哪一分量；不能用一个目标域的oracle替另一个域选机制。
+- 边界：支持允许候选复用，数量容量只是宽松上限，排序差不是可实现AP；post-NMS缺失不能唯一定位到pre-NMS生成、阈值或NMS。目标GT只用于冻结事后诊断，不能变成训练伪标签、阈值或选优依据。该单种子诊断建立异质性反例，不证明任何新机制有效，也不否定弱监督域泛化命题。
+- 证据：`ziyu24/cqc_P25@42527222cfdcda95d19636bf74feb921ed20bc99`；`lab/result.md`、`doc/r013_full_pool_audit.json`、`src/review_r013_full_pool.py`。[冻结输出完整结果](https://github.com/ziyu24/cqc_P25/blob/42527222cfdcda95d19636bf74feb921ed20bc99/lab/result.md)。
 
 ## 方法族停止索引
 
@@ -90,4 +98,5 @@ PWOOD提供半监督与弱监督的技术底座，尚需检验未见域及弱几
 | 固定高分辨率供体的最大重叠或最高置信对应 | 当前多尺度模型上的增益不足，停止两规则的训练及局部尺度/阈值/对应搜索 | 较早模型的正质量差、其它几何机制及一般弱监督DG均未被整体否定 |
 | 固定有限尾程的原生U bbox删除/保留 | 双方未通过目标增益及源保护联合条件，停止该系数/步数/种子搜索 | 召回和严格小目标支持的正差保留；非零效应、其他U损失及一般DG仍未被整体否定 |
 | 将几何算子数值修正混入真值替换收益 | 停止无同处理未改框对照的几何归因 | 正式原生AP不自动失效；实际影响规模、其它几何实现与训练机制仍待分别验证 |
-| 将二次最终分数筛选后的子集当成全部正式输出 | 停止混用候选总体的支持/类别/几何归因；须核对筛选时序和支持覆盖TP约束 | 正式AP、数量容量及高分条件观察保留；全输出瓶颈和训练机制尚待验证 |
+| 将二次最终分数筛选后的子集当成全部正式输出 | 停止混用候选总体的支持/类别/几何归因；须核对筛选时序和支持覆盖TP约束 | 正式AP、数量容量及高分条件观察保留；全输出已修正，训练机制仍待验证 |
+| 从多域同类宏观低分直接选择单一机制 | 停止跨域合并候选、类别、排序和定位瓶颈；须先按域/类分解 | 冻结异质图谱不是方法收益；训练时目标无关信号和一般DG命题仍待验证 |
