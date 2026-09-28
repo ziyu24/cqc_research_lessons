@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源项目的 `lab/discussion.md` 确认监督和目标隔离条件，再读 `lab/result.md`、`doc/r001_review.json` 的固定预测证据，随后读 `doc/r002_review.json`，检查 `src/review_transfer.py` 与 `src/review_components.py` 的PR、覆盖和固定配对干预核验。新增共同初态尺度续训及两流位置消融的全量原生PR重放见 `doc/r003_review.json`、`doc/r005_review.json`、`doc/r006_review.json`、`src/review_scale_control.py`；新增冻结信号审计为`doc/r007_review.json`、`src/review_weak_reliability.py`；固定弱质量校准的独立系数、折外分数与选择重放为`doc/r008_review.json`、`src/review_weak_calibration.py`。跨尺度供体选择与完整质量/支持重放见`doc/r009_review.json`、`src/review_cross_scale_geometry.py`。原生U回归删除的完整预测重算见`doc/r010_review.json`及`src/review_scale_control.py`。已抓取来源全部远端分支，仅main；此文不代表其他项目的审核或新颖性裁决。
+先读来源项目的 `lab/discussion.md` 确认监督和目标隔离条件，再读 `lab/result.md`、`doc/r001_review.json` 的固定预测证据，随后读 `doc/r002_review.json`，检查 `src/review_transfer.py` 与 `src/review_components.py` 的PR、覆盖和固定配对干预核验。新增共同初态尺度续训及两流位置消融的全量原生PR重放见 `doc/r003_review.json`、`doc/r005_review.json`、`doc/r006_review.json`、`src/review_scale_control.py`；新增冻结信号审计为`doc/r007_review.json`、`src/review_weak_reliability.py`；固定弱质量校准的独立系数、折外分数与选择重放为`doc/r008_review.json`、`src/review_weak_calibration.py`。跨尺度供体选择与完整质量/支持重放见`doc/r009_review.json`、`src/review_cross_scale_geometry.py`。原生U回归删除的完整预测重算见`doc/r010_review.json`及`src/review_scale_control.py`；四域冻结输出的覆盖、类别、排序和几何分解见`lab/result.md`、`src/closedset_diagnostic.py`。已抓取来源全部远端分支，仅main；此文不代表其他项目的审核或新颖性裁决。
 
 ## 项目研究什么
 
@@ -28,7 +28,7 @@ PWOOD提供半监督与弱监督的技术底座，尚需检验未见域及弱几
 
 随后从同一完整初态、同一设备环境固定续训，只删除或保留原生无标签bbox项，其余无标签分类/centerness和角度detach不变。删除相对保留的源域VOC07 AP50/AP75为+4.898/+0.657点，诊断域为−1.179/+0.090点；双方均未通过预声明目标增益及源域保护的联合条件。目标连续AP50/AP75也降低1.352/0.123点，但最高召回提高2.652/2.493点，严格小目标支持从463增至935；因此负AP不能替代全部几何/对象支持退化的判断。两臂完整状态、实际双卡干预、全部原图和四份完整原生PR/尺寸支持已独立重放一致。停止该固定bbox删除/保留的局部系数、步数和种子搜索，不推断零作用或全部无标签学习失败。来源：`ziyu24/cqc_P25@0ca20fa3dc6e50ddfc092e553384646a2a1dc5cf`，`lab/result.md`、`lab/failed_methods.md`、`doc/r010_review.json`、`configs/u_regression_ablation.json`。[实际删除对照及原生重算](https://github.com/ziyu24/cqc_P25/blob/0ca20fa3dc6e50ddfc092e553384646a2a1dc5cf/lab/result.md)。未选候选的原生背景分类惩罚删除只完成代码/原生反例交付，尚无训练结果，不计作性能证据。
 
-当前已按用户指定扩展为完整DOTA源域、约20%切片所属原图提供全部四类HBox、其余图像完全无标签，完成原生固定长程基线。源内和三个目标的完整预测身份与PR算术已核验，HRSC另重现完整原生匹配；飞机局部迁移较好、车辆低召回及严格定位弱同时成立。低召回十一点平台再次不能代表几何不变。该结果建立了描述性基线，尚无新增机制增益，不改写此前固定方法的停止边界。上述背景项删除“尚无训练结果”仅适用于当时来源提交，其完成结果以当前来源为准。来源：`ziyu24/cqc_P25@ec7e1a7e39e16bf04222318ef85901454b27d98d`，`lab/result.md`、`doc/r012_review.json`。新冻结输出诊断只完成入口与反例交付，尚无四域诊断结论。
+当前已按用户指定扩展为完整DOTA源域、约20%切片所属原图提供全部四类HBox、其余图像完全无标签，完成原生固定长程基线。源内和三个目标的完整预测身份与PR算术已核验，HRSC另重现完整原生匹配；飞机局部迁移较好、车辆低召回及严格定位弱同时成立。低召回十一点平台再次不能代表几何不变。随后在同一冻结输出上完成四域逐GT分解：SODA小车首先受保留输出/数量容量限制，FAIR大车另有明显错类通道，HRSC及若干已配对子集则主要对中心和尺寸敏感，多个类别还保留显著分数顺序差。该结果建立了描述性基线与异质瓶颈图谱，尚无新增机制增益，不改写此前固定方法的停止边界。上述背景项删除“尚无训练结果”仅适用于当时来源提交，其完成结果以当前来源为准。来源：`ziyu24/cqc_P25@e4cee44c176d4dd4ce321397b317aeda7050fa94`，`lab/result.md`、`doc/r012_review.json`、`src/closedset_diagnostic.py`、`configs/closedset_diagnostic.json`。[四域冻结诊断](https://github.com/ziyu24/cqc_P25/blob/e4cee44c176d4dd4ce321397b317aeda7050fa94/lab/result.md)。
 
 ## 教训一：低召回时严格VOC07 AP反转不能独立证明几何迁移退化
 
@@ -68,9 +68,17 @@ PWOOD提供半监督与弱监督的技术底座，尚需检验未见域及弱几
 
 - 失败命题：固定候选/GT配对后，只要调用同一个旋转IoU接口，真值替换前后的差值就一定来自所替换的几何分量。
 - 失败原因：几何替换可能制造恰好平行或嵌套的框，进入原算子的退化边界。已验证同中心、同角度、宽高20×4和14×4的框解析IoU为0.7，而固定原生CPU实现返回0；独立多边形计算与解析值一致。若只对替换后的框改变坐标处理，数值修正就会混入分量效应。
-- 后续做法：对原候选的未改框对照和全部干预采用同一公共刚体变换，交叉核对独立几何实现。将原生值与未改框对照的差异单列，干预只减同处理对照；继续保留固定配对及完整GT分母。
+- 后续做法：对原候选的未改框对照和全部干预采用同一公共坐标变换，交叉核对独立几何实现。将原生值与未改框对照的差异单列，干预只减同处理对照；继续保留固定配对及完整GT分母。
 - 边界：这是已验证的测量归因反例，不是某训练机制失败或新方法增益。尚未确定它对完整原生AP的影响规模，不能追改正式分数、把全部低分归因算子，或声称无配对对象的数值问题已解决；公共变换在已测反例上有效，不保证全部几何边界正确。
 - 证据：`ziyu24/cqc_P25@ec7e1a7e39e16bf04222318ef85901454b27d98d`；`doc/closedset_diagnostic_review.json`、`src/closedset_diagnostic.py`、`src/check_closedset_diagnostic.py`。[解析反例与检查范围](https://github.com/ziyu24/cqc_P25/blob/ec7e1a7e39e16bf04222318ef85901454b27d98d/doc/closedset_diagnostic_review.json)。
+
+## 教训六：多域同类低分不能直接归并为一个可训练瓶颈
+
+- 失败命题：多个目标域的车辆类同时低分，说明它们共享一个主导几何或分类缺陷，可以从宏观AP直接选择单一训练机制。
+- 失败原因：同一冻结模型的逐GT分解显示短板结构不同。SODA small-vehicle仅11932/185510个GT有同类IoU≥.1候选，逐图同类数量容量上限也只有29514，全部几何替换在全GT上仅增加1.143个百分点；FAIR large-vehicle的同类/任意类IoU≥.5支持为728/2030，其中1302个只有错类支持；HRSC ship的中心加尺寸替换增加32.329点，而单独角度仅增加2.199点。SODA large-vehicle、HRSC、FAIR large-vehicle和ship还分别存在28.847、23.739、16.755和14.538点固定匹配排序差距。宏观低分相似不代表候选保留、类别通道、排序和定位分量相同。
+- 后续做法：在提出机制前，固定模型和输出，按域/类别同时报告完整GT分母、分阈值同类/任意类支持、逐图数量容量、完整PR排序差及同配对几何分量，并按尺寸/长宽比分层。再要求候选机制给出不使用目标GT的训练时信号，明确它针对哪一分量；不要用一个目标域的oracle结论替另一个域选机制。
+- 边界：支持允许候选复用，数量容量只是宽松上限，排序差不是可实现AP；post-NMS缺失不能唯一定位到pre-NMS生成、阈值或NMS。目标GT只用于冻结事后诊断，不能变成训练伪标签、阈值或选优依据。该单种子诊断建立异质性反例，不证明任何新机制有效，也不否定弱监督域泛化命题。
+- 证据：`ziyu24/cqc_P25@e4cee44c176d4dd4ce321397b317aeda7050fa94`；`lab/result.md`、`src/closedset_diagnostic.py`、`configs/closedset_diagnostic.json`。[冻结输出完整结果](https://github.com/ziyu24/cqc_P25/blob/e4cee44c176d4dd4ce321397b317aeda7050fa94/lab/result.md)。
 
 ## 方法族停止索引
 
@@ -82,3 +90,4 @@ PWOOD提供半监督与弱监督的技术底座，尚需检验未见域及弱几
 | 固定高分辨率供体的最大重叠或最高置信对应 | 当前多尺度模型上的增益不足，停止两规则的训练及局部尺度/阈值/对应搜索 | 较早模型的正质量差、其它几何机制及一般弱监督DG均未被整体否定 |
 | 固定有限尾程的原生U bbox删除/保留 | 双方未通过目标增益及源保护联合条件，停止该系数/步数/种子搜索 | 召回和严格小目标支持的正差保留；非零效应、其他U损失及一般DG仍未被整体否定 |
 | 将几何算子数值修正混入真值替换收益 | 停止无同处理未改框对照的几何归因 | 正式原生AP不自动失效；实际影响规模、其它几何实现与训练机制仍待分别验证 |
+| 从多域同类宏观低分直接选择单一机制 | 停止跨域合并候选、类别、排序和定位瓶颈；须先按域/类分解 | 冻结异质图谱不是方法收益；训练时目标无关信号和一般DG命题仍待验证 |
