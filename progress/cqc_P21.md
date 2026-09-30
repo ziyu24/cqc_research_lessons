@@ -10,7 +10,7 @@
 
 ## 服务器当前内容
 
-上一任务执行结束且C已独立复核，33.37结果和保护材料继续有效。2026-09-30，C已提交推送下一项区域背景评分任务r054：复用SAM/CLIP特征，区域头12轮及单检测臂12轮，各双卡、seed42。新任务实际启动未观察，不把代码交付当执行中。两臂均继承数量的历史边界不变。
+上一任务执行结束且C已独立复核，33.37结果和保护材料继续有效。2026-09-30 14:58:33 UTC，SERVER已在46实际启动r054：复用SAM/CLIP特征，依次执行区域头12轮及单检测臂12轮，各双卡、seed42；运行器选择GPU0/1并记录RUN为RUNNING。启动时先执行输入/缓存准备，真实GPU首批、双rank计算与吞吐仍待日志形成后核验。两臂均继承数量的历史边界不变。
 
 ## 核验说明
 
@@ -22,9 +22,9 @@ C已从两臂best/final原始预测重新计算全部原图PR，与保存结果�
 
 ## 执行阶段
 
-C已下发r054至46，实际启动未知；上一轮于2026-09-30 10:12:55 UTC执行结束，原始预测已独立精确复算。当前唯一任务包含区域头和单检测臂，未追加归因训练或新种子。
+C已下发r054至46；SERVER于2026-09-30 14:58:33 UTC实际启动，当前处于执行中。上一轮于2026-09-30 10:12:55 UTC执行结束，原始预测已独立精确复算。当前唯一任务包含区域头和单检测臂，未追加归因训练或新种子。
 
-记录者：C；更新日期：2026-09-30。保留SERVER执行记录和既有C公开点复核；没有新B端讨论，不称双方共识。
+记录者：SERVER；更新日期：2026-09-30。保留既有C科学核验；本次只补实际启动事实，没有新B端讨论，不称双方共识。
 
 ## 下一步与维护
 
@@ -38,4 +38,4 @@ C已下发r054至46，实际启动未知；上一轮于2026-09-30 10:12:55 UTC�
 
 ## 证据
 
-[范围与最初立题](https://github.com/ziyu24/cqc_P21/blob/87d7b8e6bb188cdb51299e5010513d01e6f3847b/README.md)；[最新科学取舍](https://github.com/ziyu24/cqc_P21/blob/87d7b8e6bb188cdb51299e5010513d01e6f3847b/lab/discussion.md)；[结果及C独立复核](https://github.com/ziyu24/cqc_P21/blob/87d7b8e6bb188cdb51299e5010513d01e6f3847b/lab/result.md)；[当前唯一任务](https://github.com/ziyu24/cqc_P21/blob/87d7b8e6bb188cdb51299e5010513d01e6f3847b/lab/sug.md)。 [已登记教训](../lesson/cqc_P21.lessons.md)。
+[范围与最初立题](https://github.com/ziyu24/cqc_P21/blob/87d7b8e6bb188cdb51299e5010513d01e6f3847b/README.md)；[最新科学取舍](https://github.com/ziyu24/cqc_P21/blob/87d7b8e6bb188cdb51299e5010513d01e6f3847b/lab/discussion.md)；[结果及C独立复核](https://github.com/ziyu24/cqc_P21/blob/87d7b8e6bb188cdb51299e5010513d01e6f3847b/lab/result.md)；[当前任务与恢复入口](https://github.com/ziyu24/cqc_P21/blob/51fc18efc908e1689e0a842dfe885d93bb8b3cdd/configs/r054.recovery.json)。 [已登记教训](../lesson/cqc_P21.lessons.md)。
