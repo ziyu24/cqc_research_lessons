@@ -10,7 +10,7 @@
 
 ## 服务器当前内容
 
-C已交付r019：复用P19 H/O固定教师，顺序HRSC→DOTA val→SODA→FAIR，每域两臂都评完再转下一域；每模型实际两卡，0训练更新。2026-09-30 05:08:20 UTC在26只读观察：Home/tmpfs均无r018/r019目录或P25相关进程。此前未启动的r018按用户新取舍结束并归入结果页，训练后置；本轮没有启停服务器实验。真实GPU首批和正式前向仍待SERVER执行。
+C已交付r019：复用P19 H/O固定教师，顺序HRSC→DOTA val→SODA→FAIR，每域两臂都评完再转下一域；每模型实际两卡，0训练更新。SERVER于2026-09-30 05:42 UTC在26启动同号RUN，运行器选择物理GPU 0/1；H、O首批均完成两卡真实前向且优化器更新为0。随后HRSC H正式两rank已在GPU 0/1开始，两个活跃子PID的UUID回读均为MATCH。此前未执行的r018仍按用户取舍后置，不在本轮自动启动。
 
 ## 核验说明
 
@@ -24,9 +24,9 @@ C于04:33:50 UTC完成11项目资源核查；本轮进一步在26严格加载P19
 
 ## 执行阶段
 
-资源核查与CPU交付核验完成；r019已交付，尚未启动（C于2026-09-30 05:08:20 UTC只读观察）。r018未执行训练已后置；本轮实际GPU核验和正式评测尚无证据。
+服务器执行中；2026-09-30 05:42 UTC已确认r019在26使用物理GPU 0/1完成H/O真实首批并进入HRSC正式评测。r018未执行训练已后置；命令RUNNING及首批通过不等于四域科学输出完成。
 
-记录者：C；更新日期：2026-09-30。保留B于03:50 UTC的未启动观察及对缩放优先级/AP75解释的审查背景；本次任务变更依据用户明确指示，不称B/C共同讨论或共识。
+记录者：SERVER；更新日期：2026-09-30。保留C于05:08:20 UTC的启动前观察和B于03:50 UTC的审查背景；本次实际启动事实来自26同号RUN及活跃GPU PID，不称B/C共同讨论或共识。
 
 ## 下一步与维护
 
@@ -37,6 +37,8 @@ SERVER拉取来源项目唯一r019入口，真实两卡首批通过后直接完�
 ## 证据
 
 [当前唯一任务](https://github.com/ziyu24/cqc_P25/blob/2596f3de9a5c066baf6d6265d8d4606aa14354c9/lab/sug.md)；[可执行评测入口与恢复边界](https://github.com/ziyu24/cqc_P25/blob/2596f3de9a5c066baf6d6265d8d4606aa14354c9/doc/p19_reference.md)；[CPU及数据核验证据](https://github.com/ziyu24/cqc_P25/blob/2596f3de9a5c066baf6d6265d8d4606aa14354c9/doc/p19_reference_review.json)；[用户取舍及训练后置](https://github.com/ziyu24/cqc_P25/blob/2596f3de9a5c066baf6d6265d8d4606aa14354c9/lab/discussion.md)。
+
+[SERVER恢复入口](https://github.com/ziyu24/cqc_P25/blob/a03fd9ce7182fb36546a3f2128765c2bdac95c6e/configs/r019.recovery.json)。实际RUN、PID和GPU回读留在26项目运行目录，不复制到本库。
 
 [P18–P28资源核查与权重身份](https://github.com/ziyu24/cqc_P25/blob/f6a9284acae750c9cf435e101b470aff09246b28/doc/resource_audit.md)；[本轮资源判断及限制](https://github.com/ziyu24/cqc_P25/blob/f6a9284acae750c9cf435e101b470aff09246b28/lab/discussion.md)。
 
