@@ -6,28 +6,28 @@
 
 ## 核心进展
 
-当前在线适应仍落后冻结源模型；复用预测和已有权重发现高置信错误伪前景及类别混淆，单改几何或负样本权重不足以解释全部退化。
+当前在线适应仍落后冻结源模型；复用预测和已有权重发现高置信错误伪前景及类别混淆，单改几何或负样本权重不足以解释全部退化。r007正在检验：保持预测侧EMA在线更新，但改用不更新的正确标签源模型提供当前图像伪标签，切断在线错误自反馈后能否同时超过冻结源模型与原始Mean Teacher。
 
 ## 服务器当前内容
 
-最近原生监督和完整输出误差分解已结束；没有下发新的损失训练或连续域实验。
+46已实际启动r007唯一训练臂：FAIR1M固定单遍、单种子、两卡同步更新；2026-09-30 04:09 UTC观察到GPU 0、1上的两个DDP rank完成首批反传。
 
 ## 核验说明
 
-原生AP精确复现；约0.20 GPU小时固定状态检查未更新模型，随后CPU分析无训练。理想删除背景误检使在线从落后2.20点变为领先1.28点，错类纠正后差距0.17点；这些只改变方法优先级，不能宣称修复实际涨点或已排除Soft Teacher/CPF。
+原生AP精确复现；约0.20 GPU小时固定状态检查未更新模型，随后CPU分析无训练。理想删除背景误检使在线从落后2.20点变为领先1.28点，错类纠正后差距0.17点；这些只改变方法优先级，不能宣称修复实际涨点或已排除Soft Teacher/CPF。已有诊断不能回答“固定正确源模型伪标签是否能阻断错误反馈”，故需r007实际更新。SERVER复用了UNCHANGED/PASS的FAIR1M切片报告；首批两rank梯度、student/EMA变化和固定源状态不变均已核实，最终性能尚未知。
 
 ## 执行阶段
 
-诊断执行结束且B已复核；2026-09-30 03:51 UTC在46核到r005/r006 COMPLETE、槽空、无本项目计算进程。
+执行中，待完成全流、合法评测和错误分解后再交B/C复核；命令RUNNING与首批成功不代表科学完成。
 
 记录者：B；初始化日期：2026-09-30。来源中的B/C核验与本次只读观察分开表述；未取得对端新回写，不称本轮共识。
 
 ## 下一步与维护
 
-B优先研究错误伪前景与类别区分的可靠信号，借鉴成熟方法并核信息条件；若需实际更新，必须明确旧证据无法回答的干预问题。
+完成r007全流后，按单视图AP50与AP75是否都超过冻结源模型和原始Mean Teacher裁决该干预；不追加第二训练臂或阈值扫描。
 
 动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
 
 ## 证据
 
-[范围与最初立题](https://github.com/ziyu24/cqc_P28/blob/160507c1adda53133ed5c1f9df19b6e839e1b3f4/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P28/blob/160507c1adda53133ed5c1f9df19b6e839e1b3f4/lab/discussion.md)；[结果依据](https://github.com/ziyu24/cqc_P28/blob/160507c1adda53133ed5c1f9df19b6e839e1b3f4/lab/result.md)；[主线任务](https://github.com/ziyu24/cqc_P28/blob/160507c1adda53133ed5c1f9df19b6e839e1b3f4/lab/sug.md)。 [已登记教训](../lesson/cqc_P28.lessons.md)。
+[范围与最初立题](https://github.com/ziyu24/cqc_P28/blob/1fcd265e92c318051dd0c4b6e56f8e2c59a36222/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P28/blob/1fcd265e92c318051dd0c4b6e56f8e2c59a36222/lab/discussion.md)；[结果依据](https://github.com/ziyu24/cqc_P28/blob/1fcd265e92c318051dd0c4b6e56f8e2c59a36222/lab/result.md)；[主线任务](https://github.com/ziyu24/cqc_P28/blob/1fcd265e92c318051dd0c4b6e56f8e2c59a36222/lab/sug.md)。 [已登记教训](../lesson/cqc_P28.lessons.md)。
