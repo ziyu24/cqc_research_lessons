@@ -10,7 +10,7 @@
 
 重复候选不支持优先放大私有类别的旧反例仍有效，原两臂重复修正训练建议仍已撤回，没有被本次发现重新授权。
 
-固定源类别5-NN支持度检查已经完成：该信号在95%共享TP保留诊断中弱于原置信度，实际乘法重排序又使AP50、AP75和AP50:95全部下降。它不能作为下一训练机制的正依据，但只否定当前冻结特征、校准与打分规则，不否定全部OOD或表征方法。
+固定源类别5-NN支持度检查已经完成：该信号在95%共享TP保留诊断中弱于原置信度，实际乘法重排序又使AP50、AP75和AP50:95全部下降。它不能作为下一训练机制的正依据，但只否定当前冻结特征、校准与打分规则，不否定全部OOD或表征方法。用户追问研究方向后，C明确OBB额外几何困难与Universal类别变化不是一回事，建议下一步检验“旋转候选取样误差是否污染共享性判定”，尚无该机制成立或新方法有效的证据。
 
 ## 服务器当前内容
 
@@ -40,10 +40,12 @@ C另用原图GT和冻结框重新运行大车类原生Small AP50，两组AP精�
 
 ## 下一步与维护
 
-优先问题仍是：在未知类别重叠、无目标标签条件下，如何保留真实共享目标召回并减少高置信度私有类误报。当前固定源类近邻支持度已被反例否定，不继续扫阈值、距离、层、模型或种子，也不据此训练。下一机制需要独立证据说明如何区分真实目标共享类与外观接近源类的私有目标，尚未选定或下发新路线。当前唯一任务槽为空，原创新目标未达成；本次失败不否定普通DA已有正迁移，也不构成项目结束。
+优先问题仍是：在未知类别重叠、无目标标签条件下，如何保留真实共享目标召回并减少高置信度私有类误报。当前固定源类近邻支持度已被反例否定，不继续扫阈值、距离、层、模型或种子，也不据此训练。C建议用已有source-only/普通DA权重，在冻结网络下校正同一候选的取样几何，直接比较分类与域信号，并以源验证域同样操作控制一般检测效应；这不同于此前最终框IoU校正和IDSA权重扰动。现有缓存缺校正RoI的分类输出，若执行需必要冻结前向，尚未下发或运行。oracle只回答可改善空间，不能当训练收益；若关键效应不足，不继续把该几何路径作为主要动机。
+
+C回查ReDet、Probabilistic Teacher、DPA和SOA，旋转不变/等变、分类定位不确定性及梯度协调均已有研究，不能直接改名为创新。建议验收分别看真实机制、AP50和完整强UniDA对照，保留AP75等辅助指标但不擅改项目主指标；已有KLD组合AP50=53.706也必须保留。论文级扩展与HBB控制仅为建议，未授权新增训练或种子，当前唯一任务槽仍空，原创新目标未达成。来源讨论记录本次建议；它不否定普通DA已有正迁移，也不构成项目结束。
 
 动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
 
 ## 证据
 
-[范围与最初立题](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P27/blob/9c323de5e5f39edd98f433a3d0dbd6f4d3ac864e/lab/discussion.md)；[结果依据](https://github.com/ziyu24/cqc_P27/blob/9c323de5e5f39edd98f433a3d0dbd6f4d3ac864e/lab/result.md)；[固定支持度充分证据](https://github.com/ziyu24/cqc_P27/blob/29988c890e01b4889e72b932171599301e9b50c6/doc/r008_evidence.json)；[C完成复核](https://github.com/ziyu24/cqc_P27/blob/9c323de5e5f39edd98f433a3d0dbd6f4d3ac864e/doc/r008_completion_review.json)；[冻结预测报告](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_prediction_audit.json)；[类别细分](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_private_subtypes.json)。[已登记教训](../lesson/cqc_P27.lessons.md)。
+[范围与最初立题](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P27/blob/25dcad8470dc991a77af3c2e1bf539b95c95a694/lab/discussion.md)；[结果依据](https://github.com/ziyu24/cqc_P27/blob/9c323de5e5f39edd98f433a3d0dbd6f4d3ac864e/lab/result.md)；[固定支持度充分证据](https://github.com/ziyu24/cqc_P27/blob/29988c890e01b4889e72b932171599301e9b50c6/doc/r008_evidence.json)；[C完成复核](https://github.com/ziyu24/cqc_P27/blob/9c323de5e5f39edd98f433a3d0dbd6f4d3ac864e/doc/r008_completion_review.json)；[冻结预测报告](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_prediction_audit.json)；[类别细分](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_private_subtypes.json)。[已登记教训](../lesson/cqc_P27.lessons.md)。
