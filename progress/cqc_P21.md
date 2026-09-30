@@ -6,7 +6,7 @@
 
 ## 核心进展
 
-数量弱标签学习区域表示已把DOTA原图AP50从旧源29.34提高到33.37，并相对同阶段静态评分30.96通过预设双AP门槛；但仍低于公开点教师43.05，数量及无标签数据的独立作用尚未由这次配对回答。
+数量弱标签学习区域表示已把DOTA原图AP50从旧源29.34提高到33.37，并相对同阶段静态评分30.96通过预设双AP门槛；但仍低于公开点教师43.05。用户已明确要求先提高主方法精度，数量及无标签作用的补充对照后置。
 
 ## 服务器当前内容
 
@@ -26,10 +26,12 @@ C已从两臂best/final原始预测重新计算全部原图PR，与保存结果�
 
 ## 下一步与维护
 
-优先设计同等强的区域学习下数量/类别存在比较，直接回答增强视觉是否淹没数量；旧弱存在基线不能替代新表示下的控制。纯存在流程不能继承数量学成模型、数量选定弱标签或逐图真实预算；同密度错配仅检验条件对应作用。若数量增量仍保留，再补匹配L-only检验80%图像价值；若强存在追平，则当前精确数量卖点未建立。已有预测不能产生这些未训练的反事实，下一实验须按这些边界实现后交付；本轮未新增任务或训练。
+按用户最新指令，先解决主方法的实际误检、分类和漏检问题，撤销强类别存在/L-only对照作为当前优先任务，不以补归因阻挡性能推进。首选完善区域目标/非目标判别：当前15类头已有缺席类训练，却无显式非目标输出；固定3149张数量图中有1207张全类数量为零，可提供合法背景信息。含目标图的未选候选继续是未知，不能一律当负例。区域判别是否提高实际AP尚未验证；桥梁、小车的候选覆盖另有缺口，不能许诺由分类改进全部解决。既有33.37模型作为受保护性能参照，下一具体干预需完成实现与针对性检查后交付；本轮未新增任务或训练。
+
+未来若恢复归因，纯存在流程不能继承数量学成模型、数量选定弱标签或逐图真实预算，L-only须全阶段隔离U；这些边界仍有效，只调整研究顺序，不把未补证的数量/U独立收益写成事实。
 
 动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
 
 ## 证据
 
-[范围与最初立题](https://github.com/ziyu24/cqc_P21/blob/f4d9c3eddbabdfc1fbae1abff780171cc5f4be7f/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P21/blob/f4d9c3eddbabdfc1fbae1abff780171cc5f4be7f/lab/discussion.md)；[结果及C独立复核](https://github.com/ziyu24/cqc_P21/blob/f4d9c3eddbabdfc1fbae1abff780171cc5f4be7f/lab/result.md)；[空任务槽](https://github.com/ziyu24/cqc_P21/blob/f4d9c3eddbabdfc1fbae1abff780171cc5f4be7f/lab/sug.md)。 [已登记教训](../lesson/cqc_P21.lessons.md)。
+[范围与最初立题](https://github.com/ziyu24/cqc_P21/blob/f4d9c3eddbabdfc1fbae1abff780171cc5f4be7f/README.md)；[用户要求的性能优先顺序](https://github.com/ziyu24/cqc_P21/blob/6385eb9024ce44f2986af2cab676839f829352cc/lab/discussion.md)；[结果及C独立复核](https://github.com/ziyu24/cqc_P21/blob/f4d9c3eddbabdfc1fbae1abff780171cc5f4be7f/lab/result.md)；[空任务槽](https://github.com/ziyu24/cqc_P21/blob/6385eb9024ce44f2986af2cab676839f829352cc/lab/sug.md)。 [已登记教训](../lesson/cqc_P21.lessons.md)。
