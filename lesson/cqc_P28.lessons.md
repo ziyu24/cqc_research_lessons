@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_geometry.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`。当前审计来源为 `ziyu24/cqc_P28@ec8748aca9cb0a677da3b0e398f421aad00d0f29`；已抓取全部远端分支，仅 main，没有更新更晚的次线。
+先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_geometry.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`。当前审计来源为 `ziyu24/cqc_P28@2ff582533f5c7a82f8b844c305f21fa9b6c2198a`；已抓取全部远端分支，仅 main，没有更新更晚的次线。
 
 ## 项目研究什么
 
@@ -65,9 +65,12 @@
 
 - 失败命题：在学生和预测 EMA 继续适应时，仅用不更新的正确标签源模型替代 EMA 提供当前图像伪标签，就能让单视图 AP50 与 AP75 同时超过冻结和朴素 Mean Teacher。
 - 失败原因：固定源监督单视图 AP50/AP75 为 0.53157/0.29020，相对朴素 MT 为 +0.02124/+0.01288，但相对冻结为 −0.00077/+0.01084，未满足预定联合条件。双视图为 0.56151/0.29405，虽超过两基线，却不能改写单视图判据。score≥0.7 的 TP/FP/precision 从朴素 MT 的 247,272/161,117/60.55% 恢复到 211,505/44,611/82.58%，背景 FP 从 119,817 降至 17,055；冻结仍为 188,713/36,174/83.91%。大车全分数同类召回也只从 16.27% 回升到 19.42%，未恢复冻结的 31.56%。
+- 配对补核：大车是唯一单视图AP50下降类（−2.998个百分点），其他三类均为正。对同一GT按原生一对一匹配，源模型正确检出的11,926个大车中，新臂保留7,235、丢失4,691，另新检出103；丢失者4,679个（99.74%）原源TP低于0.7，其中3,818个（81.39%）仍有IoU≥0.5的小车框覆盖。固定监督并未自动保留低置信类别证据，下一机制不能仅凭总体误检减少推断弱类也被保护。
 - 后续做法：将“固定源提供者”保留为隔离错误反馈的强对照，而不是直接包装成新方法。评价稳定教师或类别修复时，必须同时报告相对朴素在线、相对冻结、同视图与双视图、AP50/AP75、极高分精度及弱类召回；不能只凭误检下降或双视图提升宣称在线适应成功。新机制还要明确处理固定源漏检/错类和学生共享特征漂移中的哪一项。
-- 边界：该干预同时改变伪框的类别、几何、数量和后续训练轨迹，不是可加的单机制因果分解。证据只限 FAIR1M 四类固定单遍流、阈值 0.7、一个种子/顺序；不否定其他稳定教师、类别纠错、Soft Teacher/CPF 或整条 TTA-OBB→CTTA-OBB 主线，也不提供独立目标域或连续适应证据。
+- 边界：该干预同时改变伪框的类别、几何、数量和后续训练轨迹，不是可加的单机制因果分解。 单视图AP50仅低0.077个百分点，单种子不足以认定稳定劣于冻结。原图合并低分不等于所有切片缺乏监督，小车框覆盖也不是逐预测身份转换；尚未分解源伪标签错类、背景分配与共享表征漂移的训练因果。证据只限 FAIR1M 四类固定单遍流、阈值 0.7、一个种子/顺序；不否定其他稳定教师、类别纠错、Soft Teacher/CPF 或整条 TTA-OBB→CTTA-OBB 主线，也不提供独立目标域或连续适应证据。
 - 证据：`ziyu24/cqc_P28@ec8748aca9cb0a677da3b0e398f421aad00d0f29` 的 `lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r007.json`、`src/online_supervision.py`、`src/online_entry.py`、`src/run_r007.py` 和 `src/score_r007_errors.py`；实际运行时实现与配置来源为同库 `1fcd265e92c318051dd0c4b6e56f8e2c59a36222`。
+
+- 补充证据：`ziyu24/cqc_P28@2ff582533f5c7a82f8b844c305f21fa9b6c2198a` 的 `lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md` 和 `src/analyze_large_vehicle_retention.py`。
 
 ## 方法族停止索引
 
