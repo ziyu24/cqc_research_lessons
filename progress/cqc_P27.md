@@ -14,7 +14,7 @@
 
 ## 服务器当前内容
 
-既有域适应/定位实验已结束。SERVER于2026-09-30 06:59–07:50 UTC在26实际完成固定源支持度检查：复用普通DA best，对源train、源val和目标val执行完整两卡冻结前向，随后CPU原生评测；无训练、无新权重、无target test。当前执行工作结束，结果已发布，等待B/C科学复核；没有自动衔接新任务。
+既有域适应/定位实验已结束。SERVER于2026-09-30 06:59–07:50 UTC在26实际完成固定源支持度检查：复用普通DA best，对源train、源val和目标val执行完整两卡冻结前向，随后CPU原生评测；无训练、无新权重、无target test。C已完成科学复核，确认执行完整、当前固定方案失败；没有自动衔接新任务。
 
 ## 核验说明
 
@@ -28,18 +28,22 @@ C精确回放576原图、20549切片的原生AP及TP身份，并独立重建每�
 
 结果上，95%共享TP保留点中源支持度只抑制14.472%私有相关FP，低于原置信度17.225%；乘积为17.247%。实际AP50/AP75/AP50:95由0.52062/0.13870/0.22154降至0.50298/0.13000/0.21214，large-vehicle AP50由0.16138降至0.07653；原始和重排序命中同一83,560个TP，失败来自排序而非覆盖集合变化。首次attempt在任何前向前因恢复配置类型错误退出，同号修复后完成，不计科学失败。
 
+C独立复算全部保存数组，并排除支持度离散并列导致的比较口径疑点：严格同保留79,803个共享TP时，支持度仅移除1,330个私有相关FP，原置信度移除1,436个；大车类同保留1,396个TP时分别移除179/382个。大车真TP与container相关FP的支持度中位数为0.17530/0.17729，成对区分AUC为0.48778，弱于原置信度0.61245；这支持当前标量区分失败，不能外推为整个特征空间不可分或唯一训练成因。
+
+C另用原图GT和冻结框重新运行大车类原生Small AP50，两组AP精确复现，1,469个TP的检测身份及匹配GT身份完全相同。其余类别/IoU复用已绑定的原生评测输出，未全部重新匹配；没有新增前向或训练。现有证据足以停止该固定方案，无需继续核验或重训确认。实际命令含一次前向前失败共50.66分钟，按两卡全命令占用折算约1.689 GPU小时，非纯GPU计算时间。
+
 ## 执行阶段
 
-既有训练已结束且已有科学复核；冻结预测复核亦已完成并发布证据。固定源支持度任务现已执行结束并发布充分统计，任务槽已清空，处于等待B/C科学复核而非继续运行状态。保留B于2026-09-30 03:51 UTC对更早定位对照的观察；本次无训练，也未自动下发后续任务。
+既有训练已结束且已有科学复核；冻结预测复核亦已完成并发布证据。固定源支持度任务现已执行结束，C完成复核并确认达到既定失败终点，任务槽为空。保留B于2026-09-30 03:51 UTC对更早定位对照的观察；本次无训练，也未自动下发后续任务。
 
-记录者：SERVER；更新日期：2026-09-30。保留B/C既有判断；本次只登记实际执行结束和按冻结判据得到的结果，不冒充B/C最终科学共识。
+记录者：C；更新日期：2026-09-30。保留SERVER实际执行记录及B/C既有有效核验；本次判断为C独立复核，不冒充跨端共识。
 
 ## 下一步与维护
 
-优先问题仍是：在未知类别重叠、无目标标签条件下，如何保留真实共享目标召回并减少高置信度私有类误报。当前固定源类近邻支持度已被反例否定，不继续扫阈值、距离、层、模型或种子，也不据此训练；下一路线须由B/C结合完整结果另行科学裁决。当前唯一任务槽为空，不把本次负结果扩写为所有特征不可分或项目结束。
+优先问题仍是：在未知类别重叠、无目标标签条件下，如何保留真实共享目标召回并减少高置信度私有类误报。当前固定源类近邻支持度已被反例否定，不继续扫阈值、距离、层、模型或种子，也不据此训练。下一机制需要独立证据说明如何区分真实目标共享类与外观接近源类的私有目标，尚未选定或下发新路线。当前唯一任务槽为空，原创新目标未达成；本次失败不否定普通DA已有正迁移，也不构成项目结束。
 
 动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
 
 ## 证据
 
-[范围与最初立题](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P27/blob/29988c890e01b4889e72b932171599301e9b50c6/lab/discussion.md)；[结果依据](https://github.com/ziyu24/cqc_P27/blob/29988c890e01b4889e72b932171599301e9b50c6/lab/result.md)；[固定支持度充分证据](https://github.com/ziyu24/cqc_P27/blob/29988c890e01b4889e72b932171599301e9b50c6/doc/r008_evidence.json)；[冻结预测报告](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_prediction_audit.json)；[类别细分](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_private_subtypes.json)。[已登记教训](../lesson/cqc_P27.lessons.md)。
+[范围与最初立题](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P27/blob/9c323de5e5f39edd98f433a3d0dbd6f4d3ac864e/lab/discussion.md)；[结果依据](https://github.com/ziyu24/cqc_P27/blob/9c323de5e5f39edd98f433a3d0dbd6f4d3ac864e/lab/result.md)；[固定支持度充分证据](https://github.com/ziyu24/cqc_P27/blob/29988c890e01b4889e72b932171599301e9b50c6/doc/r008_evidence.json)；[C完成复核](https://github.com/ziyu24/cqc_P27/blob/9c323de5e5f39edd98f433a3d0dbd6f4d3ac864e/doc/r008_completion_review.json)；[冻结预测报告](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_prediction_audit.json)；[类别细分](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_private_subtypes.json)。[已登记教训](../lesson/cqc_P27.lessons.md)。
