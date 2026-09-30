@@ -120,6 +120,9 @@ PWOOD提供半监督与弱监督的技术底座，尚需检验未见域及弱几
 - 边界：这是单seed、固定1024、完整120k且目标域已有研究暴露的框架条件结果，不否定其它日程、多尺度、U语义、检测头或一般DG。它也不抹去HRSC、DOTA及大车的正差；只说明该消融未形成统一机制收益，更不构成新方法或跨种子稳定性证据。
 - 证据：`ziyu24/cqc_P25@4fd2b575fcfcc5e092bc2c42f4fd62e24a91d946`；`lab/result.md`、`lab/failed_methods.md`、`configs/u_contribution.json`、`doc/u_contribution.md`、`src/run_u_contribution.py`。[完整日程结果与裁决](https://github.com/ziyu24/cqc_P25/blob/4fd2b575fcfcc5e092bc2c42f4fd62e24a91d946/lab/result.md)。
 
+
+完整PR复核进一步限定解释：两个目标域小车严格VOC07负差都只来自零召回格；其中FAIR小车连续AP75/最高召回仍增加0.119755/0.512676点，而SODA小车对应下降0.813900/0.450650点。车辆严格连续宏平均仅下降0.020372点、最高召回反而提高0.853611点；FAIR大车严格VOC07增加3.588517点，连续面积却只增加0.000854点。因此保留预定联合失败与异质性，不能将大小车的VOC方向直接提升为几何统一改善或退化。两模型52组完整PR、实际干预与两卡记录、新预测分片、固定分母及完整终点已独立核验，没有新推理或全量独立IoU重放。来源：`ziyu24/cqc_P25@a48771f3b4d7b80974316e34fa7096208c190b12`，`lab/result.md`、`doc/r016_review.json`、`src/review_u_completion.py`。[完整PR及解释边界](https://github.com/ziyu24/cqc_P25/blob/a48771f3b4d7b80974316e34fa7096208c190b12/doc/r016_review.json)。既定固定删项停止范围不变，不新增教训条数。
+
 ## 方法族停止索引
 
 | 方法或解释族 | 当前限制 | 没有被否定的范围 |
