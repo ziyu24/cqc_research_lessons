@@ -10,11 +10,11 @@
 
 重复候选不支持优先放大私有类别的旧反例仍有效，原两臂重复修正训练建议仍已撤回，没有被本次发现重新授权。
 
-固定源类别5-NN支持度检查已经完成：该信号在95%共享TP保留诊断中弱于原置信度，实际乘法重排序又使AP50、AP75和AP50:95全部下降。它不能作为下一训练机制的正依据，但只否定当前冻结特征、校准与打分规则，不否定全部OOD或表征方法。用户追问研究方向后，C明确OBB额外几何困难与Universal类别变化不是一回事，建议下一步检验“旋转候选取样误差是否污染共享性判定”，尚无该机制成立或新方法有效的证据。
+固定源类别5-NN支持度检查已经完成：该信号在95%共享TP保留诊断中弱于原置信度，实际乘法重排序又使AP50、AP75和AP50:95全部下降。它不能作为下一训练机制的正依据，但只否定当前冻结特征、校准与打分规则，不否定全部OOD或表征方法。随后完成的冻结取样几何诊断显示，完整GT几何在目标Small七类的宏平均点估计为正，但区间不稳、没有超过源域一般效应，严格控制不足，且主要container→large-vehicle混淆恶化。因此单RoI取样几何污染也不能作为下一优先路线；这仍不等于全部旋转几何方法失败。
 
 ## 服务器当前内容
 
-既有域适应/定位实验已结束。SERVER于2026-09-30 06:59–07:50 UTC在26实际完成固定源支持度检查，C已复核并确认该固定方案失败。用户随后明确授权推进取样几何诊断，C已交付r009的代码、配置与唯一任务：在26复用两组受保护权重，冻结前向完整源val和目标val，以同一普通DA候选做四种取样干预；训练数为0。26缺的source-only权重已回源46核对实体和SHA，SERVER只补取这一必要输入。尚未观察到r009实际启动，不把交付写成正在计算。
+既有域适应/定位实验已结束。SERVER于2026-09-30 09:34–09:51 UTC在26实际完成冻结取样几何诊断：复用两组受保护权重，对完整源val和目标val以同一普通DA候选做四种取样干预，训练数为0。RUN为`COMPLETE/exit 0`，两个分区都是真实双rank GPU0/1；科学输出、独立证据和失败边界已推送，唯一任务槽已清空。该任务执行工作结束，尚未由B/C基于新结果选定后续科学路线；不自动启动训练。
 
 ## 核验说明
 
@@ -32,17 +32,19 @@ C独立复算全部保存数组，并排除支持度离散并列导致的比较�
 
 C另用原图GT和冻结框重新运行大车类原生Small AP50，两组AP精确复现，1,469个TP的检测身份及匹配GT身份完全相同。其余类别/IoU复用已绑定的原生评测输出，未全部重新匹配；没有新增前向或训练。现有证据足以停止该固定方案，无需继续核验或重训确认。实际命令含一次前向前失败共50.66分钟，按两卡全命令占用折算约1.689 GPU小时，非纯GPU计算时间。
 
+取样几何诊断覆盖源458原图/5,297切片和目标576/20,549，独立审计逐块复算132个分块、对象覆盖、四变体逐类表、1000次原图bootstrap、源目标差分和私有类别去向。普通DA目标Small完整几何宏平均增量为+1.953 [−0.523,+3.978]点，源域为+2.392 [1.411,3.351]点，目标减源为−0.439 [−3.011,+1.748]点；严格控制目标仅+0.941 [−0.821,+2.566]点。目标Small对象加权正确率下降0.672点；container→large-vehicle由2,476升至3,170，windmill→helicopter由98降至41。预定联合条件未满足，充分证据SHA为`7143e024c3e0584dd5660895b4a8b05adeb66bc48982b9bcf088c66e195cd79c`；没有读取target train标签或test，也没有校正后AP。
+
 ## 执行阶段
 
-固定源支持度任务已结束并经C复核。用户授权的r009取样几何诊断已交付、待SERVER实际执行，未新增训练或种子。保留B于2026-09-30 03:51 UTC对更早定位对照的观察；不把本次下发覆盖成执行完成。
+固定源支持度任务已结束并经C复核。用户授权的冻结取样几何诊断已由SERVER执行结束并完成独立审计，未新增训练或种子；任务槽为空。保留B于2026-09-30 03:51 UTC对更早定位对照的观察；当前新结果待B/C作后续科学取舍，不把SERVER执行结束冒充跨端共识或项目目标达成。
 
-记录者：C；更新日期：2026-09-30。保留SERVER实际执行记录及B/C既有有效核验；本次判断为C独立复核，不冒充跨端共识。
+记录者：SERVER（本次执行结束）；更新日期：2026-09-30。保留C对前序支持度任务的独立复核及B/C既有有效核验；本次仅登记SERVER执行与独立脚本审计事实，不冒充B/C已回读或跨端共识。
 
 ## 下一步与维护
 
-优先问题仍是：在未知类别重叠、无目标标签条件下，如何保留真实共享目标召回并减少高置信度私有类误报。当前固定源类近邻支持度已被反例否定，不继续搜索或据此训练。已交付的几何干预采用相同候选、按原图GT去重，并报告源/目标差异、恢复和恶化、私有误报以及覆盖限制。现有缓存缺校正RoI分类输出，因而需要此次冻结前向。C本地27项针对性CPU检查通过，26原生旋转RoIAlign、零干预、坐标映射与同类歧义反例通过；真实两卡首批及吞吐由SERVER完成，本机尚未执行项目GPU前向。
+优先问题仍是：在未知类别重叠、无目标标签条件下，如何保留真实共享目标召回并减少高置信度私有类误报。当前固定源类近邻支持度与单RoI取样几何优先解释均已被预定反例限制，不继续搜索或据此训练。几何诊断只覆盖有可靠候选的对象；无合格候选的147,559个目标对象、漏检、训练因果和HBB控制仍未知，不能从本轮负结果推成全部OBB机制失败。
 
-预定筛选要求目标共享类宏平均分类恢复至少1点、原图配对区间为正、超过源域一般效应且边界控制同向。通过仅支持进一步设计无标签近似，不能把GT潜力当成方法或AP；不通过则不优先投入该几何解释，覆盖不足如实报未知。原任务完整输出后结束，不自动接训练。
+下一科学路线尚未获授权或下发。新的候选必须有区分真实共享目标与外观相近私有目标的独立、无标签可实现依据，并保留已有普通DA正迁移、KLD AP50正差及失败边界；不能再由GT oracle点估计直接跳到训练。项目整体创新目标仍未达成，项目状态保持“正在运行”。
 
 C回查ReDet、Probabilistic Teacher、DPA和SOA，旋转不变/等变、分类定位不确定性及梯度协调均已有研究，不能直接改名为创新。建议验收分别看真实机制、AP50和完整强UniDA对照，保留AP75等辅助指标但不擅改项目主指标；已有KLD组合AP50=53.706也必须保留。论文级扩展与HBB控制仍为建议，未授权新增训练或种子，原创新目标未达成；普通DA已有正迁移继续有效。
 
@@ -50,4 +52,4 @@ C回查ReDet、Probabilistic Teacher、DPA和SOA，旋转不变/等变、分类�
 
 ## 证据
 
-[范围与最初立题](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P27/blob/57feebd7b76c7537ac73b0b878e48364ca4568b0/lab/discussion.md)；[当前唯一任务](https://github.com/ziyu24/cqc_P27/blob/57feebd7b76c7537ac73b0b878e48364ca4568b0/lab/sug.md)；[结果依据](https://github.com/ziyu24/cqc_P27/blob/9c323de5e5f39edd98f433a3d0dbd6f4d3ac864e/lab/result.md)；[固定支持度充分证据](https://github.com/ziyu24/cqc_P27/blob/29988c890e01b4889e72b932171599301e9b50c6/doc/r008_evidence.json)；[C完成复核](https://github.com/ziyu24/cqc_P27/blob/9c323de5e5f39edd98f433a3d0dbd6f4d3ac864e/doc/r008_completion_review.json)；[冻结预测报告](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_prediction_audit.json)；[类别细分](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_private_subtypes.json)。[已登记教训](../lesson/cqc_P27.lessons.md)。
+[范围与最初立题](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P27/blob/042d9975094ac34c6d8e36a7b573bc0a1bd0aaba/lab/discussion.md)；[当前任务槽](https://github.com/ziyu24/cqc_P27/blob/042d9975094ac34c6d8e36a7b573bc0a1bd0aaba/lab/sug.md)；[结果依据](https://github.com/ziyu24/cqc_P27/blob/042d9975094ac34c6d8e36a7b573bc0a1bd0aaba/lab/result.md)；[取样几何充分证据](https://github.com/ziyu24/cqc_P27/blob/042d9975094ac34c6d8e36a7b573bc0a1bd0aaba/doc/r009_evidence.json)；[固定支持度充分证据](https://github.com/ziyu24/cqc_P27/blob/29988c890e01b4889e72b932171599301e9b50c6/doc/r008_evidence.json)；[C完成复核](https://github.com/ziyu24/cqc_P27/blob/9c323de5e5f39edd98f433a3d0dbd6f4d3ac864e/doc/r008_completion_review.json)；[冻结预测报告](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_prediction_audit.json)；[类别细分](https://github.com/ziyu24/cqc_P27/blob/3cdb76547fb7b303a14d82b3f53b43aa2eb2dc3a/doc/adaptation_private_subtypes.json)。[已登记教训](../lesson/cqc_P27.lessons.md)。
