@@ -12,7 +12,9 @@
 
 ## 服务器当前内容
 
-46已经完成r007唯一训练臂、完整评测及误差诊断，2026-09-30 02:32 PDT结束。B于当天03:08 PDT起回核原始结果并完成补充CPU配对分析；没有下发或启动下一训练。当前任务槽为空，重要最终状态已受保护。
+46上一固定源监督实验已完成并经B复核。2026-09-30 10:55 UTC，B已发布r008：沿同一修复源模型和FAIR1M完整在线流，先用源教师在学生实际候选上的完整五类概率监督分类，再做同候选概率argmax硬目标对照。两项各实际两卡、一个固定种子、一遍流；冻结、朴素MT及固定源硬监督旧基线复用。入口、配置、必要反例检查和判据已推送。
+
+这是已下发内容，尚未观测到新GPU实验启动。最后服务器只读观察为10:43 UTC的上一完成记录；不将代码就绪当已执行。已有重要源/在线最终状态继续受保护。
 
 ## 核验说明
 
@@ -22,16 +24,16 @@ B进一步用已保存预测按同一GT做零训练配对，174秒CPU、0GPU：�
 
 ## 执行阶段
 
-已复核（2026-09-30，B）。r007执行完整但未满足预定单视图联合条件，局部及双视图正结果保留；原始项目目标未达成，主线未被整体证伪。没有新的训练任务。
-
-记录者：B；本页是B本轮回核与补算，历史SERVER记录按来源保留，不冒称与C共识。
+已下发，尚未观测启动（2026-09-30 10:55 UTC，B）。上一轮结果已充分复核；本轮新增机制尚无性能结果。原始科学目标未达成，TTA-OBB→CTTA-OBB主线不变。
 
 ## 下一步与维护
 
-下一机制应回答如何在纠正源偏差时保留低置信但正确的类别证据；选择方法前比较公开核心方法、可用代码和信息条件。本轮已有证据足以作上述取舍，停止继续穷尽静态归因，不自动扫阈值或追加训练。独立目标域和真正连续流证据仍待获得，不能用当前单域发现代替。
+现有零训练证据已足够确定待证问题：固定监督下，硬类别目标是否抹去低置信但正确的类别信息。Humble Teacher/LPLD已有候选分布监督思想；作者代码完整性和原任务信息条件存在限制，本轮做明确的受控适配，不称完整复现或新OBB方法。Soft Teacher负样本加权不能直接检验前景车辆错类，因此不优先堆背景权重。
 
-动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
+现有预测无法推算新损失下的参数、候选和EMA轨迹，需要两项实际在线实验。原生旋转bbox head CPU反例已验证软/硬分类梯度、教师停止梯度、背景保留、原生归一化及回归梯度不变；真实GPU候选特征路径和双rank首批/吞吐由SERVER在同一入口验证。先完成主臂立即评分，再完成必要对照，不因低分取消有判别力的对照。分别看整体AP、大车AP/召回及背景误检；只有重赋硬类有效时不能归功于软分布。
+
+本轮只使用已观察的FAIR1M研究流。SODA-A独立目标与真正连续流仍待后续，不把当前类别保持问题宣称CTTA-OBB的已证核心。动作执行者按[主动更新约定](README.md)在真实启动/结束时更新本页并发布总览。
 
 ## 证据
 
-[最初立题](https://github.com/ziyu24/cqc_P28/blob/2ff582533f5c7a82f8b844c305f21fa9b6c2198a/README.md)；[B复核与全部配对统计](https://github.com/ziyu24/cqc_P28/blob/2ff582533f5c7a82f8b844c305f21fa9b6c2198a/lab/result.md)；[当前问题及边界](https://github.com/ziyu24/cqc_P28/blob/2ff582533f5c7a82f8b844c305f21fa9b6c2198a/lab/discussion.md)；[零训练配对实现](https://github.com/ziyu24/cqc_P28/blob/2ff582533f5c7a82f8b844c305f21fa9b6c2198a/src/analyze_large_vehicle_retention.py)；[任务槽](https://github.com/ziyu24/cqc_P28/blob/2ff582533f5c7a82f8b844c305f21fa9b6c2198a/lab/sug.md)；[已登记教训](../lesson/cqc_P28.lessons.md)。
+[最初立题](https://github.com/ziyu24/cqc_P28/blob/2ff582533f5c7a82f8b844c305f21fa9b6c2198a/README.md)；[上一轮充分核验与零训练配对](https://github.com/ziyu24/cqc_P28/blob/2ff582533f5c7a82f8b844c305f21fa9b6c2198a/lab/result.md)；[当前机制与公开方法比较](https://github.com/ziyu24/cqc_P28/blob/01bdcc687b49b23c2e8edd31a0d986d319194ad5/lab/discussion.md)；[唯一任务及判据](https://github.com/ziyu24/cqc_P28/blob/01bdcc687b49b23c2e8edd31a0d986d319194ad5/lab/sug.md)；[可续接双卡入口](https://github.com/ziyu24/cqc_P28/blob/01bdcc687b49b23c2e8edd31a0d986d319194ad5/src/run_r008.py)；[原生头反例检查](https://github.com/ziyu24/cqc_P28/blob/01bdcc687b49b23c2e8edd31a0d986d319194ad5/src/check_roi_targets.py)；[已登记教训](../lesson/cqc_P28.lessons.md)。
