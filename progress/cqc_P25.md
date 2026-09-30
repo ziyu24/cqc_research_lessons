@@ -36,8 +36,12 @@ r020执行、SERVER检查及C独立复核均已结束，来源结果已推送。
 
 先核定CDDMSL作者实现、预训练实体和完整机制，再明确其双源水平框方法对单DOTA源内195-L/1216-U与旋转框的必要适配。真实OBB+U外部方法参照与对应HBox+U方案应匹配初始化、采样、预算和种子，目标图像/GT不得进入训练、风格库、选优或阈值搜索；外部预训练差异不能记为DG收益。当前只是协议/实现准备，尚未交付或下发训练。既有指标不能回答该外部参照问题；无须再扩增域内模型或重复15项诊断。
 
+C进一步明确：补齐外部模型分数只解决比较参照问题，要推进r020诊断，还须绑定一个可证伪的机制假设和必要的同初态机制开/关对照。拟检验源内合法外观变化下的语义一致性是否改善同类筛选保留及实际检测，并保持几何覆盖/严格定位；若支持率上升而AP未改善，不能算问题解决，若覆盖同时改变则承认联合效应。可比旧臂复用，不扩增模型扫测。当前尚无机制实现或收益，只有分解问题及匹配信息条件的研究方法可借鉴，不能宣称已帮助其它项目获得性能提升；本轮没有修改其它项目。
+
 动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
 
 ## 证据
 
 [C独立复核与指标](https://github.com/ziyu24/cqc_P25/blob/5cbd1ed275c561facae133a7f27ccb81d1755885/doc/r020_independent_review.json)；[完整结果与边界](https://github.com/ziyu24/cqc_P25/blob/5cbd1ed275c561facae133a7f27ccb81d1755885/lab/result.md)；[下一步科学取舍](https://github.com/ziyu24/cqc_P25/blob/5cbd1ed275c561facae133a7f27ccb81d1755885/lab/discussion.md)；[恢复入口](https://github.com/ziyu24/cqc_P25/blob/e01a955020fc6c4b94a333aab2f5a80d62e522a2/configs/r020.recovery.json)；[已登记教训](../lesson/cqc_P25.lessons.md)。
+
+[参照与机制验证的作用区分](https://github.com/ziyu24/cqc_P25/blob/e1a21172d65eebbd88b7eb33d9bcb8aebf91c924/lab/discussion.md)。
