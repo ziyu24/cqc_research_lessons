@@ -6,28 +6,28 @@
 
 ## 核心进展
 
-当前在线适应仍落后冻结源模型；复用预测和已有权重发现高置信错误伪前景及类别混淆，单改几何或负样本权重不足以解释全部退化。r007正在检验：保持预测侧EMA在线更新，但改用不更新的正确标签源模型提供当前图像伪标签，切断在线错误自反馈后能否同时超过冻结源模型与原始Mean Teacher。
+当前在线适应仍未按预定单视图判据超过冻结源模型。r007切断在线伪标签自反馈后，相对朴素Mean Teacher明显恢复，但单视图AP50仍比冻结低0.077个百分点；说明错误反馈是重要退化环节，却不是固定源监督能够完整解决的唯一限制。
 
 ## 服务器当前内容
 
-46已实际启动r007唯一训练臂：FAIR1M固定单遍、单种子、两卡同步更新；2026-09-30 04:09 UTC观察到GPU 0、1上的两个DDP rank完成首批反传。
+46已完成r007唯一训练臂、全流评测和误差诊断：FAIR1M固定单遍、单种子、GPU 0、1两卡同步更新，覆盖16,239原图/22,618切片；2026-09-30 09:32 UTC正常退出，结果已推送。
 
 ## 核验说明
 
-原生AP精确复现；约0.20 GPU小时固定状态检查未更新模型，随后CPU分析无训练。理想删除背景误检使在线从落后2.20点变为领先1.28点，错类纠正后差距0.17点；这些只改变方法优先级，不能宣称修复实际涨点或已排除Soft Teacher/CPF。已有诊断不能回答“固定正确源模型伪标签是否能阻断错误反馈”，故需r007实际更新。SERVER复用了UNCHANGED/PASS的FAIR1M切片报告；首批两rank梯度、student/EMA变化和固定源状态不变均已核实，最终性能尚未知。
+SERVER复用了UNCHANGED/PASS的FAIR1M切片报告，核实首批两rank梯度、student/EMA变化、固定源状态不变、全流预测全集和恢复状态。单视图AP50/AP75为0.531571/0.290202，相对冻结为−0.000773/+0.010842，相对朴素MT为+0.021239/+0.012876；预定总体正信号为否。高分背景FP从MT的119,817降至17,055，但冻结仅12,750；大车同类召回19.42%，仍低于冻结31.56%。证据足以结束r007执行，不支持追加第二臂或阈值扫描。
 
 ## 执行阶段
 
-执行中，待完成全流、合法评测和错误分解后再交B/C复核；命令RUNNING与首批成功不代表科学完成。
+执行结束，待B/C复核；SERVER已完成全流、合法评测、错误分解、结果归档、失败边界和checkpoint保护。命令COMPLETE本身不是科学成功，r007按预定判据失败但有明确局部缓解。
 
 记录者：B；初始化日期：2026-09-30。来源中的B/C核验与本次只读观察分开表述；未取得对端新回写，不称本轮共识。
 
 ## 下一步与维护
 
-完成r007全流后，按单视图AP50与AP75是否都超过冻结源模型和原始Mean Teacher裁决该干预；不追加第二训练臂或阈值扫描。
+B/C复核目标达成、路线失败边界与下一核心问题；SERVER不自动追加第二训练臂、阈值扫描或CTTA。项目原始目标仍未达成，主线未被整体证伪。
 
 动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
 
 ## 证据
 
-[范围与最初立题](https://github.com/ziyu24/cqc_P28/blob/1fcd265e92c318051dd0c4b6e56f8e2c59a36222/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P28/blob/1fcd265e92c318051dd0c4b6e56f8e2c59a36222/lab/discussion.md)；[结果依据](https://github.com/ziyu24/cqc_P28/blob/1fcd265e92c318051dd0c4b6e56f8e2c59a36222/lab/result.md)；[主线任务](https://github.com/ziyu24/cqc_P28/blob/1fcd265e92c318051dd0c4b6e56f8e2c59a36222/lab/sug.md)。 [已登记教训](../lesson/cqc_P28.lessons.md)。
+[范围与最初立题](https://github.com/ziyu24/cqc_P28/blob/ec8748aca9cb0a677da3b0e398f421aad00d0f29/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P28/blob/ec8748aca9cb0a677da3b0e398f421aad00d0f29/lab/discussion.md)；[结果依据](https://github.com/ziyu24/cqc_P28/blob/ec8748aca9cb0a677da3b0e398f421aad00d0f29/lab/result.md)；[任务槽已清空](https://github.com/ziyu24/cqc_P28/blob/ec8748aca9cb0a677da3b0e398f421aad00d0f29/lab/sug.md)。 [已登记教训](../lesson/cqc_P28.lessons.md)。

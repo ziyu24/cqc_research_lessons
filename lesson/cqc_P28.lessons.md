@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_geometry.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`。当前审计来源为 `ziyu24/cqc_P28@160507c1adda53133ed5c1f9df19b6e839e1b3f4`；已抓取全部远端分支，仅 main，没有更新更晚的次线。
+先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_geometry.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`。当前审计来源为 `ziyu24/cqc_P28@ec8748aca9cb0a677da3b0e398f421aad00d0f29`；已抓取全部远端分支，仅 main，没有更新更晚的次线。
 
 ## 项目研究什么
 
@@ -12,7 +12,7 @@
 
 本项目已经建立正确标注训练的四类源初态，并完成真实跨数据集单遍在线对照、直接回归损失删除干预，以及跨视图旋转一致性与置信度的等比例 RoI 定位选择比较。固定朴素教师—学生配方的平均检测 AP 低于同视图冻结预测；删除回归只呈混合改变；跨视图一致性排序也未超过置信度排序或冻结的预定联合条件。尚无本项目 CTTA 结果，也未证明旋转几何具有普通检测不存在的独特适应困难。论文检索未确认同题系统工作不等于已经证明首创。
 
-复用现有权重和预测的零更新诊断，已查实原生采样中的错误背景和类别误监督，以及全流高置信预测精度下降。完整输出的真值辅助反事实支持优先检查背景误检负担与类别区分，但训练机制各自对 AP 下降的因果贡献、候选修复的真实性能收益仍未知。
+复用现有权重和预测的零更新诊断，已查实原生采样中的错误背景和类别误监督，以及全流高置信预测精度下降。完整输出的真值辅助反事实支持优先检查背景误检负担与类别区分。固定源模型替代在线 EMA 提供伪标签的实际干预，显著恢复了高分精度并全面超过朴素 Mean Teacher，但预定单视图 AP50 仍略低于冻结；错误自反馈是重要组成部分，却不是该固定替换能够完整解决的唯一限制。
 
 ## 实际采用过的方法
 
@@ -24,6 +24,7 @@
 - 定位选择比较保留全部伪前景分类、RPN 与 RPN 回归，只对每类原生已采样正 RoI 保留 `ceil(n/2)` 个五维回归权重。主臂按教师原视图与逆翻转视图的同类最大 rotated IoU 排序，对照按置信度排序；两臂各完成 15,869 次更新并完整评分。
 - 低成本诊断固定既有流前 256 张单切片原图，以源状态和在线最终状态分别重算原生采样、损失及最后分类层条件梯度，不执行优化器或 EMA 更新；双卡两个既定亮度视图，权重和缓冲区前后摘要不变。另对全部既有历史预测按原阈值、一对一旋转匹配复算精度；真实标签仅用于离线核查。
 - 完整输出反事实只读取已保存预测及离线 GT，保持原生匹配/ignore、同分排序与 VOC07 AP 口径，分别剔除五类 FP、纠正错误类别/框，或在队尾追加未匹配 GT。各操作独立、分数和 GT 分母按固定规则处理；不加载模型或训练，原始两模型 AP 精确复得，不声称完整 TIDE 复现或全局最优上界。
+- 固定源监督干预保持学生、预测 EMA、优化器、原生损失、阈值和流顺序不变，只将训练伪标签提供者替换为每次从正确标签源权重重建且不更新的模型；当前图仍先由 EMA 预测保存，再由固定源原始视图输出提供两个学生视图的监督。完整一遍完成 14,644 次同步更新，固定源参数和缓冲区摘要不变。
 
 ## 教训一：置信筛选和 EMA 不能替代同视图的在线性能证据
 
@@ -60,10 +61,19 @@
 - 证据：`ziyu24/cqc_P28@5989b52be91d6c16adb0ff22f747f1d798682432` 的 `lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`configs/r005.json`、`src/probe_supervision.py`、`src/summarize_supervision_probe.py` 和 `src/analyze_high_confidence.py`。
 - 补充证据：`ziyu24/cqc_P28@160507c1adda53133ed5c1f9df19b6e839e1b3f4` 的 `lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`configs/r006.json`、`src/analyze_ap_errors.py`、`src/check_ap_errors.py` 和 `src/summarize_ap_errors.py`。
 
+## 教训五：切断在线伪标签自反馈能大幅缓解退化，但固定源监督仍不等于超过冻结
+
+- 失败命题：在学生和预测 EMA 继续适应时，仅用不更新的正确标签源模型替代 EMA 提供当前图像伪标签，就能让单视图 AP50 与 AP75 同时超过冻结和朴素 Mean Teacher。
+- 失败原因：固定源监督单视图 AP50/AP75 为 0.53157/0.29020，相对朴素 MT 为 +0.02124/+0.01288，但相对冻结为 −0.00077/+0.01084，未满足预定联合条件。双视图为 0.56151/0.29405，虽超过两基线，却不能改写单视图判据。score≥0.7 的 TP/FP/precision 从朴素 MT 的 247,272/161,117/60.55% 恢复到 211,505/44,611/82.58%，背景 FP 从 119,817 降至 17,055；冻结仍为 188,713/36,174/83.91%。大车全分数同类召回也只从 16.27% 回升到 19.42%，未恢复冻结的 31.56%。
+- 后续做法：将“固定源提供者”保留为隔离错误反馈的强对照，而不是直接包装成新方法。评价稳定教师或类别修复时，必须同时报告相对朴素在线、相对冻结、同视图与双视图、AP50/AP75、极高分精度及弱类召回；不能只凭误检下降或双视图提升宣称在线适应成功。新机制还要明确处理固定源漏检/错类和学生共享特征漂移中的哪一项。
+- 边界：该干预同时改变伪框的类别、几何、数量和后续训练轨迹，不是可加的单机制因果分解。证据只限 FAIR1M 四类固定单遍流、阈值 0.7、一个种子/顺序；不否定其他稳定教师、类别纠错、Soft Teacher/CPF 或整条 TTA-OBB→CTTA-OBB 主线，也不提供独立目标域或连续适应证据。
+- 证据：`ziyu24/cqc_P28@ec8748aca9cb0a677da3b0e398f421aad00d0f29` 的 `lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r007.json`、`src/online_supervision.py`、`src/online_entry.py`、`src/run_r007.py` 和 `src/score_r007_errors.py`；实际运行时实现与配置来源为同库 `1fcd265e92c318051dd0c4b6e56f8e2c59a36222`。
+
 ## 方法族停止索引
 
 - 已测固定朴素配方：本次没有总体收益，保留负结果，不通过反复调目标分数掩盖。
 - 广义教师—学生与 TTA-OBB→CTTA-OBB：未被整体否定，仍需针对性对照、可信强方法和未观察目标域证据。
 - 固定的直接回归监督删除：已完成，未稳定缓解负迁移，停止将其单独作为根因修复；不外推为几何机制无效。
 - 固定的同类最大 rotated IoU、半量 RoI 回归选择：已完成，未优于同量置信度排序或冻结联合条件，停止该固定规则的目标域比例微调；不外推为全部几何可靠性机制无效。
+- 固定源模型替代在线 EMA 提供伪标签：已完成，显著优于朴素在线但未满足单视图同时超过冻结的联合条件；保留为反馈隔离对照，不在已观察目标流追加阈值扫描，也不外推为所有稳定教师无效。
 - 其他语义/几何可靠更新及强检测 TTA 对照：尚无可裁决性能，不根据思路或局部诊断登记成败。
