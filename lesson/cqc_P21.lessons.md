@@ -310,13 +310,13 @@
 - 边界：这是DOTA-v1.0的20%切片数量覆盖、单seed42和重复开发集证据；20%不是原图比例或实测人工成本。1008张L切片改变选择，12600张U的伪监督与视觉项逐项恒等；类别增益主要集中于大车、储罐和港口，网球场退步，桥梁仍近零。learned仍比公开10%点教师低9.6784/10.5011双AP点；SAM2、GeoRSCLIP及区域蒸馏均有既有方法来源。因此该结果支持当前条件路线，不建立跨seed泛化、原创性、顶刊潜力或项目整体成功。
 - 证据：`ziyu24/cqc_P21@f4d9c3eddbabdfc1fbae1abff780171cc5f4be7f`；`lab/result.md`、`lab/discussion.md`、`configs/dota10_region_learning.json`、`configs/r053.recovery.json`、`doc/dota_region_learning_execution.md`、`src/dota_region_learning.py`、`src/dota_region_features.py`、`src/dota_region_model.py`、`src/dota_region_runtime.py`、`src/check_dota_region.py`及`src/audit_dota_region_result.py`。分类头和两检测臂均完成12轮/47256更新及真实双GPU计算；SERVER终审11项反例和真实源合同通过，C新增数量输入反例后12项通过，并独立精确重建两臂best/final原图PR、汇总和21份准备输出，核对15749/5297切片覆盖、L3149/U12600、全部U恒等、合法best/final及六份受保护模型散列；未读取test或扫描阈值、种子和轮数。原服务器结果提交实际为`d7d731c25272a343a7dc7fa27b912fed16617e00`，本次已更正旧版误写的来源链接。
 
-## 教训二十二：显式背景评分改善排序和AP，仍须以强参照的完整联合指标裁决
+## 教训二十二：固定预算TP与宏AP可以反向，联合失败不能抹去性能进步
 
 - 失败命题：在已有数量弱标签区域头上，只用全类数量为零的有标签图学习显式非目标概率，并将条件类别概率改为目标联合概率，就能相对当前最强区域学生同时提高双AP、固定预测预算下的TP并保持召回。
 - 失败原因：固定SAM2候选、GeoRSCLIP特征、37835个数量预算、U监督、检测初态和12轮训练预算后，新检测best相对强参照的AP07/面积AP提高2.3400/2.5190点，宏最大召回提高1.9600点，但平均每类TP@500下降2.6667，预设联合判据因此失败。与此同时，同一个区域头的同一批候选与类别只改变评分方式时，联合目标概率相对条件类别概率提高3.1534/3.2282双AP点、TP500提高29.80，说明干预确实改善了前端排序；前端诊断的正结果没有自动转化为强检测器在固定预算下的完整实用收益。
-- 后续做法：评分或校准干预应先用同预测诊断定位其直接作用，再以当前最强可比检测器、合法best及预先冻结的全部指标裁决下游价值；不能用更弱静态评分或旧源上的通过替代强参照，也不能因主AP上涨而事后删除TP条件。联合门槛失败后停止当前固定背景监督、损失权重、阈值、轮数和种子搜索；若后续研究监督传递，须另获路线授权并设计能区分排序改善与下游训练吸收的必要对照。
-- 边界：这是DOTA-v1.0、20%切片数量覆盖、单seed42、重复开发集和外部SAM2/GeoRSCLIP先验下的经验负结果；AP与召回正增量真实存在，不能写成显式非目标概率无效。它不否定其它背景标签来源、校准目标、检测器或数据集，也不建立统计等价、数量独立因果、跨数据泛化或项目整体失败。结果尚未由B/C独立重放完整PR，当前证据为SERVER对生成合同、完整端点和保存散列的收尾核验。
-- 证据：`ziyu24/cqc_P21@e8d1b17fba3fe13238f11966b8c15c01c3847924`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/dota10_region_background.json`、`configs/r054.recovery.json`、`src/dota_background_learning.py`、`src/dota_background_model.py`、`src/dota_background_runtime.py`及`src/check_dota_background.py`。背景头与唯一检测臂各完成12轮/47256更新及真实双GPU计算；验证覆盖5297切片合并完整458原图、26944有效GT并忽略1909 difficult GT，13项针对性检查通过，未读取test或扫描阈值、类别、轮数和种子。
+- 后续做法：评分或校准干预应先用同预测诊断定位其直接作用，再以当前最强可比检测器、合法best及预先冻结的全部指标裁决下游价值；不能用更弱静态评分或旧源上的通过替代强参照，也不能因主AP上涨而事后删除TP条件。联合门槛失败后停止当前固定配置的权重、阈值、轮数和种子搜索。TP500只表示每类全验证集前500预测的正确检出数，不能替代mAP、完整PR或不同类别的损失；后续应按完整证据定位下一干预。既有授权范围内的必要核验继续，实质变更路线或成功标准再说明影响并取得授权，不因一次联合门槛未过而自动禁止所有后续研究。
+- 边界：这是DOTA-v1.0、20%切片数量覆盖、单seed42、重复开发集和外部SAM2/GeoRSCLIP先验下的经验负结果；AP与召回正增量真实存在，不能写成显式非目标概率无效。它不否定其它背景标签来源、校准目标、检测器或数据集，也不建立统计等价、数量独立因果、跨数据泛化或项目整体失败。C已只读独立重放检测best/final和两种前端评分的完整原图PR，逐字段一致，并复核原生best、监督准备、双rank来源及三份新保护模型。新增分解显示：9类AP改善、6类下降，足球场贡献净宏AP增量约66.12%；港口和船舶的TP500分别下降69/19。所有输出总TP也下降272，实例汇总召回下降1.0095点，而宏召回上升；故不能把500截点下降外推为全面退步，也不能把宏AP上涨解释为检出总数增加。已保存的100/1000预算TP分别上升11/40，不用这些有利截点追溯改判。额外冻结组合中，旧类别条件概率乘新前景概率得到21.6417/20.0498双AP，高于新类别配新前景的20.7207/19.2574；这只支持后续性能候选，不能当下游训练收益或全部类别恢复。旧头足球场仅余弦转条件概率就由2.7635升至41.6841，说明评分形式必须匹配，不能把全部增量归因背景训练或类别遗忘。
+- 证据：`ziyu24/cqc_P21@bb5d73927dbd31fc2ea23d8d9a417b83e58ff4f2`；`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/dota10_region_background.json`、`configs/r054.recovery.json`、`src/dota_background_learning.py`、`src/dota_background_model.py`、`src/dota_background_runtime.py`、`src/check_dota_background.py`、`src/audit_dota_background_result.py`及`src/audit_dota_background_factorization.py`。背景头与唯一检测臂各完成12轮/47256更新及真实双GPU计算；验证覆盖5297切片合并完整458原图、26944有效GT并忽略1909 difficult GT，13项针对性检查通过，未读取test或扫描阈值、类别、轮数和种子。
 
 ## 方法族停止索引
 
