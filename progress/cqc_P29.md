@@ -14,19 +14,19 @@
 
 执行端继续为用户指定的 46。SERVER 于 2026-10-01 12:53:46–12:55:01 UTC 完成 r001；两教师前向及分析各由双 rank 处理 91/90 图，冻结状态一致、两卡运行证据完整。C 最后只读观察为 13:42:52 UTC，旧任务相关 PID 已退出、结果及两源输入仍在；没有新增模型 checkpoint，既有保护不变。
 
-r002 已交付：仅一次 FAIR 冻结前向取得完整 ROI 概率，同候选 max/sum 控制及六视图评测，DOTA/开发 GT 复用。训练、续训、消融训练均为零；每项 GPU 计算实际两卡、原固定种子。预计冻结计算 2–5 分钟（0.07–0.17 GPU 小时），依据首轮 74.9 秒及新增完整概率 I/O/评测的余量，不是停机上限。未观察新任务实际启动，不将交付写成执行。
+SERVER 于 14:01 UTC 实际启动 r002：复用 r001 的 DOTA 预测和已审计开发集分析，只新增 FAIR 教师一次冻结前向，在完全相同的候选池比较“九个船类概率最大值”与“九类概率之和”。运行绑定两张 A30，两个 DDP rank 均已进入前向且 GPU UUID 与预期一致；任务固定为 181 张 HRSC val、0 训练步、单个预定种子。r001 产物摘要哈希、预测覆盖和源提交在启动前复核一致。预计冻结计算 2–5 分钟（0.07–0.17 GPU 小时），不是停机上限。
 
 ## 核验说明
 
 已充分核验本轮限定开发诊断的执行与数值结论：实际提交和恢复记录、362 份预测身份、181 图及 541 GT、双 rank 计算、模型状态不变；八份 PR 的 AP 独立复算误差小于 1e-6，Shapely 多边形重算全部 NMS 与覆盖一致。DOTA 为 27.38/14.44、FAIR 为 38.87/22.50、融合为 34.42/21.43 AP50/AP75（百分数）。
 
-新任务已通过四项概率/共同候选反例与 46 原生分类头 CPU 检查，含完整 softmax、原生解码/缩放、旧投影重建和排序反例。尚未做新入口真实 GPU 首批，SERVER 按既有规则验证后连续执行；未改共享环境或源权重。
+新任务已通过四项概率/共同候选反例与 46 原生分类头 CPU 检查，含完整 softmax、原生解码/缩放、旧投影重建和排序反例；真实 GPU 首批的双 rank 与两卡绑定也已通过。完整覆盖、AP/PR 及联合判据仍待运行结束核验；未改共享环境或源权重。
 
 未核事项：跨源—HRSC 内容重复、严格四类 FAIR 输入和 SODA 主实验协议尚未闭合，因此本轮只能作异类别头船类开发诊断。SERVER 曾在覆盖排错时误读非 val XML 对象数量汇总，未读框坐标、未据此改方法且未访问 SODA；HRSC test 不再称未见标签集合。学生瓶颈、主实验收益均未知。
 
 ## 执行阶段
 
-r001 已执行并经 C 复核；r002 已下发，实际启动尚未观察。项目继续运行，原始科学目标不变。
+实际执行中；2026-10-01 14:01 UTC，SERVER 在 46 启动 r002 两卡冻结概率事件对照。当前仅证明两 rank 已真实上卡并进入前向，尚无完整覆盖、AP/PR 或科学结论。项目目标未达成；r001 的简单 NMS 路线失败，MS-01/MS-02 命题未被证伪。
 
 记录者：C；2026-10-01。继承 B 的初始化与 SERVER 的真实执行记录，未续接 B 原线程、未取得对端回写，不称跨端共识。
 
@@ -40,4 +40,4 @@ MoCaE 已有旋转检测校准实验，使用标注校准集；不能声称 OBB 
 
 ## 证据
 
-[原始立题](https://chatgpt.com/share/6abe2544-9118-83ea-8576-dd658ea87852)；[复核后的结果](https://github.com/ziyu24/cqc_P29/blob/c64c9687320d98a9f575e29064ad480ed32eab02/lab/result.md#r001)；[当前判断与前作](https://github.com/ziyu24/cqc_P29/blob/c64c9687320d98a9f575e29064ad480ed32eab02/lab/discussion.md)；[独立复算统计](https://github.com/ziyu24/cqc_P29/blob/c64c9687320d98a9f575e29064ad480ed32eab02/configs/r001.review.json)；[唯一科学任务](https://github.com/ziyu24/cqc_P29/blob/c64c9687320d98a9f575e29064ad480ed32eab02/lab/sug.md)；[两卡入口及预估依据](https://github.com/ziyu24/cqc_P29/blob/c64c9687320d98a9f575e29064ad480ed32eab02/doc/server-execution.md)。
+[原始立题](https://chatgpt.com/share/6abe2544-9118-83ea-8576-dd658ea87852)；[复核后的结果](https://github.com/ziyu24/cqc_P29/blob/c64c9687320d98a9f575e29064ad480ed32eab02/lab/result.md#r001)；[当前判断与前作](https://github.com/ziyu24/cqc_P29/blob/c64c9687320d98a9f575e29064ad480ed32eab02/lab/discussion.md)；[独立复算统计](https://github.com/ziyu24/cqc_P29/blob/c64c9687320d98a9f575e29064ad480ed32eab02/configs/r001.review.json)；[r002 固定任务与联合判据](https://github.com/ziyu24/cqc_P29/blob/c64c9687320d98a9f575e29064ad480ed32eab02/lab/sug.md#r002)；[两卡入口及直接抑制证据](https://github.com/ziyu24/cqc_P29/blob/35184a5cf347a24b476217a095df555e14209ded/src/run_projection.py)。
