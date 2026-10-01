@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源 `README.md` 与 `lab/discussion.md` 的 MS-01/MS-02 信息条件，再读 `lab/result.md` 和 `lab/failed_methods.md` 的两轮冻结双教师诊断；结合 `configs/r001.audit.json`、`configs/r002.audit.json`、`src/run_diagnostic.py`、`src/run_projection.py` 与两个协议模块核对教师投影、共同候选、旋转 NMS 和覆盖统计。当前审计来源为 `ziyu24/cqc_P29@d625e080ec1bb4273618201abc259b5e1dc12bcb`；已检查全部远端分支，仅 main，没有更新更晚的次线。
+先读来源 `README.md` 与 `lab/discussion.md` 的 MS-01/MS-02 信息条件，再读 `lab/result.md` 和 `lab/failed_methods.md` 的两轮冻结双教师诊断；结合 `configs/r001.audit.json`、`configs/r002.audit.json`、`src/run_diagnostic.py`、`src/run_projection.py` 与两个协议模块核对教师投影、共同候选、旋转 NMS 和覆盖统计。当前审计来源为 `ziyu24/cqc_P29@673f9ce8561829a49dd25c4d6178ae3621f8d614`；已检查全部远端分支，仅 main，没有更新更晚的次线。
 
 ## 项目研究什么
 
@@ -10,7 +10,7 @@
 
 ## 领域位置与当前结论
 
-首次诊断固定 DOTA 四类教师与 FAIR 37 类教师，在 HRSC val 的船类投影上做零训练前向。两教师存在候选互补，但把 DOTA 粗类概率与 FAIR 最大细类概率直接混排会删除大量并集已覆盖目标，且融合 AP 低于较强单教师。第二轮在相同 FAIR ROI 资格池改用九船类概率之和，显著减少 NMS 覆盖损失并提高融合 AP，证明概率事件不一致是旧失败的一部分；但求和融合没有在 AP50/AP75 都超过对应 FAIR 单教师。输出预算始终没有额外覆盖损失。当前仍未证明无标签定位质量判断、学生收益或整个多源适应命题。
+首次诊断固定 DOTA 四类教师与 FAIR 37 类教师，在 HRSC val 的船类投影上做零训练前向。两教师存在候选互补，但把 DOTA 粗类概率与 FAIR 最大细类概率直接混排会删除大量并集已覆盖目标，且融合 AP 低于较强单教师。第二轮在相同 FAIR ROI 资格池改用九船类概率之和，明显减少 NMS 覆盖损失并提高融合 AP，证明概率事件不一致是旧失败的一部分；但求和融合没有在 AP50/AP75 都超过对应 FAIR 单教师。输出预算始终没有额外覆盖损失。当前仍未证明无标签定位质量判断、学生收益或整个多源适应命题。
 
 ## 实际采用过的方法
 
@@ -31,10 +31,10 @@
 ## 教训二：对齐类别概率事件能修复旧排序，但不足以保证多源胜过强教师
 
 - 失败命题：只要把细粒度教师的多个互斥子类概率相加为与粗类教师一致的事件，简单跨源 NMS 就会稳定超过对应强单教师，从而已经把教师互补转化为多源收益。
-- 失败原因：共同资格池固定为 55,250 个 ROI，并明确排除 8,206 个仅概率和过线的候选后，sum 相对 max 的 union AP50/AP75 从 0.344194/0.214302 升到 0.495909/0.359431，NMS 覆盖损失从 63/80 降至 27/26，NMS 后覆盖从 374/221 升至 412/288，预注册联合条件通过。这证明概率事件不一致对旧失败有贡献。但对应 FAIR sum 单教师已经达到 0.506138/0.356322；sum 融合相对它为 AP50 -0.010229、AP75 +0.003108，方向混合。类别概率描述“是什么”，不能单独提供“框定位得多好”；修正分数语义后，跨教师定位质量冲突仍存在。
+- 失败原因：共同资格池固定为 55,250 个 ROI，并明确排除 8,206 个仅概率和过线的候选后，sum 相对 max 的 union AP50/AP75 从 0.344194/0.214302 升到 0.495909/0.359431，NMS 覆盖损失从 63/80 降至 27/26，NMS 后覆盖从 374/221 升至 412/288，预注册联合条件通过。这证明概率事件不一致对旧失败有贡献。但对应 FAIR sum 单教师已经达到 0.506138/0.356322；sum 融合相对它为 AP50 -0.010229、AP75 +0.003108，方向混合。C 独立核对全部 ROI 资格/分数、跨源 NMS 与十二条完整 PR 后结果一致。相对 FAIR sum，一对一正确匹配在 IoU 0.5 新增/丢失各 22，在 0.75 为 19/18；净正确目标增量仅 0/1。修正分数语义后，已有互补仍被替换冲突及排序抵消；总低分 FP 数量不能单独说明 AP 原因，尚未证明定位质量是唯一剩余瓶颈。
 - 后续做法：任何下一融合或学生机制都应把 `fair_sum` 与 `union_sum` 作为更强对照，直接检验不依赖目标标签的定位质量估计、冲突监督和学生迁移。必须同时报告相对对应单教师的增减，不能只报相对错误 max 基线的大幅提升；也不要继续用开发 GT 扫阈值或拟合校准器。完整 softmax 及逐图直接抑制关系可复用，避免重跑教师猜原因。
 - 边界：当前正证据只说明 DOTA ship 粗类与 FAIR 九船类投影在 HRSC val、共同候选和 NMS IoU 0.1 下的概率事件控制有效；不证明其它类别、其它域、严格四类教师或无标签校准普遍有效。单开发集、单种子冻结诊断没有学生训练、SODA 主实验或跨种子稳定性。
-- 证据：`ziyu24/cqc_P29@d625e080ec1bb4273618201abc259b5e1dc12bcb` 的 `lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`configs/r002.json`、`configs/r002.audit.json`、`configs/r002.recovery.json`、`src/run_projection.py` 与 `src/projection_protocol.py`。
+- 证据：`ziyu24/cqc_P29@673f9ce8561829a49dd25c4d6178ae3621f8d614` 的 `lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`configs/r002.json`、`configs/r002.audit.json`、`configs/r002.recovery.json`、`src/run_projection.py`、`src/projection_protocol.py`、`configs/r002.review.json` 与 `src/review_projection.py`。
 
 ## 方法族停止索引
 
