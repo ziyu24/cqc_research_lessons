@@ -30,4 +30,4 @@
 
 ## 证据
 
-固定同源外部对象正支持及固定候选冻结排序均未过低误报投入门槛；[来源结果](https://github.com/ziyu24/cqc_P19/blob/3321da8243da3340f823afa4146c70a43705b6b7/lab/result.md)及[清理恢复记录](https://github.com/ziyu24/cqc_P19/blob/3321da8243da3340f823afa4146c70a43705b6b7/configs/r005.recovery.json)。[已登记教训](../lesson/cqc_P19.lessons.md)。
+固定同源外部对象正支持及固定候选冻结排序均未过低误报投入门槛；[来源结果](https://github.com/ziyu24/cqc_P19/blob/47429da0e5876670847c06064b4c9f39c7ec9ad0/lab/result.md)及[清理恢复记录](https://github.com/ziyu24/cqc_P19/blob/47429da0e5876670847c06064b4c9f39c7ec9ad0/configs/r005.recovery.json)。[已登记教训](../lesson/cqc_P19.lessons.md)。
