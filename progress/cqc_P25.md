@@ -44,6 +44,8 @@ CDDMSL作者实现、预训练实体和原生机制已经核定；下一步需�
 
 下一最小方案为A：同一195-L真实OBB+U、语言机制关闭；B：同条件开启CDDMSL图像/区域一致性及描述蒸馏；C：与B相同而L改用全部共享类HBox。三臂共同骨干初态、采样、完整预算和单预定种子；A/B使用相同源内风格输入，因此B−A只估计语言机制增量，B−C估计该机制下的监督方案差距。先完成正式适配及A/B，关键臂结束立即按完整四域协议评测；有判别价值的参照形成后推进C。已有旧基线初始化/框架不匹配，不能替代A。该段是下一方案，尚非可执行训练交付，不新增任务号或盲报训练时长。
 
+用户认可后，C已补充具体服务器执行方案并推送，仍未下发训练。本轮仅拟A/B两臂各120k、4L+2U、seed42，沿既有旋转半监督循环接入作者骨干和语言分支。源内风格拟用固定低频幅度交换、供体只取DOTA源图，明确区别于作者双源CycleGAN；分类器及区域候选差异不能隐去，完整外部方法复现仍未完成。RegionCLIP/FPN、区域接口、真实开关和并行归约必须由C实现后才交付SERVER，不能让SERVER从文字临时设计。资源按旧日志及原生分支耗时粗估整轮188–320 GPU小时，含两臂训练、首批检查及全四域评测；这是未实测的规划区间，需真实吞吐校正，不是硬上限。当前保持空任务槽，无新训练启动。
+
 C进一步明确：补齐外部模型分数只解决比较参照问题，要推进r020诊断，还须绑定一个可证伪的机制假设和必要的同初态机制开/关对照。拟检验源内合法外观变化下的语义一致性是否改善同类筛选保留及实际检测，并保持几何覆盖/严格定位；若支持率上升而AP未改善，不能算问题解决，若覆盖同时改变则承认联合效应。可比旧臂复用，不扩增模型扫测。当前尚无机制实现或收益，只有分解问题及匹配信息条件的研究方法可借鉴，不能宣称已帮助其它项目获得性能提升；本轮没有修改其它项目。
 
 动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
@@ -57,3 +59,5 @@ C进一步明确：补齐外部模型分数只解决比较参照问题，要推�
 [r021完整结果与边界](https://github.com/ziyu24/cqc_P25/blob/6346d421aa13616f44f555a3c52957961a7df452/lab/result.md#r021)；[SERVER核验摘要](https://github.com/ziyu24/cqc_P25/blob/6346d421aa13616f44f555a3c52957961a7df452/doc/r021_review.json)；[恢复入口](https://github.com/ziyu24/cqc_P25/blob/6346d421aa13616f44f555a3c52957961a7df452/configs/r021.recovery.json)；[已清空任务槽](https://github.com/ziyu24/cqc_P25/blob/6346d421aa13616f44f555a3c52957961a7df452/lab/sug.md)；[C交付前检查](https://github.com/ziyu24/cqc_P25/blob/112b1c74ad2e759340e79b99e223335facf7dc91/doc/cddmsl_probe_review.json)。
 
 [C对r021的独立复核及边界](https://github.com/ziyu24/cqc_P25/blob/f62c99923ce8e021db6dc069dfaad9027d32a36b/doc/r021_independent_review.json)；[正式适配与最小机制比较方案](https://github.com/ziyu24/cqc_P25/blob/f62c99923ce8e021db6dc069dfaad9027d32a36b/lab/discussion.md)。
+
+[具体服务器执行方案与未实现边界](https://github.com/ziyu24/cqc_P25/blob/ce18be1f9d72e70e0e5f041e3336a4f36b61f48f/doc/cddmsl_adaptation.md)。
