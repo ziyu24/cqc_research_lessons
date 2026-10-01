@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_roi_targets.py`、`src/online_geometry.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`，严格IoU的PR分解见 `src/analyze_small_vehicle_ranking.py`。当前审计来源为 `ziyu24/cqc_P28@85bd2098b0574ab55aaf6f1c95ef1843339c662d`；已检查全部远端分支，仅 main，没有更新更晚的次线。
+先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_roi_targets.py`、`src/online_geometry.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`，严格IoU的PR分解见 `src/analyze_small_vehicle_ranking.py`。当前审计来源为 `ziyu24/cqc_P28@35055ea3eb3b13a4aefdd9387dc93318323e8845`；已检查全部远端分支，仅 main，没有更新更晚的次线。
 
 ## 项目研究什么
 
@@ -13,6 +13,8 @@
 本项目已经建立正确标注训练的四类源初态，并完成真实跨数据集单遍在线对照、直接回归损失删除干预，以及跨视图旋转一致性与置信度的等比例 RoI 定位选择比较。固定朴素教师—学生配方的平均检测 AP 低于同视图冻结预测；删除回归只呈混合改变；跨视图一致性排序也未超过置信度排序或冻结的预定联合条件。尚无本项目 CTTA 结果，也未证明旋转几何具有普通检测不存在的独特适应困难。论文检索未确认同题系统工作不等于已经证明首创。
 
 复用现有权重和预测的零更新诊断，已查实原生采样中的错误背景和类别误监督，以及全流高置信预测精度下降。固定源模型替代在线 EMA 提供伪标签显著恢复了高分精度，但预定单视图 AP50 仍略低于冻结。进一步在学生实际RoI上使用固定源完整类别后验，能恢复大车类别证据，却同时增加背景误检并降低整体AP75；只对原生前景RoI传递条件类别分布后，背景误检与大车证据可同时改善，但AP75仍未超过固定源硬监督。错误自反馈、类别分布和前景背景约束都是重要环节，局部修复仍未形成预定总体在线收益。
+
+条件目标相对冻结的平均AP50/AP75已实际提高0.509/0.481点，不能把“未超过全部指定基线”写成完全没有总体适应增益。它相对固定源硬监督的AP75缺口主要来自小车，而小车VOC07差值又主要来自召回零点插值项；积分AP75仍有负差，故保持原联合失败，同时保留真实正收益和仍待独立域检验的边界。
 
 严格IoU指标下降不能直接解释为准确框大量消失：完整预测复算显示，soft小车AP75大跌的94.52%算术来源于VOC07召回0插值项，而严格匹配TP净增916。积分AP也略降、背景FP确实增加，故仍保留原联合失败；该检查修正的是定位退化解释，不是事后更换主指标翻案。
 
@@ -91,9 +93,12 @@
 
 - 失败命题：保留原生二元前景背景监督、仅在原生前景RoI内传递固定源条件类别分布，应同时超过冻结、朴素在线和固定源硬监督的单视图AP50/AP75，并保住大车证据与背景精度。
 - 失败原因：条件臂单视图AP50/AP75为0.53744/0.28417；AP50为六臂最高，但AP75低于固定源硬监督0.29020，因此整体条件失败。大车AP50/同类召回由固定源硬监督的0.14277/19.42%恢复到0.16644/29.46%，score≥0.7背景FP也从17,055降到16,226；这两项局部条件均通过，却不能替代失败的整体条件。源正确检出的11,926个大车中保留10,648、丢失1,278、新增484，表现介于硬监督与完整后验soft之间。
+- 保留的正证据与独立补核：相对冻结的平均AP50/AP75为+0.509399/+0.480592点，预定更严格联合失败不等于完全无收益。输入、实际双rank及物理卡MATCH、全流覆盖、原生与独立AP、完整受保护权重均回核；相对固定源硬监督的平均AP75低0.603607点，其中小车贡献−0.617990点。小车严格TP只净少138，同GT共同正确58,163、旧臂独有3,248、新臂独有3,110；VOC07 AP75低2.471960点中，召回0插值项从1变为0.75贡献91.94%。积分AP75仍低0.460074点，说明真实PR代价存在，不能全部说成指标问题，也不能把AP幅度解释为大规模准确框消失。
 - 后续做法：解耦类别分布与前景背景监督时，必须同时报告整体AP50/AP75、逐类严格IoU、背景FP、高分precision及弱类同GT保留，不能按最高AP50或两个局部诊断挑选结论。当前固定配方不再通过温度、阈值或类别先验扫描维护；若继续原主线，应转向信息条件明确的强方法对照或未观察目标域/连续流证据。
 - 边界：原生前景背景分配本身来自固定源伪框，仍会把漏检真目标当背景，也会保留错误前景；完整训练后候选和参数轨迹分化，不能把硬监督、完整soft与条件臂差值解释为可加因果份额。证据只限一个FAIR1M固定流、单种子/顺序和一遍，不否定其他解耦蒸馏、强检测TTA或TTA-OBB→CTTA-OBB主线，也没有独立域、连续换域、遗忘或OBB特有性证据。
+- 解释边界：指标算术分解不是训练因果占比，严格TP净变化也不能抹去逐目标得失。大车与背景局部条件实际可同时通过；未通过的是整体双AP优于全部指定控制，不再泛称二者必然不能兼得。诊断积分AP不能事后替换原主要指标，单流单种子正点估计也不称稳定收益。
 - 证据：`ziyu24/cqc_P28@85bd2098b0574ab55aaf6f1c95ef1843339c662d` 的 `lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r009.json`、`src/online_roi_targets.py`、`src/online_entry.py` 和 `src/run_r008.py`；实际运行时来源为同库 `af4f057b88b0e76b97a2266f5d8f153f2076ee70`。
+- 补充证据：`ziyu24/cqc_P28@35055ea3eb3b13a4aefdd9387dc93318323e8845` 的 `lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`src/analyze_small_vehicle_ranking.py` 和 `doc/execution.md`。只读CPU全量PR复算，没有新增训练或目标域参数扫描。
 
 ## 方法族停止索引
 
