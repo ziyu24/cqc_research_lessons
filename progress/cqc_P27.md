@@ -14,7 +14,7 @@ UniOT固定检测适配已充分核验为失败：两臂目标AP50为41.739/43.4
 
 SERVER在26完成两臂：各12源epoch、47,256步、固定种子20260926、真实两卡；均以epoch12源best评完整目标val。实际墙钟12小时9分23秒，整段两卡折合24.313 GPU小时，短于C此前46–64 GPU小时估算。步时0.377/0.363秒，原估算依据0.758秒；没有少跑，具体加速因素尚无受控剖析。任务未读取目标train标签或test，两份best继续受保护。
 
-C于2026-09-30 18:43 PDT观察26无残留该任务进程，随后完成结果复核。有限梯度检查r011已经实现、检查并下发，沿26执行；未观察到新任务启动，不把准备/推送当运行。
+C于2026-09-30 18:43 PDT观察26无残留上一任务进程，随后完成结果复核。SERVER于2026-10-01 02:10 UTC在26实际启动有限梯度检查r011：运行器选择GPU0/1，启动PID到两张GPU UUID的回读为MATCH；这是冻结检查，不含训练更新。
 
 ## 核验说明
 
@@ -26,9 +26,9 @@ C复核重算诊断数组、曲线与比较，重读运行/日志/模型及评�
 
 ## 执行阶段
 
-2026-09-30 PDT，C已完成上一轮科学复核；有限现有权重检查r011已下发、尚未观察启动。训练更新0，不是整个项目结束。
+2026-10-01 UTC，SERVER已在26启动r011，正在对两份受保护best各检查固定8个全局批次；真实双卡已核验，训练更新固定为0。当前只是执行中，不是科学完成或整个项目结束。
 
-记录者：C；更新日期：2026-09-30 PDT（UTC为10月1日）。保留SERVER已验证结果，项目创新目标未达成，不登记项目结束。
+记录者：SERVER；更新日期：2026-10-01 UTC。保留C已验证结果，项目创新目标未达成，不登记项目结束。
 
 ## 下一步与维护
 
@@ -43,3 +43,5 @@ C复核重算诊断数组、曲线与比较，重读运行/日志/模型及评�
 [r010结果、失败边界与受保护权重](https://github.com/ziyu24/cqc_P27/blob/dec8e4c127a0caede7fc4aa8554cb763e3634599/lab/result.md)；[独立充分证据](https://github.com/ziyu24/cqc_P27/blob/dec8e4c127a0caede7fc4aa8554cb763e3634599/doc/r010_evidence.json)；[当前科学讨论](https://github.com/ziyu24/cqc_P27/blob/dec8e4c127a0caede7fc4aa8554cb763e3634599/lab/discussion.md)；[恢复入口](https://github.com/ziyu24/cqc_P27/blob/dec8e4c127a0caede7fc4aa8554cb763e3634599/configs/r010.recovery.json)。[已登记教训](../lesson/cqc_P27.lessons.md)。
 
 [C完成复核、源验证与耗时](https://github.com/ziyu24/cqc_P27/blob/592e702/lab/result.md)；[唯一后续任务](https://github.com/ziyu24/cqc_P27/blob/592e702/lab/sug.md)；[有限检查实现与边界](https://github.com/ziyu24/cqc_P27/blob/592e702/doc/gradient_probe.md)。
+
+[r011恢复入口](https://github.com/ziyu24/cqc_P27/blob/bc1e2af/configs/r011.recovery.json)。
