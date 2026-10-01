@@ -32,11 +32,11 @@ r020独立复算248个AP单元、全部阶段计数及支持交集，覆盖15份
 
 ## 执行阶段
 
-用户随后授权主/辅卡均衡：A主0辅1，B主1辅0，仍每臂两卡且并行，禁用2/3。SERVER已交付机械包装，B反序真实双卡零更新检查通过；两臂3200步完整resume严格恢复检查也通过，模型/EMA、optimizer/LR、计数、Python/NumPy/Torch/逻辑双卡RNG相等，120k终点不变。最新日志两臂3350步，原PID存活且继续前进，未暂停、未反序续跑。旧在跑hook没有协作退出接口，外部保存事件加信号有下一步竞态，无法保证不直接中断或回退未保存更新，SERVER已报告限制，不擅自发信号。等待用户对这种不同暂停方式的方向；原科学训练继续。原生DataLoader预取不保存，不能宣称位级batch轨迹连续。
+用户随后授权主/辅卡均衡：A主0辅1，B主1辅0，仍每臂两卡且并行，禁用2/3。SERVER已交付机械包装，B反序真实双卡零更新检查通过；两臂3200步完整resume严格恢复检查也通过，模型/EMA、optimizer/LR、计数、Python/NumPy/Torch/逻辑双卡RNG相等，120k终点不变。用户现已明确允许各臂下一完整checkpoint核验后外部受控暂停/退出，并接受少量在途或未保存更新回退，但不得使用更早checkpoint。05:15 UTC两臂最新日志均10050步、最近完整保存均9600步；已启动一次性精确PID控制入口，分别等待下一保存12800步、CPU完整核验后退出，再同r022反序续接。不再等待确认；截至本次观察仍是原序训练，不能写成已反序续跑。原生DataLoader预取不保存，不能宣称位级batch轨迹连续。
 
 r022已在26实际启动；02:26 UTC已核两臂真实CUDA首批通过，并已自动进入正式120k训练。A/B各自PID绑定物理GPU 0、1为MATCH，两卡均观察到学生实际前向和非零反向；采用原生等价双卡特征并行与完整batch头/归约，不冒称DDP。初态相同、空L/冻结分支/正ROI梯度及真实语言开关检测损失隔离通过，无优化器首批更新。尚无final和新AP，内部诊断/r021成功不代表r022机制或P25目标成功。
 
-记录者：SERVER（保留C核验与交付）；更新日期：2026-10-01 02:26 UTC。
+记录者：SERVER（保留C核验与交付）；更新日期：2026-10-01 05:15 UTC。
 
 ## 下一步与维护
 
@@ -48,7 +48,9 @@ SERVER按交付入口完成两臂，每臂关键终点立即评测，同次正�
 
 ## 证据
 
-[用户授权卡序包装、反序GPU与3200步完整恢复检查及暂停限制](https://github.com/ziyu24/cqc_P25/blob/479ca1d/doc/r022_device_order_review.json)；[完整恢复核验入口](https://github.com/ziyu24/cqc_P25/blob/de76cd5/src/check_language_resume_order.py)。
+[用户追加允许完整保存后的外部受控退出及原号恢复材料](https://github.com/ziyu24/cqc_P25/blob/7c59352/configs/r022.recovery.json)；[一次性下一完整保存核验与精确PID退出入口](https://github.com/ziyu24/cqc_P25/blob/7c59352/src/pause_language_checkpoint.py)。
+
+[反序GPU与3200步完整恢复检查及此前暂停限制](https://github.com/ziyu24/cqc_P25/blob/479ca1d/doc/r022_device_order_review.json)；[完整恢复核验入口](https://github.com/ziyu24/cqc_P25/blob/de76cd5/src/check_language_resume_order.py)。
 
 [SERVER UUID绑定修正](https://github.com/ziyu24/cqc_P25/commit/62d4b1f685310e2d780b50fe7ff1222ed09e5d63)；[已推送实际恢复入口](https://github.com/ziyu24/cqc_P25/blob/c17fd3e3730d99d1b82cc29d886c23baca566ff1/configs/r022.recovery.json)。
 
