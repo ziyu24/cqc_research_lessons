@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源 `README.md` 与 `lab/discussion.md` 的 MS-01/MS-02 信息条件，再读 `lab/result.md` 和 `lab/failed_methods.md` 的两轮冻结双教师诊断；结合 `configs/r001.audit.json`、`configs/r002.audit.json`、`src/run_diagnostic.py`、`src/run_projection.py` 与两个协议模块核对教师投影、共同候选、旋转 NMS 和覆盖统计。当前审计来源为 `ziyu24/cqc_P29@673f9ce8561829a49dd25c4d6178ae3621f8d614`；已检查全部远端分支，仅 main，没有更新更晚的次线。
+先读来源 `README.md` 与 `lab/discussion.md` 的 MS-01/MS-02 信息条件，再读 `lab/result.md` 和 `lab/failed_methods.md` 的三轮冻结双教师诊断；结合三个完成审计、`src/run_diagnostic.py`、`src/run_projection.py`、`src/run_fusion.py` 与对应协议模块核对教师投影、共同候选、旋转 NMS、ProbEn 适配和覆盖统计。当前审计来源为 `ziyu24/cqc_P29@d14a9ba970cdd7ea1479c9c94b0b37a207c2f2bf`；已检查全部远端分支，仅 main，没有更新更晚的次线。
 
 ## 项目研究什么
 
@@ -10,7 +10,7 @@
 
 ## 领域位置与当前结论
 
-首次诊断固定 DOTA 四类教师与 FAIR 37 类教师，在 HRSC val 的船类投影上做零训练前向。两教师存在候选互补，但把 DOTA 粗类概率与 FAIR 最大细类概率直接混排会删除大量并集已覆盖目标，且融合 AP 低于较强单教师。第二轮在相同 FAIR ROI 资格池改用九船类概率之和，明显减少 NMS 覆盖损失并提高融合 AP，证明概率事件不一致是旧失败的一部分；但求和融合没有在 AP50/AP75 都超过对应 FAIR 单教师。输出预算始终没有额外覆盖损失。当前仍未证明无标签定位质量判断、学生收益或整个多源适应命题。
+首次诊断固定 DOTA 四类教师与 FAIR 37 类教师，在 HRSC val 的船类投影上做零训练前向。两教师存在候选互补，但把 DOTA 粗类概率与 FAIR 最大细类概率直接混排会删除大量并集已覆盖目标。第二轮改用九船类概率之和，明显减少损失并提高融合 AP，但没有在 AP50/AP75 都超过对应 FAIR 单教师。第三轮的分组控制几乎复现该融合；均匀二元 ProbEn 后验反而降低排序性能，无定位方差的置信度加权旋转框又损害严格 IoU。输出预算始终不是主要损失。当前仍未证明可靠的无标签定位质量判断、学生收益或整个多源适应命题。
 
 ## 实际采用过的方法
 
@@ -19,6 +19,7 @@
 - 比较 DOTA、FAIR、候选并集经旋转 IoU 0.1 NMS、以及再按每图两教师较大输出数限制预算的四个视图；使用原生旋转 VOC07 11 点 AP50/AP75 和完整 PR。
 - 以 GT 只做开发诊断：统计 DOTA 独有、FAIR 独有、共同、均未覆盖，以及 NMS 和预算分别删除的已覆盖目标；这些量是候选潜力，不是一对一召回或可部署 oracle。
 - 第二轮只新增一次 FAIR 冻结前向，保存每个 class-agnostic ROI 的完整 37 类加背景 softmax；max/sum 两臂严格共享以最大船类概率过 0.001 筛出的 ROI，只改变船类分数事件，同时重建旧 native 细类 NMS 输出并逐图核对。
+- 第三轮不做教师前向；按最高分种子和旋转 IoU 0.5 分组，每教师最多一票，比较组内 max、二元后验乘积保留原框、以及同后验加原置信度加权的周期旋转框，三臂再统一做 NMS 0.1 与固定预算。
 
 ## 教训一：候选互补不保证固定跨源 NMS 保留覆盖
 
@@ -36,9 +37,18 @@
 - 边界：当前正证据只说明 DOTA ship 粗类与 FAIR 九船类投影在 HRSC val、共同候选和 NMS IoU 0.1 下的概率事件控制有效；不证明其它类别、其它域、严格四类教师或无标签校准普遍有效。单开发集、单种子冻结诊断没有学生训练、SODA 主实验或跨种子稳定性。
 - 证据：`ziyu24/cqc_P29@673f9ce8561829a49dd25c4d6178ae3621f8d614` 的 `lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`configs/r002.json`、`configs/r002.audit.json`、`configs/r002.recovery.json`、`src/run_projection.py`、`src/projection_protocol.py`、`configs/r002.review.json` 与 `src/review_projection.py`。
 
+## 教训三：同图教师的概率乘积和分类置信度框平均不能代替定位质量
+
+- 失败命题：修正类别事件后，把同组双教师的二元 ship 后验相乘，并以分类置信度加权旋转框，就能利用共同证据并超过 FAIR sum 与 union sum。
+- 失败原因：8365 个冻结候选形成 7012 组，其中双教师组 1353；`group_max` 相对 `union_sum` 的 AP50/AP75 仅 +0.000028/0，排除了分组次序作为主要影响。二元后验排序相对分组控制降低 0.043218/0.041059 AP，旋转框加权再降低 0.000638/0.022049；预定主臂最终为 0.452082/0.296323，低于 FAIR sum 0.506138/0.356322 和 union sum 0.495909/0.359431。相对 FAIR，主臂在 IoU 0.5 新增/丢失正确匹配 22/25，在 0.75 为 22/36。两教师看同一图像，不满足可依赖的条件独立假设，共同误检也会增信；分类置信度不是定位方差，框平均尤其破坏严格 IoU。
+- 后续做法：保留 `fair_sum`、`union_sum`、`group_max` 和当前负基线。若进入学习式质量/冲突监督或学生迁移，先说明不使用目标标签的定位质量信号来源，并直接测一对一正确匹配和 AP；不要扫描先验、分组阈值、NMS 阈值，或把控制臂改称主臂。没有方差头时，不把分类分数包装成 ProbEn 的方差加权定位。
+- 边界：只否定当前 HRSC val、同图 DOTA/FAIR 教师、均匀二元先验、分组 IoU 0.5、最终 NMS 0.1、每教师一票及置信度加权周期旋转框的适配。它不是 ProbEn 原 RGB/thermal 基准或学习方差版本的完整复现，也不否定其它有依据的无标签质量估计和学生适应。
+- 证据：`ziyu24/cqc_P29@d14a9ba970cdd7ea1479c9c94b0b37a207c2f2bf` 的 `lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`configs/r003.json`、`configs/r003.audit.json`、`configs/r003.recovery.json`、`src/run_fusion.py`、`src/fusion_protocol.py` 与 `src/check_fusion.py`。
+
 ## 方法族停止索引
 
 - 未校准原始分数的固定跨源旋转 NMS：在当前协议下已失败，停止把它当作保留互补的默认基线或继续做目标标签驱动微调。
 - 输出预算限制：本轮额外覆盖损失为零，不作为当前主要瓶颈；不同预算或部署约束尚未被普遍否定。
 - 相同候选的粗类概率控制：已确认能修复旧 max 排序的大部分损失，但没有跨 AP50/AP75 一致超过对应强单教师；停止把它单独包装为已解决的多源机制。
+- 均匀二元 ProbEn＋无方差置信度加权旋转框：当前适配两项 AP 均明显下降，停止扫描先验/阈值或继续普通框平均；原方法其它信息条件和学习方差版本不在停止范围。
 - 无标签定位质量/冲突处理和学生学习：尚无可裁决性能，不根据候选潜力或概率控制结果登记成功或失败。
