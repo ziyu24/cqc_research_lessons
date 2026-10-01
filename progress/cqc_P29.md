@@ -12,7 +12,13 @@ C已实际核清学生初始化监督：局部正/背景冲突存在，但平均
 
 ## 服务器当前内容
 
-C按用户授权直接在46完成r004，2026-10-01 15:21:07–15:22:04 UTC实际两张A30、91/90图，57.621秒、0.03201 GPU小时；实际PID→GPU UUID为MATCH。181次学生前向、0优化步，无新权重。当前已执行结束并由C独立复核，任务槽已结束，没有后台监控或正在运行的P29训练。
+C已按用户“给出服务器执行方案”交付r005到46 Home仓库：同一DOTA源初态，HRSC无标签train436图，依次训练FAIR监督、union sum融合监督、DOTA监督三个同容量学生；每臂实际两卡、12epoch/660更新、一个种子。固定epoch12后立即评估181图开发val，目标标签不参与训练或选best。入口、恢复规则、唯一任务和全训练预算已推送；**仅完成交付，实际GPU训练未启动**，没有后台监控。
+
+五项针对性反例及46原生CPU数据检查通过：空图保留、四类头ship索引、qbox转rbox与缩放、完整436样本覆盖、两rank采样模拟各220、恢复到本臂学生checkpoint。实际双卡前后向、吞吐和最终性能留给SERVER执行，CPU通过不冒充GPU检查。训练合计预计1.2–2.4 GPU小时，含冻结前向/评测/首批粗估总1.5–3.0 GPU小时，非硬上限。
+
+以下保留已完成证据：
+
+C按用户授权直接在46完成r004，2026-10-01 15:21:07–15:22:04 UTC实际两张A30、91/90图，57.621秒、0.03201 GPU小时；实际PID→GPU UUID为MATCH。181次学生前向、0优化步，无新权重。该旧任务已执行结束并由C独立复核；新任务是上面的r005，未运行。
 
 三臂共362000个原RPN、各92672个采样ROI；两个rank模型状态前后不变。2026-10-01 15:43:20 UTC观察时相关PID退出，两源实体存在，既有P28源best保护不变。新产物368文件、64,346,052字节，原始分配/梯度、日志和恢复材料保留。
 
@@ -28,16 +34,20 @@ SODA输入修复也已在46验证：仅按原图尺寸生成1067图/37980窗口�
 
 ## 执行阶段
 
-项目继续运行。原四轮开发工作已完成并复核；本轮新增图像输入修复已检查。原目标未达成，当前固定融合路线失败；未训练的新机制不登记为失败，MS-01/MS-02未被证伪不等于成功。
+项目继续运行。原四轮开发工作已完成并复核，SODA图像独立入口已检查；当前r005已交付、未实际启动，尚无学生训练结果。原目标未达成，当前固定融合路线失败；未训练的新机制不登记为失败，MS-01/MS-02未被证伪不等于成功。
 
 记录者及本轮动作执行者：C；2026-10-01。未续接B原线程或获得对端回写，不称跨端共识。
 
 ## 下一步与维护
 
-核心是同时区分缺失观测和错误正框，不能靠无差别ignore、保留所有冲突或全局投影绕过质量问题。下一学生机制需说明合法无标签可识别信号，并保留同初态单教师/融合学生的必要对照，用真实AP裁决；当前没有可验证的完整新机制，未虚报训练启动。
+本轮停止继续拆冻结诊断，直接检验学生优化能否吸收现有教师标签。三臂必须完成固定终点，不根据首臂val成绩调整其余臂；联合支持要求融合AP50超过两个单教师监督学生中的较高值至少1个百分点且AP75不降，并另过冻结FAIR教师参照。若仅胜过单教师监督学生但仍落后冻结教师，分别报告相对增益和部署不足；若不胜FAIR监督，则当前固定融合学习没有可靠增量，后续机制须实质解决错误正框/漏监督。
 
-严格四类FAIR源划分/教师与SODA正式评估协议仍须闭合；图像独立输入仅已完成数据部分，不是完整学生训练入口。后续每项GPU训练和评测实际两卡、一个预定种子，必要新训练按原规则列全臂预估并交付科学代码。此类远程轻量工作由C按现有授权直接完成，无需用户搬运日志或反复转发。
+三臂都含DOTA初态知识，“FAIR监督学生”不是纯FAIR初态对照；本轮不分离标签数量与互补因果，不替代严格四类SODA主实验。FAIR四类教师/源划分与SODA正式评估条件仍保留，暂不先花约18 GPU小时补源模型；新机制尚未被证明。后续MS-02和SODA不自动启动。
+
+SERVER按已交付入口核实际两卡首批和吞吐，通过后直接完成整个任务，无需再次等C。更新仍沿现有任务/进展规则，不增审批或状态。
 
 ## 证据
 
 [完整结果](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/lab/result.md#r004)；[当前取舍](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/lab/discussion.md)；[真实执行](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/configs/r004.audit.json)；[独立监督/梯度复核](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/configs/r004.review.json)；[输入清单审计](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/configs/input_audit.json)；[SODA真实读取验证](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/configs/soda_input_check.json)；[图像独立入口](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/src/soda_unlabeled.py)。
+
+本轮交付：[唯一r005任务](https://github.com/ziyu24/cqc_P29/blob/fab1bcb056e54876cdcbb60e447a65c487fd8832/lab/sug.md)、[两卡入口](https://github.com/ziyu24/cqc_P29/blob/fab1bcb056e54876cdcbb60e447a65c487fd8832/src/run_student_adaptation.py)、[完整预算与执行命令](https://github.com/ziyu24/cqc_P29/blob/fab1bcb056e54876cdcbb60e447a65c487fd8832/doc/server-execution.md)、[实际CPU检查](https://github.com/ziyu24/cqc_P29/blob/fab1bcb056e54876cdcbb60e447a65c487fd8832/configs/r005.preflight.json)、[研究取舍](https://github.com/ziyu24/cqc_P29/blob/fab1bcb056e54876cdcbb60e447a65c487fd8832/lab/discussion.md)。
