@@ -10,7 +10,7 @@
 
 ## 服务器当前内容
 
-46上一轮背景头与检测臂已经完成，各12轮/47256更新、seed42和真实双卡；C已充分复核，best为epoch11、主AP35.7140，final主AP35.6174，新旧模型保护继续有效。2026-09-30（PDT），用户认可固定评分组合并要求服务器指令，C已交付一个12轮/47256更新的双卡检测任务。尚未观察新任务实际启动；C本次仅做CPU内存检查，没有服务器写入、训练或GPU模型前向。
+46上一轮背景头与检测臂已经完成，各12轮/47256更新、seed42和真实双卡；C已充分复核，best为epoch11、主AP35.7140，final主AP35.6174，新旧模型保护继续有效。SERVER于2026-10-01 01:46:17 UTC在46实际启动固定评分组合任务，运行器选物理0/1卡并进入prepare→targets→唯一检测训练流程；当前仅确认worker运行，GPU首批、双rank计算和吞吐仍待实际观察，不能把启动当作科学完成。
 
 ## 核验说明
 
@@ -22,9 +22,9 @@ TP500是每类全验证集前500预测的正确检出数再平均。总TP500从2
 
 ## 执行阶段
 
-上一轮执行完成且C充分复核；2026-09-30（PDT）已交付固定旧类别/新前景评分的唯一检测任务，SERVER实际启动尚未观察。原成功标准和35.7140强参照保留，C未启动训练。
+上一轮执行完成且C充分复核；固定旧类别/新前景评分的唯一检测任务已由SERVER在46实际启动，当前处于执行中。原成功标准和35.7140强参照保留；没有新增对照、种子或路线。
 
-记录者：C；更新日期：2026-09-30（PDT）。没有新的B端讨论或双方共识。
+记录者：SERVER；更新日期：2026-10-01 UTC。保留C的交付与核验记录；本次只补实际启动事实，没有新的B端讨论或双方共识。
 
 ## 下一步与维护
 
@@ -36,6 +36,6 @@ TP500是每类全验证集前500预测的正确检出数再平均。总TP500从2
 
 ## 证据
 
-[当前唯一服务器任务](https://github.com/ziyu24/cqc_P21/blob/9b193a19dbf296854860ec8b48ad73c0be2674bf/lab/sug.md)；[交付依据和核验](https://github.com/ziyu24/cqc_P21/blob/9b193a19dbf296854860ec8b48ad73c0be2674bf/lab/discussion.md)；[执行入口](https://github.com/ziyu24/cqc_P21/blob/9b193a19dbf296854860ec8b48ad73c0be2674bf/src/dota_factorized_learning.py)；[针对性检查](https://github.com/ziyu24/cqc_P21/blob/9b193a19dbf296854860ec8b48ad73c0be2674bf/src/check_dota_factorized.py)。
+[当前唯一服务器任务](https://github.com/ziyu24/cqc_P21/blob/bd588d3de274f3b0bac3c00d5258ba2cd6437414/lab/sug.md)；[交付依据和核验](https://github.com/ziyu24/cqc_P21/blob/9b193a19dbf296854860ec8b48ad73c0be2674bf/lab/discussion.md)；[执行入口](https://github.com/ziyu24/cqc_P21/blob/9b193a19dbf296854860ec8b48ad73c0be2674bf/src/dota_factorized_learning.py)；[恢复入口](https://github.com/ziyu24/cqc_P21/blob/6ac93b1a91df1571d2833dc81c461a8398fbb310/configs/r055.recovery.json)。
 
 [本轮结果与独立复核](https://github.com/ziyu24/cqc_P21/blob/bb5d73927dbd31fc2ea23d8d9a417b83e58ff4f2/lab/result.md)；[当前取舍](https://github.com/ziyu24/cqc_P21/blob/bb5d73927dbd31fc2ea23d8d9a417b83e58ff4f2/lab/discussion.md)；[复核入口](https://github.com/ziyu24/cqc_P21/blob/bb5d73927dbd31fc2ea23d8d9a417b83e58ff4f2/src/audit_dota_background_result.py)；[保护记录](https://github.com/ziyu24/cqc_P21/blob/bb5d73927dbd31fc2ea23d8d9a417b83e58ff4f2/configs/r054.recovery.json)。[已登记教训](../lesson/cqc_P21.lessons.md)。
