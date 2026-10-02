@@ -10,7 +10,7 @@ DOTA当前最强数量模型的原图VOC07 AP50已提高到37.7601、面积AP36.
 
 ## 服务器当前内容
 
-2026-10-02约02:48 UTC，用户认可下一方案后，C已交付r057：冻结当前37.7601学生，仅为L生成新候选，教师互斥选配、SAM补原配额；先准确对应主性能臂，再连续执行原固定同密度错配控制。两臂各12轮/47256更新、seed42、每项实际2卡，从同一29.3378完整初态出发，U与已验证可靠缺席负监督不变。代码、配置、检查和唯一任务已推送；尚未观察到SERVER启动，C没有启动前向或训练。
+2026-10-02 03:00 UTC，SERVER已在46实际启动r057，来源提交`6818344`、worker PID 2723283，运行器选择物理GPU 1、0。当前先执行一次共享的L3149强教师双卡候选前向，随后将按固定顺序执行accurate和permuted；两臂各12轮/47256更新、seed42、每项实际2卡，从同一29.3378完整初态出发，U与已验证可靠缺席负监督不变。此处只登记启动事实，候选完整性、真实双rank计算和科学结果仍待运行证据。
 
 上一项固定评分组合已在46完成并由C充分复核：best35.5851/34.4424、平均每类TP500为196.8、宏召回59.5455%；较强参照双AP略低，原成功条件失败。其实际性能、模型及先前35.7140强参照均保留。
 
@@ -32,9 +32,9 @@ C于2026-10-02 02:13:44—02:23:01 UTC独立只读核验本次结果：26个唯�
 
 ## 执行阶段
 
-上一轮可靠负监督已执行结束并由C充分复核，37.7601强参照继续保留。用户已认可强教师更新L及必要数量对应控制，当前唯一任务r057已正式下发，等待SERVER实际执行；没有把交付完成写成训练已开始。每臂完成立即评测，再自动继续下一臂，无需等用户在线。实际涨点与新阶段数量对应收益均未知；项目总体目标、U独立价值、跨seed稳定性及顶刊创新证据仍未完成，没有真实B端讨论或双方共识。
+上一轮可靠负监督已执行结束并由C充分复核，37.7601强参照继续保留。当前唯一任务r057已由SERVER在46实际启动，处于共享教师候选前向/准备阶段；每臂完成立即评测，再自动继续下一臂，无需等用户在线。实际涨点与新阶段数量对应收益均未知；项目总体目标、U独立价值、跨seed稳定性及顶刊创新证据仍未完成，没有真实B端讨论或双方共识。
 
-记录者：C、SERVER；更新日期：2026-10-02。SERVER保留上一轮执行及清理实绩，C补记复核、研究依据及新两臂交付。
+记录者：C、SERVER；更新日期：2026-10-02。SERVER保留上一轮执行及清理实绩，并补记r057实际启动；C补记复核、研究依据及新两臂交付。
 
 ## 下一步与维护
 
@@ -46,7 +46,7 @@ SERVER按唯一任务连续完成共用L教师前向、准确主性能臂及原�
 
 ## 证据
 
-[当前两臂任务](https://github.com/ziyu24/cqc_P21/blob/cbabfcc12f89d25d02e4f437e79f562db3737f08/lab/sug.md)；[教师刷新入口](https://github.com/ziyu24/cqc_P21/blob/cbabfcc12f89d25d02e4f437e79f562db3737f08/src/dota_teacher_refresh.py)；[授权、反例及只读原生检查](https://github.com/ziyu24/cqc_P21/blob/cbabfcc12f89d25d02e4f437e79f562db3737f08/lab/discussion.md)。
+[当前两臂任务](https://github.com/ziyu24/cqc_P21/blob/6818344f2fb391c91bedf9e3ea82375e2caac30f/lab/sug.md)；[教师刷新入口](https://github.com/ziyu24/cqc_P21/blob/cbabfcc12f89d25d02e4f437e79f562db3737f08/src/dota_teacher_refresh.py)；[授权、反例及只读原生检查](https://github.com/ziyu24/cqc_P21/blob/cbabfcc12f89d25d02e4f437e79f562db3737f08/lab/discussion.md)；[r057恢复入口](https://github.com/ziyu24/cqc_P21/blob/0280478b9fcdc2c968a95dcd0ced67b1343a49ce/configs/r057.recovery.json)。
 
 [C独立复核及新候选统计](https://github.com/ziyu24/cqc_P21/blob/e04f82fe346c21d2cc304a8d1bc6441206539bdd/lab/result.md)；[下一机制与文献代码比较](https://github.com/ziyu24/cqc_P21/blob/e04f82fe346c21d2cc304a8d1bc6441206539bdd/lab/discussion.md)；[同配额诊断入口](https://github.com/ziyu24/cqc_P21/blob/e04f82fe346c21d2cc304a8d1bc6441206539bdd/src/diagnose_dota_teacher_candidates.py)。
 
