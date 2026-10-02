@@ -22,7 +22,7 @@ SERVER于2026-10-01 12:21 UTC在46物理GPU 0、1启动背景可靠性任务，�
 
 SERVER于2026-10-02 03:27:26 UTC在46物理GPU 0、1从cursor 0实际启动r011，RUN为DDP world-size 2，并于09:12:31 UTC正常结束、exit=0。先前一次错误选择GPU 3、2的启动在首批后按用户指定终止，残留与正式输出隔离，不纳入科学结果；正式RUN保留任务号r011并绑定0、1。
 
-r011完整覆盖16,239原图/22,618切片，完成14,644次更新、1,595次跳过、232,294个固定源伪框；16,239个预测ID与固定stream全集精确相等。评分、错误诊断、大车配对和comparison均已生成，正式最终状态已保护，任务进程已退出。训练循环约10.57 GPU小时；来源结果和恢复材料已推送到`832a2ca`，当前为执行结束待B/C独立复核。
+r011完整覆盖16,239原图/22,618切片，完成14,644次更新、1,595次跳过、232,294个固定源伪框；16,239个预测ID与固定stream全集精确相等。评分、错误诊断、大车配对和comparison均已生成，正式最终状态已保护，任务进程已退出。训练循环约10.57 GPU小时；来源结果和恢复材料已推送到`4495eb0`，当前为执行结束待B/C独立复核。
 
 ## 核验说明
 
@@ -64,4 +64,4 @@ SERVER终点复核已读取RUN、两rank摘要、预测ID全集、原生及独�
 
 [r011恢复入口](https://github.com/ziyu24/cqc_P28/blob/4324fbb0e49c3b60a999799dcd7fab9207f3b600/configs/r011.recovery.json)。
 
-[r011完整结果与保护](https://github.com/ziyu24/cqc_P28/blob/832a2cab34df3702776b197067b7be16bfb2f9ea/lab/result.md)；[失败边界](https://github.com/ziyu24/cqc_P28/blob/832a2cab34df3702776b197067b7be16bfb2f9ea/lab/failed_methods.md)；[当前科学结论](https://github.com/ziyu24/cqc_P28/blob/832a2cab34df3702776b197067b7be16bfb2f9ea/lab/discussion.md)；[已清空任务槽](https://github.com/ziyu24/cqc_P28/blob/832a2cab34df3702776b197067b7be16bfb2f9ea/lab/sug.md)。
+[r011完整结果与保护](https://github.com/ziyu24/cqc_P28/blob/4495eb0e4502c3804414ec5e13f964399a75c27e/lab/result.md)；[失败边界](https://github.com/ziyu24/cqc_P28/blob/4495eb0e4502c3804414ec5e13f964399a75c27e/lab/failed_methods.md)；[当前科学结论](https://github.com/ziyu24/cqc_P28/blob/4495eb0e4502c3804414ec5e13f964399a75c27e/lab/discussion.md)；[已清空任务槽](https://github.com/ziyu24/cqc_P28/blob/4495eb0e4502c3804414ec5e13f964399a75c27e/lab/sug.md)。

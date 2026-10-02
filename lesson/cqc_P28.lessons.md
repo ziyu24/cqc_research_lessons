@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_roi_targets.py`、`src/online_geometry.py`、`src/online_adapter.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、更新参数范围、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`，严格IoU的PR分解见 `src/analyze_small_vehicle_ranking.py`。当前审计来源为 `ziyu24/cqc_P28@832a2cab34df3702776b197067b7be16bfb2f9ea`；已检查全部远端分支，仅 main，没有更新更晚的次线。
+先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_roi_targets.py`、`src/online_geometry.py`、`src/online_adapter.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、更新参数范围、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`，严格IoU的PR分解见 `src/analyze_small_vehicle_ranking.py`。当前审计来源为 `ziyu24/cqc_P28@4495eb0e4502c3804414ec5e13f964399a75c27e`；已检查全部远端分支，仅 main，没有更新更晚的次线。
 
 ## 项目研究什么
 
@@ -121,7 +121,7 @@
 - 失败原因：adapter臂单视图AP50/AP75为0.55984/0.28935，相对条件前景提高0.02241/0.00519；score≥0.7背景FP由16,226降至14,090，源正确大车保留由10,648增至11,573，故预定机制正信号通过。它相对冻结双AP也提高0.02750/0.00999，但AP75仍比固定源硬监督0.29020低0.00085，更强联合命题失败。完整预测、原生与独立评分、同GT配对、实际双rank及恢复状态闭合；原检测器348项张量在student/teacher终点均与源权重精确相等，64项adapter与adapter-only EMA实际改变。
 - 后续做法：把可更新参数范围与监督内容并列为在线检测适应的核心设计变量；比较受限更新时，必须保留同监督全参数控制、冻结及强稳定教师参照，并同时报告AP50/AP75、背景FP、弱类召回和同GT保持。机制判据通过可以支持继续研究更新约束，但不能事后放宽“胜过全部参照”的独立联合门槛；当前固定位置、比例、宽度和学习率不再扫描。
 - 边界：adapter同时改变参数化、自由度和有效更新幅度，结果不能唯一归因于检测头漂移，也不是完整WHW特征对齐复现。证据限于一个FAIR1M固定单遍流、单种子/顺序和比例32；不提供跨种子稳定、独立域、连续换域、遗忘或OBB特有性证据，也不否定其他受限更新结构或强检测TTA。
-- 证据：`ziyu24/cqc_P28@832a2cab34df3702776b197067b7be16bfb2f9ea` 的 `lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r011.json`、`configs/r011.recovery.json`、`src/online_adapter.py`、`src/online_entry.py` 和 `src/run_r008.py`；实际运行时实现与配置来源为同库 `3cba31bc71291cec6829e69071683051f5727aed`。
+- 证据：`ziyu24/cqc_P28@4495eb0e4502c3804414ec5e13f964399a75c27e` 的 `lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r011.json`、`configs/r011.recovery.json`、`src/online_adapter.py`、`src/online_entry.py` 和 `src/run_r008.py`；实际运行时实现与配置来源为同库 `3cba31bc71291cec6829e69071683051f5727aed`。
 
 ## 方法族停止索引
 
