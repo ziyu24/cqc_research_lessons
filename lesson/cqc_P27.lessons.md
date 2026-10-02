@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读研究对象和候选级对照，再读九条教训。前七条依次覆盖批均值控制、冻结筛选解释、随机位置反例、定位误差分解、固定KLD、源类近邻支持度和GT校正RoI几何；第八条结合UniOT与DPA两次固定适配，说明总体性能或聚合曲线不能替代关键类别同TP混淆裁决；第九条说明终点零散负夹角不足以解释两臂共同退化。最新来源为 `ziyu24/cqc_P27@84fa2a17b1fb6e3976a93dc22f13be713330b9bd`，主要证据见 `lab/result.md`、`lab/failed_methods.md`、`doc/r003_evidence.json` 至 `doc/r012_evidence.json`、`src/review_r003.py` 至 `src/review_r012.py`。
+先读研究对象和候选级对照，再读九条教训。前七条依次覆盖批均值控制、冻结筛选解释、随机位置反例、定位误差分解、固定KLD、源类近邻支持度和GT校正RoI几何；第八条结合UniOT与DPA两次固定适配，说明总体性能或聚合曲线不能替代关键类别同TP混淆裁决；第九条说明终点零散负夹角不足以解释两臂共同退化。最新来源为 `ziyu24/cqc_P27@a6b9499da2c074f4e53aaa3aecda8a025005264d`，主要证据见 `lab/result.md`、`lab/failed_methods.md`、`doc/r003_evidence.json` 至 `doc/r012_evidence.json`、`src/review_r003.py` 至 `src/review_r012.py`。
 
 ## 项目研究什么
 
@@ -86,10 +86,10 @@
 ## 教训八：检测适配不能由聚合固定TP曲线替代完整性能与关键类别召回
 
 - 失败命题：把已有分类域适配中的目标结构学习和跨域部分匹配移植到无标签目标检测后，能够保留普通DA的共享召回、减少外观相近私有类误报并提高完整目标验证AP；其中目标结构PCD应相对同预算去PCD对照产生正增量。
-- 失败原因：同一源初始化、检测器、数据、预算和源best选优下，完整CCD+PCD与去PCD臂的目标Small AP50为0.41739/0.43409，均低于普通DA0.52062，完整臂又低0.01669。去PCD在固定79,382个共享TP处的私有FP为6,425，低于参考7,607，但large-vehicle只有1,159个TP，无法达到参考95%所需1,396。独立的DPA比较提供了更强反例：完整臂相对同结构普通臂的AP50为0.52461对0.52317，全共享固定69,526个TP处私有FP为4,154对4,359，两个聚合指标均改善；但源best为0.74854对0.75023，large-vehicle AP50为0.17206对0.18722，在固定1,087个大车TP处私有FP为4,532对4,149，且完整臂达不到旧普通DA所需的1,396个大车TP。总体AP和全共享曲线同时为正，仍没有转化为关键类别的保召回降混淆。
+- 失败原因：同一源初始化、检测器、数据、预算和源best选优下，完整CCD+PCD与去PCD臂的目标Small AP50为0.41739/0.43409，均低于普通DA0.52062，完整臂又低0.01669。去PCD在固定79,382个共享TP处的私有FP为6,425，低于参考7,607，但large-vehicle只有1,159个TP，无法达到参考95%所需1,396。独立的DPA比较提供了更强反例：完整臂相对同结构普通臂的AP50为0.52461对0.52317，全共享固定69,526个TP处私有FP为4,154对4,359，两个聚合指标均改善；但源best为0.74854对0.75023，large-vehicle AP50为0.17206对0.18722，在固定1,087个大车TP处私有FP为4,532对4,149，且完整臂达不到旧普通DA所需的1,396个大车TP。总体AP和全共享曲线同时为正，仍没有转化为关键类别的保召回降混淆。独立复核整个共同可达的大车1—1,144 TP范围：完整DPA在1,103点私有FP更多、41点相同、没有更少的点，故不是只在预定95%点碰巧不利；不能靠另选原分数阈值取得同结构大车曲线优势。
 - 后续做法：把分类域适配机制迁入检测时，必须保留同预算去机制或同结构普通对照，并把四类主张分开裁决：源检测保持、完整目标AP、结构组件增量、关键混淆在不降召回条件下的变化。固定TP曲线须同时报告聚合类和预定关键类；若关键类不可达历史参考召回，或在同TP下私有FP反增，就不能用总体AP或聚合FP减少宣布问题解决。组合臂与旧基线的差异也不能单独归因某个组件。
-- 边界：两组结论都只覆盖DOTA1.0→SODA-A无遮罩自定义切片、Oriented R-CNN R50-FPN、当前top128候选接口和一个预固定种子；UniOT还限定作者Office31参数组，DPA限定本次GDPA/IDSA/PCC检测迁移及其同结构控制。DPA的AP75/AP50:95及全共享同TP曲线小幅正值是真实保留结果，不等于稳定性或核心混淆成功。结论不否定DPA/UniOT原论文、其他检测候选构造、重新预定的配置、所有部分匹配/概率选样方法或官方遮罩SODA协议；目标val标签仅用于训练后评测和冻结诊断，没有读取target train标签或test。
-- 证据：UniOT证据为`ziyu24/cqc_P27@dec8e4c127a0caede7fc4aa8554cb763e3634599`的`lab/result.md`、`lab/failed_methods.md`、`doc/r010_evidence.json`、`src/review_r010.py`、`src/p27/uniot.py`；DPA证据为`ziyu24/cqc_P27@84fa2a17b1fb6e3976a93dc22f13be713330b9bd`的`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`doc/r012_evidence.json`、`src/review_r012.py`、`src/dpa_result.py`。四臂均完成12轮/47,256步、合法source-best、576原图/20,549切片完整val及真实两卡；checkpoint/config/GT绑定、诊断曲线和无test访问由只读审计重算。
+- 边界：两组结论都只覆盖DOTA1.0→SODA-A无遮罩自定义切片、Oriented R-CNN R50-FPN、当前top128候选接口和一个预固定种子；UniOT还限定作者Office31参数组，DPA限定本次GDPA/IDSA/PCC检测迁移及其同结构控制。DPA的AP75/AP50:95及全共享同TP曲线小幅正值是真实保留结果，不等于稳定性或核心混淆成功。相对旧普通DA的大车共同可达范围仍有多数点改善，同1,087 TP处为4,532对5,495，但同结构普通控制更好（4,149）；不能抹去局部收益，也不能把结构/候选/基础对齐的旧新差额都归因DPA专属模块。源best高于旧普通DA，不是UniOT式源检测崩塌。可达范围仅限既定分数截断、NMS及输出上限，曲线点不是独立样本或显著性证据。结论不否定DPA/UniOT原论文、其他检测候选构造、重新预定的配置、所有部分匹配/概率选样方法或官方遮罩SODA协议；目标val标签仅用于训练后评测和冻结诊断，没有读取target train标签或test。
+- 证据：UniOT证据为`ziyu24/cqc_P27@dec8e4c127a0caede7fc4aa8554cb763e3634599`的`lab/result.md`、`lab/failed_methods.md`、`doc/r010_evidence.json`、`src/review_r010.py`、`src/p27/uniot.py`；DPA证据为`ziyu24/cqc_P27@84fa2a17b1fb6e3976a93dc22f13be713330b9bd`的`lab/result.md`、`lab/discussion.md`、`lab/failed_methods.md`、`doc/r012_evidence.json`、`src/review_r012.py`、`src/dpa_result.py`。四臂均完成12轮/47,256步、合法source-best、576原图/20,549切片完整val及真实两卡；checkpoint/config/GT绑定、诊断曲线和无test访问由只读审计重算。 C完整复核及全范围曲线证据见`ziyu24/cqc_P27@a6b9499da2c074f4e53aaa3aecda8a025005264d`的`lab/result.md`、`doc/r012_completion_review.json`及`src/review_dpa_curves.py`；运行数据换端仅变路径前缀，未重扫图像或新增训练。
 
 ## 教训九：终点零散负夹角不足以解释两臂共同退化
 
