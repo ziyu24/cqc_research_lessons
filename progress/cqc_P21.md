@@ -10,7 +10,7 @@ DOTA当前最高原图VOC07 AP50为39.5057、面积AP38.2576，相对此前最�
 
 ## 服务器当前内容
 
-上一项两臂教师刷新已于2026-10-02执行结束，并由C于09:19—09:45 PDT充分独立复核。用户随后认可优先做完整存在比较；C已提交并推送新入口和唯一任务：两段存在区域头、四段独立纯存在检测依赖，每段12轮、seed42、实际两卡，从公开初态开始，不继承数量标签、预算或数量模型。已交付到46原项目流程，尚未观察到新任务启动；C没有启动训练或改服务器工作树。
+上一项两臂教师刷新已于2026-10-02执行结束，并由C于09:19—09:45 PDT充分独立复核。用户随后认可优先做完整存在比较；C已提交并推送新入口和唯一任务：两段存在区域头、四段独立纯存在检测依赖，每段12轮、seed42、实际两卡，从公开初态开始，不继承数量标签、预算或数量模型。SERVER已于2026-10-02在46以同一r058实际启动，运行器选中物理GPU 0、1，当前处于数据身份和冻结输入准备阶段，尚无新模型指标。
 
 旧可靠缺席类负监督37.7601/36.8639的有效结果继续保留。此前用户授权的清理累计释放13,743,559,597字节；受保护模型及固定下游依赖均保留，本轮没有新增清理或转入通用权重库。
 
@@ -24,7 +24,7 @@ C独立重放两臂best/final完整原图PR和summary，3份JSON逐字段一致�
 
 ## 执行阶段
 
-2026-10-02：上一项已充分复核；完整纯存在任务已由C交付，SERVER实际启动与新指标未知。原数量弱半监督目标、联合标准和保护模型不变。项目仍在运行，未完成顶刊贡献；没有真实B端讨论或双方共识。
+2026-10-02：上一项已充分复核；完整纯存在任务已由C交付并由SERVER在46实际启动。当前已观察到运行器RUNNING与准备子进程，首个GPU训练及双rank计算证据仍待核验，新指标未知。原数量弱半监督目标、联合标准和保护模型不变。项目仍在运行，未完成顶刊贡献；没有真实B端讨论或双方共识。
 
 ## 下一步与维护
 
@@ -38,8 +38,8 @@ C独立重放两臂best/final完整原图PR和summary，3份JSON逐字段一致�
 
 ## 证据
 
-[本次唯一任务](https://github.com/ziyu24/cqc_P21/blob/490aa7b93585c0bdb9911c1be5ab268269d50998/lab/sug.md)；[完整执行入口与边界](https://github.com/ziyu24/cqc_P21/blob/490aa7b93585c0bdb9911c1be5ab268269d50998/doc/dota_strong_presence_execution.md)；[当前授权与科学取舍](https://github.com/ziyu24/cqc_P21/blob/490aa7b93585c0bdb9911c1be5ab268269d50998/lab/discussion.md)；[检查入口](https://github.com/ziyu24/cqc_P21/blob/490aa7b93585c0bdb9911c1be5ab268269d50998/src/check_dota_strong_presence.py)。
+[本次唯一任务](https://github.com/ziyu24/cqc_P21/blob/490aa7b93585c0bdb9911c1be5ab268269d50998/lab/sug.md)；[完整执行入口与边界](https://github.com/ziyu24/cqc_P21/blob/490aa7b93585c0bdb9911c1be5ab268269d50998/doc/dota_strong_presence_execution.md)；[当前授权与科学取舍](https://github.com/ziyu24/cqc_P21/blob/490aa7b93585c0bdb9911c1be5ab268269d50998/lab/discussion.md)；[检查入口](https://github.com/ziyu24/cqc_P21/blob/490aa7b93585c0bdb9911c1be5ab268269d50998/src/check_dota_strong_presence.py)；[SERVER恢复入口](https://github.com/ziyu24/cqc_P21/blob/ed4b6ab50abeabe659a7b695d1f868aac68a4f89/configs/r058.recovery.json)。
 
 [完整结果与C独立复核](https://github.com/ziyu24/cqc_P21/blob/6b3fee796727b3067fca092469359000f2adbc4b/lab/result.md)；[当前科学判断与下一取舍](https://github.com/ziyu24/cqc_P21/blob/6b3fee796727b3067fca092469359000f2adbc4b/lab/discussion.md)；[四端点PR重放](https://github.com/ziyu24/cqc_P21/blob/6b3fee796727b3067fca092469359000f2adbc4b/src/audit_dota_teacher_result.py)；[准备与来源重放](https://github.com/ziyu24/cqc_P21/blob/6b3fee796727b3067fca092469359000f2adbc4b/src/audit_dota_teacher_preparation.py)；[错误与实例得失](https://github.com/ziyu24/cqc_P21/blob/6b3fee796727b3067fca092469359000f2adbc4b/doc/dota_teacher_transfer_diagnosis.json)；[固定身份几何诊断](https://github.com/ziyu24/cqc_P21/blob/6b3fee796727b3067fca092469359000f2adbc4b/doc/dota_teacher_geometry_diagnosis.json)；[恢复与保护](https://github.com/ziyu24/cqc_P21/blob/6b3fee796727b3067fca092469359000f2adbc4b/configs/r057.recovery.json)；[已登记教训](../lesson/cqc_P21.lessons.md)。
 
-记录者：C、SERVER；更新日期：2026-10-02。SERVER记录上一项实际结束，C补独立复核及本次完整存在任务交付。
+记录者：C、SERVER；更新日期：2026-10-02。SERVER记录上一项实际结束及r058在46实际启动，C补独立复核及本次完整存在任务交付。
