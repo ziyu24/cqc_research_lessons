@@ -6,7 +6,7 @@
 
 ## 核心进展
 
-C已交付正式DOTA＋FAIR→SODA四类主实验，HRSC只保留已有探针，不再执行上版提议的整套HRSC开发训练。r006科学代码、实际输入准备和CPU集成已完成，GPU训练尚未启动。本轮独立补FAIR四类源，再检验普通可见源监督及第二教师的额外作用；不是已经实现新的质量学习方法，原项目目标仍未达成。
+C已交付正式DOTA＋FAIR→SODA四类主实验，HRSC只保留已有探针，不再执行上版提议的整套HRSC开发训练。r006科学代码、实际输入准备和CPU集成已完成，SERVER已在46实际启动两卡训练。本轮独立补FAIR四类源，再检验普通可见源监督及第二教师的额外作用；不是已经实现新的质量学习方法，原项目目标仍未达成。
 
 已有HRSC负结果保持：相同DOTA初态和预算下，union AP50/AP75为0.399136/0.291599，低于FAIR监督学生0.487296/0.333018和冻结FAIR教师0.506138/0.356322。r005执行完整、固定配方失败，不能外推为正式四类SODA或整个MS-01/MS-02已失败。
 
@@ -17,6 +17,8 @@ C已交付正式DOTA＋FAIR→SODA四类主实验，HRSC只保留已有探针，
 SERVER于2026-10-01 17:06:47–17:49:35 UTC在46完成三臂：FAIR、union、DOTA伪标签监督；HRSC train436图，每臂实际两卡、12epoch/660优化步、同一初态、一个预定种子；固定epoch12后各评测181图/541GT。DOTA学生为0.323041/0.199333。总墙钟2568.738秒、1.42708 GPU小时。三项终点保存完整优化器/调度器恢复状态，均受保护，删除须用户明确授权。
 
 C于2026-10-02 02:56:13 UTC在46完成r006真实输入CPU集成：SODA无标签窗口37980、DOTA训练15749、FAIR训练18207/源验证4660条均实际加载，四集真实首图变换成功；DOTA权重严格加载且tensor摘要一致。29项协议与原生CPU反例通过，其中包含真实两rank Gloo联合梯度与恢复检查。源码和证据已推送并同步46 Home，唯一任务为r006。本次C没有启动GPU训练或SODA实际评测；GPU首批、显存及吞吐待SERVER实测，不能把CPU检查称为训练成功。未重新清点整机其它项目负载。
+
+SERVER于2026-10-02 04:50:58 UTC按用户明确抢占指令停止占用GPU 2/3的P23 r030，并在46以同一r006、物理GPU 3/2实际启动。`cqc-run gpu-check`观察到两训练PID与两张预期卡完全匹配；两个rank均记录world size 2、seed 20261001、FAIR训练18207切片和相同初态摘要。首50 iter实际loss 0.8623、grad norm 2.5232，均为有限值；约0.402秒/iter，训练进程显存约5.9/5.5 GiB，GPU 2另保留既有qhl约2 GiB且未改动。当前处于FAIR独立源训练第1轮；SODA学生与实际评测均尚未开始，不能据此报告科学结果。
 
 ## 核验说明
 
@@ -30,7 +32,7 @@ SODA适应使用1067原图/37980个raw无GT掩膜窗口；正式评估固定576�
 
 ## 执行阶段
 
-项目继续运行。r005已执行结束并由C独立复核；2026-10-01（C本地日期）r006已正式交付，46输入准备及CPU集成完成，实际GPU训练未启动。原目标、正式主路线和单容量部署条件不变；固定union探针失败不等于整个问题被证伪。记录者C，没有对端原线程回写，不称跨端共识。
+项目继续运行。r005已执行结束并由C独立复核；r006已正式交付并于2026-10-02 04:50:58 UTC在46实际开始两卡执行，当前为FAIR源训练第1轮。原目标、正式主路线和单容量部署条件不变；固定union探针失败不等于整个问题被证伪。C交付段记录者为C，SERVER启动段记录者为SERVER；没有对端原线程回写，不称跨端共识。
 
 ## 下一步与维护
 
@@ -38,10 +40,12 @@ SODA适应使用1067原图/37980个raw无GT掩膜窗口；正式评估固定576�
 
 全部七项训练：FAIR源，以及SODA的DOTA单教师、FAIR单教师、双教师A、A加DOTA监督B_D、仅DOTA教师加同DOTA监督S_D、A加FAIR监督B_F。原HRSC学生不能当SODA基线复用。每项实际两卡、一个种子、12epoch；源27312优化步，学生各56976步。源分支额外batch8，不减目标batch8；一次联合反传/裁剪。B_D须胜A且胜S_D并超过强单源参照，才能支持隐藏FAIR信息有效，不能只把源GT修复坏A当多源成功。B_F含DOTA初态，方向边界如实报告。
 
-训练预计294–442 GPU小时，加冻结前向、评估和首批余量合计324–487 GPU小时，持续两卡约6.8–10.2天；估算依据见来源工程文档，非硬时限。SERVER完成真实GPU首批后直接连续推进，每臂结束即固定评估，不等C再次确认、不按低分删臂或加种子。候选类别/旋转IoU质量学习仍是后续未验证假设，共同ROI、软蒸馏和IoU头本身已有前作；普通源监督结果不能冒充该方法成功。既有产物保护继续有效，本次准备没有新增权重。
+训练预计294–442 GPU小时，加冻结前向、评估和首批余量合计324–487 GPU小时，持续两卡约6.8–10.2天；估算依据见来源工程文档，非硬时限。真实GPU首批已通过，SERVER直接连续推进，每臂结束即固定评估，不等C再次确认、不按低分删臂或加种子。候选类别/旋转IoU质量学习仍是后续未验证假设，共同ROI、软蒸馏和IoU头本身已有前作；普通源监督结果不能冒充该方法成功。既有产物保护继续有效，r006终点按配置在产生后保护。
 
 ## 证据
 
 [完整结果](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/lab/result.md#r005)、[C独立复核](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/configs/r005.review.json)、[复核实现](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/src/review_student_adaptation.py)、[当前科学判断与方案](https://github.com/ziyu24/cqc_P29/blob/066d6ffbbaf7312d87c76c23557ee9de25a78bf0/lab/discussion.md)、[SERVER执行审计](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/configs/r005.audit.json)、[失败边界](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/lab/failed_methods.md)。
 
 [论文与代码核查](https://github.com/ziyu24/cqc_P29/blob/066d6ffbbaf7312d87c76c23557ee9de25a78bf0/doc/takeover-evidence.md)、[当前唯一任务](https://github.com/ziyu24/cqc_P29/blob/19333fa8b2e7aae45247f4aaf070e781aa536637/lab/sug.md)、[最新科学取舍](https://github.com/ziyu24/cqc_P29/blob/19333fa8b2e7aae45247f4aaf070e781aa536637/lab/discussion.md)、[全部训练清单与预算](https://github.com/ziyu24/cqc_P29/blob/19333fa8b2e7aae45247f4aaf070e781aa536637/doc/server-execution.md)、[46真实CPU集成证据](https://github.com/ziyu24/cqc_P29/blob/19333fa8b2e7aae45247f4aaf070e781aa536637/configs/r006.preflight.json)、[正式两卡科学入口](https://github.com/ziyu24/cqc_P29/blob/19333fa8b2e7aae45247f4aaf070e781aa536637/src/run_main_experiment.py)。
+
+[启动时科学代码](https://github.com/ziyu24/cqc_P29/tree/c41d7ddaee1529d12163d9a19062373220ed4f00)、[修正后的恢复入口](https://github.com/ziyu24/cqc_P29/blob/86db4fb96df76d39d4c34e0104108f6c54a898a1/configs/r006.recovery.json)。
