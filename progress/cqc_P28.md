@@ -16,7 +16,7 @@
 
 r011正式RUN于2026-10-02 03:27:26至09:12:31 UTC在46实际两卡完整执行，16,239原图/22,618切片、14,644次更新、1,595跳过、232,294源伪框闭合。训练循环约10.567 GPU小时，含CPU评分的正式两卡RUN约11.503 GPU小时；早期用户停止的误选卡短启单列，不混作完整累计成本。受保护源与适配器终点均保持原保护。
 
-B于15:30:46 UTC只读核46仍为4495eb0，未见r012 RUN或本项目在线任务进程。未执行的r012硬监督适配器控制已撤回当前执行序列并后置，未记成功或失败，没有中断实验。B新交付唯一r013：两冻结模型状态、同一源RPN候选、既定256张单切片图、真实两个rank亮度视图、零优化器更新及独立CPU统计。来源提交45ef0aa，尚未观察到SERVER实际启动，不能把代码交付当运行完成。
+B于15:30:46 UTC只读核46仍为4495eb0，未见r012 RUN或本项目在线任务进程。未执行的r012硬监督适配器控制已撤回当前执行序列并后置，未记成功或失败，没有中断实验。B新交付唯一r013：两冻结模型状态、同一源RPN候选、既定256张单切片图、真实两个rank亮度视图、零优化器更新及独立CPU统计。SERVER于2026-10-02 16:17:31 UTC在46的GPU 0/1同号恢复后实际启动；两个rank均完成首图，源共享特征检测与原生predict最大绝对差7.45e-9、HPL逐值一致，实测峰值约1,007 MiB/卡。当前仍在执行完整256图，不能把首图通过当科学完成。
 
 ## 核验说明
 
@@ -26,11 +26,11 @@ r011源/流/运行时配置、预测ID全集、双rank与PID→GPU UUID、评分
 
 本轮三臂几何诊断在16,239原图上精确复现325项基线检查，0GPU；但发现GT角度约5.96e-8弧度的纯表示变化使原生同框IoU从接近1变成接近0。所有新几何分量统计不采纳，不能当作几何因果或修复潜力证据。代码已保留原始表示并通过实际反例，未再全流复算，不继续把该诊断作为推进前置条件。旧主要AP及既定评估协议未改；此为数值边界，不登记为研究路线失败。
 
-r013已有本地公式/空候选/同量控制/NaN padding/ignore/重复唯一GT反例；46实际环境的源与适配器合成CPU接口及原生匹配检查通过，权重不变。真实目标首批、双GPU和吞吐尚未执行。GPU入口不加载GT；独立CPU才看标签。终点学生已见过这些图，证据只能诊断当前状态，不能推断在线收益或独立域表现。
+r013已有本地公式/空候选/同量控制/NaN padding/ignore/重复唯一GT反例；46实际环境的源与适配器合成CPU接口及原生匹配检查通过，权重不变。真实目标首批及双GPU已核实，完整覆盖、终点不变和独立CPU裁决尚待运行结束。GPU入口不加载GT；独立CPU才看标签。终点学生已见过这些图，证据只能诊断当前状态，不能推断在线收益或独立域表现。
 
 ## 执行阶段
 
-r011完成且复核；r012未执行、撤回当前序列并后置；r013已经交付、未观察执行。原始TTA-OBB→CTTA-OBB目标尚未达成，当前有效底座保留；没有经验证的完整解法，也不以论文成熟度自评判定项目失败。
+r011完成且复核；r012未执行、撤回当前序列并后置；r013正在46以实际两卡执行，首图已通过、完整结果待产出。原始TTA-OBB→CTTA-OBB目标尚未达成，当前有效底座保留；没有经验证的完整解法，也不以论文成熟度自评判定项目失败。
 
 ## 下一步与维护
 
@@ -42,4 +42,4 @@ r011完成且复核；r012未执行、撤回当前序列并后置；r013已经�
 
 ## 证据
 
-[累计结果、r011复核及本轮数值反例](https://github.com/ziyu24/cqc_P28/blob/45ef0aa1c93fca488ee03a6ab7489d6a4c59a27d/lab/result.md)；[当前核心问题与裁决](https://github.com/ziyu24/cqc_P28/blob/45ef0aa1c93fca488ee03a6ab7489d6a4c59a27d/lab/discussion.md)；[唯一冻结核验任务](https://github.com/ziyu24/cqc_P28/blob/45ef0aa1c93fca488ee03a6ab7489d6a4c59a27d/lab/sug.md)；[可执行入口与检查边界](https://github.com/ziyu24/cqc_P28/blob/45ef0aa1c93fca488ee03a6ab7489d6a4c59a27d/doc/execution.md)；[既有失败及边界](https://github.com/ziyu24/cqc_P28/blob/45ef0aa1c93fca488ee03a6ab7489d6a4c59a27d/lab/failed_methods.md)。
+[累计结果、r011复核及本轮数值反例](https://github.com/ziyu24/cqc_P28/blob/45ef0aa1c93fca488ee03a6ab7489d6a4c59a27d/lab/result.md)；[当前核心问题与裁决](https://github.com/ziyu24/cqc_P28/blob/45ef0aa1c93fca488ee03a6ab7489d6a4c59a27d/lab/discussion.md)；[唯一冻结核验任务](https://github.com/ziyu24/cqc_P28/blob/45ef0aa1c93fca488ee03a6ab7489d6a4c59a27d/lab/sug.md)；[实际首图数值等价修复](https://github.com/ziyu24/cqc_P28/commit/bad10cf87f7170f548868c6ccd6ac3db2db078a5)；[可执行入口与检查边界](https://github.com/ziyu24/cqc_P28/blob/45ef0aa1c93fca488ee03a6ab7489d6a4c59a27d/doc/execution.md)；[既有失败及边界](https://github.com/ziyu24/cqc_P28/blob/45ef0aa1c93fca488ee03a6ab7489d6a4c59a27d/lab/failed_methods.md)。
