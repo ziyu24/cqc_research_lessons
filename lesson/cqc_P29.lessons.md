@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源 `README.md` 与 `lab/discussion.md` 的 MS-01/MS-02 信息条件，再读 `lab/result.md` 和 `lab/failed_methods.md` 的冻结双教师诊断、学生监督探针及r005完整学生训练；结合各轮审计、`src/run_student_adaptation.py` 与对应协议模块核对教师投影、伪标签、原生训练和固定终点评测。另读图像独立目标入口，核实预处理信息条件。当前审计来源为 `ziyu24/cqc_P29@ec3e70810e425f7bde0d0c6a34b8fc3ffe6bfbb6`；已检查全部远端分支，仅 main，没有更新更晚的次线。
+先读来源 `README.md` 与 `lab/discussion.md` 的 MS-01/MS-02 信息条件，再读 `lab/result.md` 和 `lab/failed_methods.md` 的冻结双教师诊断、学生监督探针及r005完整学生训练；结合各轮审计、`src/run_student_adaptation.py` 与对应协议模块核对教师投影、伪标签、原生训练和固定终点评测。另读图像独立目标入口，核实预处理信息条件。当前审计来源为 `ziyu24/cqc_P29@46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef`；已检查全部远端分支，仅 main，没有更新更晚的次线。
 
 ## 项目研究什么
 
@@ -68,10 +68,10 @@
 ## 教训六：候选并集扩大不等于学生可吸收的双源增量
 
 - 失败命题：在相同学生初态和训练预算下，把已修正类别事件的DOTA/FAIR候选并成union伪标签，会使学生AP50至少超过最佳单源学生0.01且AP75不降，并进一步不劣于冻结强教师。
-- 失败原因：固定门槛0.5后，FAIR/union/DOTA伪标签分别有1622/2087/1636个正框与70/43/81张空图。三个学生都完成双卡12 epoch、660优化步和固定epoch12评估；FAIR/union/DOTA AP50/AP75依次为0.487296/0.333018、0.399136/0.291599、0.323041/0.199333。union相对DOTA有增益，却相对最佳单源FAIR下降0.088160/0.041419，也低于冻结FAIR教师0.506138/0.356322。更多正框和更少空图没有形成更好学生，但没有等数量或噪声分型控制，不能把数量、误检或漏监督中的任一项认作唯一原因。
+- 失败原因：固定门槛0.5后，FAIR/union/DOTA伪标签分别有1622/2087/1636个正框与70/43/81张空图。三个学生都完成双卡12 epoch、660优化步和固定epoch12评估；FAIR/union/DOTA AP50/AP75依次为0.487296/0.333018、0.399136/0.291599、0.323041/0.199333。union相对DOTA有增益，却相对最佳单源FAIR下降0.088160/0.041419，也低于冻结FAIR教师0.506138/0.356322。更多正框和更少空图没有形成更好学生。C独立复算全部有效训练标签及六条完整PR后确认：union保留1247个FAIR框，删除其原有375个框并纳入840个DOTA框，不能把净增465框误写为纯补漏。最终学生在IoU0.5相对FAIR监督学生只新增11个正确匹配而丢35个，IoU0.75新增22而丢51个；固定分数口径下误检也增加。替换和补充未单独操纵，没有训练GT质量分类，不能认定删掉的375框全正确、加入的840框全错误，或将任一因素说成唯一因果。
 - 后续做法：把r005 FAIR学生作为当前训练参照，停止扫描固定union门槛、普通后处理或无依据的框数平衡。任何新学生机制都须给出不依赖目标标签、能同时处理漏监督与错误正框的可证伪质量依据，并直接比较固定终点AP；候选潜力、冲突率下降或相对DOTA学生改善均不足以宣称双源收益。
 - 边界：只否定HRSC开发训练、DOTA初态、异类别头船类投影、固定0.5门槛/NMS和单种子协议。FAIR学生不是纯FAIR初态对照；单种子不称跨种子稳定；不否定严格四类SODA主实验、其它有依据的多教师学习或整个MS-01/MS-02。
-- 证据：`ziyu24/cqc_P29@ec3e70810e425f7bde0d0c6a34b8fc3ffe6bfbb6` 的 `lab/result.md#r005`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r005.json`、`configs/r005.audit.json`、`src/run_student_adaptation.py` 与 `src/student_native.py`。
+- 证据：`ziyu24/cqc_P29@46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef` 的 `lab/result.md#r005`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r005.json`、`configs/r005.audit.json`、`src/run_student_adaptation.py`、`src/student_native.py`、`configs/r005.review.json` 与 `src/review_student_adaptation.py`。
 
 ## 方法族停止索引
 

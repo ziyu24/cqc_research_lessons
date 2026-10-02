@@ -6,48 +6,34 @@
 
 ## 核心进展
 
-C已实际核清学生初始化监督：局部正/背景冲突存在，但平均检测头梯度同向，且约70%的冲突涉及错误伪框，不能直接拿冲突判标签质量或投入全局梯度投影。SERVER随后完成r005真实学生训练；union学生AP50/AP75为0.399136/0.291599，低于FAIR学生0.487296/0.333018，也低于冻结FAIR教师0.506138/0.356322。当前固定union学生路线未把互补转成最佳单源之上的收益。
+C已独立核实：相同DOTA初态和预算下，直接合并两个教师的伪标签训练学生，反而比只用FAIR伪标签低8.82个AP50百分点。union AP50/AP75为0.399136/0.291599，FAIR监督学生为0.487296/0.333018，冻结FAIR教师为0.506138/0.356322。本轮执行完整、固定配方失败，原项目目标尚未达成。
 
-原冻结控制已确认类别概率事件修正有效；当前ProbEn后验和置信度框平均失败。固定输出集合复算证明主要损失来自排序和坐标平均，NMS选择改变不足以解释。此结论保留，停止当前分支的阈值/先验扫描。
+新的原因定位证据是：union删除375个原有FAIR训练伪框、纳入840个DOTA框，不能说只是增加互补。最终在IoU0.5相对FAIR监督学生新增11个正确匹配而丢35个，在IoU0.75新增22而丢51个。替换和补充没有分开干预，不能认定唯一因果；没有用train GT把被删或新增框判成对错。
 
 ## 服务器当前内容
 
-SERVER于2026-10-01 17:06:47–17:49:35 UTC在46完整执行r005：同一DOTA源初态，HRSC无标签train 436图，依次训练FAIR、union sum、DOTA监督三个同容量学生；每臂实际两卡、12 epoch/660更新、一个种子。三臂两个DDP rank、学习率节点、有限损失/梯度、固定epoch12终点和181图评测均齐全，GPU UUID为MATCH，结束后相关进程为0。DOTA学生AP50/AP75为0.323041/0.199333；union虽高于DOTA，但低于FAIR学生0.088160/0.041419，两个预定支持条件均失败。墙钟2568.738秒、两卡累计1.42708 GPU小时。
+SERVER于2026-10-01 17:06:47–17:49:35 UTC在46完成三臂：FAIR、union、DOTA伪标签监督；HRSC train436图，每臂实际两卡、12epoch/660优化步、同一初态、一个预定种子；固定epoch12后各评测181图/541GT。DOTA学生为0.323041/0.199333。总墙钟2568.738秒、1.42708 GPU小时。三项终点保存完整优化器/调度器恢复状态，均受保护，删除须用户明确授权。
 
-五项针对性反例及46原生CPU数据检查通过：空图保留、四类头ship索引、qbox转rbox与缩放、完整436样本覆盖、两rank采样模拟各220、恢复到本臂学生checkpoint。实际训练中每臂1320微迭代/660优化步，双rank终态摘要一致；三项epoch12终点已列为受保护权重。实际总成本低于事前1.5–3.0 GPU小时估计。
-
-以下保留已完成证据：
-
-C按用户授权直接在46完成r004，2026-10-01 15:21:07–15:22:04 UTC实际两张A30、91/90图，57.621秒、0.03201 GPU小时；实际PID→GPU UUID为MATCH。181次学生前向、0优化步，无新权重。该旧任务已执行结束并由C独立复核；r005随后已完成，未改写r004的限定结论。
-
-三臂共362000个原RPN、各92672个采样ROI；两个rank模型状态前后不变。2026-10-01 15:43:20 UTC观察时相关PID退出，两源实体存在，既有P28源best保护不变。新产物368文件、64,346,052字节，原始分配/梯度、日志和恢复材料保留。
-
-SODA输入修复也已在46验证：仅按原图尺寸生成1067图/37980窗口，集合缺失/额外0，四个实际边界裁块与原图像素一致，未读目标标注。原官方切片依赖GT掩膜，保留原数据并新增图像独立读取方式，没有批量重切或修改正式评估。代码、结论、索引及恢复材料已推送并同步46 Home仓库。
+C于2026-10-02 00:07:21 UTC远端核实三个权重实体、哈希和模型状态吻合，相关训练进程0；复核代码、充分统计与结论已推送并同步46 Home。未启动新GPU任务或后续训练，当前任务槽为空。
 
 ## 核验说明
 
-**r004限定结论已由C充分复核；r005已由SERVER充分核验执行与产物完整性，尚不是B/C独立科学复算。** r005训练未打开train GT，三份伪标签各覆盖436图；三臂各181份预测，双rank评测91/90图，六条PR长度均等于检测数。三个权重哈希与评测记录一致，student summary联合支持为false。
+**已充分核验这轮限定开发结论。** C检查生成提交和源码/输入身份、双rank初终态、训练日志/学习率/更新步、checkpoint与评测一致性、436图伪标签全集和181图完整预测。独立多边形几何重算全部有效训练标签及六条PR；原NumPy同分排序下逐点与AP均吻合。本机另一NumPy同分顺序只产生约0.00002226的union AP50差，不影响裁决。当前配置仅在执行后加了权重保护，科学参数未改。
 
-r004梯度检查仍只限于DOTA源初态、预定0.5门槛、原生ROI监督及最后共享FC/分类/回归层；r005补上了完整训练与学生AP，但没有等数量伪框或噪声分型对照。union正框更多且空图更少而性能更低，与错误正框/漏监督并存相容，却不能唯一识别因果。单种子不称跨种子稳定。
+训练代码路径不读取目标XML，但没有操作系统文件访问跟踪；不把声明当取证。三臂都有DOTA初始化，FAIR监督学生不是纯FAIR初态单源模型。一个种子不说明跨种子稳定；替换和补充同时变化，不能把失败唯一归因于数量、噪声、背景或容量。完整低分候选下正确匹配减少，固定0.5分数下TP410→392、FP633→769，不能仅怪低分尾部。
 
-回源快检DOTA、FAIR、SODA五份报告均UNCHANGED/PASS，复用清单和摘要，无全集新解码/重哈希。十对数据集及HRSC val未发现精确编码重复，DOTA/SODA各自train-val原图ID无交叉；**重编码、裁幅和地理同景未排除**。FAIR37类到四类及TXT别名已核，other-vehicle保留ignore，空图保留；旧源train_only/val路径不存在，不能把标准总体当成已核源划分或冒用37类权重。HRSC test曾暴露对象数量的旧边界仍保留。
+原输入审计仍有效：五份源端报告UNCHANGED，复用摘要没有重扫全集；精确编码/原图ID重复已核，重编码、裁幅及同景未排除。FAIR四类映射/别名已核，但旧源划分目录缺失、严格四类教师未闭合。SODA图像独立适应入口已验证1067原图/37980窗口，修正GT掩膜依赖；正式评估协议未冻结。HRSC test曾暴露对象计数，旧限制保留。
 
 ## 执行阶段
 
-项目继续运行。r005已在46执行结束并由SERVER完成运行/产物审计，等待B/C按需独立科学复核；当前任务槽为空。原目标未达成，固定union学生路线失败；严格四类SODA主实验尚未开始，MS-01/MS-02未被证伪不等于成功。
-
-本次执行收尾记录者：SERVER；2026-10-01。未续接B/C原线程或获得其对端回写，不称独立复核或跨端共识。
+项目继续运行。r005执行结束，已由C独立复核；固定union学习路线失败，MS-01/MS-02整体未被证伪不等于成功。SODA主实验和MS-02尚未执行。记录者C，没有对端原线程回写，不称跨端共识。
 
 ## 下一步与维护
 
-r005已经表明当前固定union学习没有可靠双源增量。停止继续扫描union门槛、普通后处理或无依据的框数平衡；后续机制须用合法无标签依据同时处理错误正框与漏监督，并直接相对r005 FAIR/union学生终点检验，而不是只优化冲突率或候选潜力。
+目前核心问题是无标签条件下如何区分可靠补漏与有害替换，已有固定合并缺少这个依据。保留FAIR监督学生与冻结FAIR参照；下一机制必须说明可靠监督何时保留、第二教师独有预测凭何纳入。仅无差别保留FAIR再加DOTA仍有错误正框反例，尚无经过验证的新解法。不继续对已判负配方拆零散诊断或扫阈值，本次按用户现状请求不发新训练号。
 
-三臂都含DOTA初态知识，“FAIR监督学生”不是纯FAIR初态对照；本轮不分离标签数量与互补因果，不替代严格四类SODA主实验。FAIR四类教师/源划分与SODA正式评估条件仍保留，暂不先花约18 GPU小时补源模型；新机制尚未被证明。后续MS-02和SODA不自动启动。
-
-当前不自动启动后续SODA/MS-02训练。更新仍沿现有任务/进展规则，不增审批或状态。
+原“先建立MS-01可信基础，再比较MS-02，不等待MS-01新方法成功”的顺序保留。HRSC成功不是主实验门槛；MS-02仍须比较普通源监督与交换可见源，不能用本轮负结果代替。下一执行方案须在已有证据上说明新增信息/机制的必要性，同时闭合正式四类源及SODA评估条件。保护三项固定终点，不搬入通用权重库。
 
 ## 证据
 
-[完整结果](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/lab/result.md#r004)；[当前取舍](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/lab/discussion.md)；[真实执行](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/configs/r004.audit.json)；[独立监督/梯度复核](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/configs/r004.review.json)；[输入清单审计](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/configs/input_audit.json)；[SODA真实读取验证](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/configs/soda_input_check.json)；[图像独立入口](https://github.com/ziyu24/cqc_P29/blob/c283314cd4fc1f94252d7bbea538e5c6703566bc/src/soda_unlabeled.py)。
-
-r005收尾：[完整结果](https://github.com/ziyu24/cqc_P29/blob/ec3e70810e425f7bde0d0c6a34b8fc3ffe6bfbb6/lab/result.md#r005)、[执行与产物审计](https://github.com/ziyu24/cqc_P29/blob/ec3e70810e425f7bde0d0c6a34b8fc3ffe6bfbb6/configs/r005.audit.json)、[失败边界](https://github.com/ziyu24/cqc_P29/blob/ec3e70810e425f7bde0d0c6a34b8fc3ffe6bfbb6/lab/failed_methods.md)、[当前取舍](https://github.com/ziyu24/cqc_P29/blob/ec3e70810e425f7bde0d0c6a34b8fc3ffe6bfbb6/lab/discussion.md)。
+[完整结果](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/lab/result.md#r005)、[C独立复核](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/configs/r005.review.json)、[复核实现](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/src/review_student_adaptation.py)、[当前科学判断](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/lab/discussion.md)、[SERVER执行审计](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/configs/r005.audit.json)、[失败边界](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/lab/failed_methods.md)。
