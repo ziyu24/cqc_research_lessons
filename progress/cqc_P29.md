@@ -6,7 +6,7 @@
 
 ## 核心进展
 
-C已独立核实：相同DOTA初态和预算下，直接合并两个教师的伪标签训练学生，反而比只用FAIR伪标签低8.82个AP50百分点。union AP50/AP75为0.399136/0.291599，FAIR监督学生为0.487296/0.333018，冻结FAIR教师为0.506138/0.356322。本轮执行完整、固定配方失败，原项目目标尚未达成。
+C已独立核实：相同DOTA初态和预算下，直接合并两个教师的伪标签训练学生，反而比只用FAIR伪标签低8.82个AP50百分点。union AP50/AP75为0.399136/0.291599，FAIR监督学生为0.487296/0.333018，冻结FAIR教师为0.506138/0.356322。本轮执行完整、固定配方失败，原项目目标尚未达成。C已根据论文与实际源码形成下一方案：补齐真实四类源教师，先检验普通可见源监督及第二教师的额外作用，再判断候选质量学习的必要性；方案已发布，未下发训练。
 
 新的原因定位证据是：union删除375个原有FAIR训练伪框、纳入840个DOTA框，不能说只是增加互补。最终在IoU0.5相对FAIR监督学生新增11个正确匹配而丢35个，在IoU0.75新增22而丢51个。替换和补充没有分开干预，不能认定唯一因果；没有用train GT把被删或新增框判成对错。
 
@@ -14,7 +14,7 @@ C已独立核实：相同DOTA初态和预算下，直接合并两个教师的伪
 
 SERVER于2026-10-01 17:06:47–17:49:35 UTC在46完成三臂：FAIR、union、DOTA伪标签监督；HRSC train436图，每臂实际两卡、12epoch/660优化步、同一初态、一个预定种子；固定epoch12后各评测181图/541GT。DOTA学生为0.323041/0.199333。总墙钟2568.738秒、1.42708 GPU小时。三项终点保存完整优化器/调度器恢复状态，均受保护，删除须用户明确授权。
 
-C于2026-10-02 00:07:21 UTC远端核实三个权重实体、哈希和模型状态吻合，相关训练进程0；复核代码、充分统计与结论已推送并同步46 Home。未启动新GPU任务或后续训练，当前任务槽为空。
+C于2026-10-02 00:07:21 UTC远端核实三个权重实体、哈希和模型状态吻合，相关训练进程0；复核代码、充分统计与结论已推送并同步46 Home。此次调研没有启动新GPU任务或后续训练，当前任务槽为空。本次未重新观察服务器实时负载，上述进程状态只对应所列观察时间。
 
 ## 核验说明
 
@@ -26,14 +26,18 @@ C于2026-10-02 00:07:21 UTC远端核实三个权重实体、哈希和模型状�
 
 ## 执行阶段
 
-项目继续运行。r005执行结束，已由C独立复核；固定union学习路线失败，MS-01/MS-02整体未被证伪不等于成功。SODA主实验和MS-02尚未执行。记录者C，没有对端原线程回写，不称跨端共识。
+项目继续运行。r005已执行结束并由C独立复核；2026-10-01（C本地日期）完成深度调研和方案发布，尚未下发新任务，未启动新训练。SODA主实验和MS-02尚未执行。固定union路线失败不等于整个问题被证伪。记录者C，没有对端原线程回写，不称跨端共识。
 
 ## 下一步与维护
 
-目前核心问题是无标签条件下如何区分可靠补漏与有害替换，已有固定合并缺少这个依据。保留FAIR监督学生与冻结FAIR参照；下一机制必须说明可靠监督何时保留、第二教师独有预测凭何纳入。仅无差别保留FAIR再加DOTA仍有错误正框反例，尚无经过验证的新解法。不继续对已判负配方拆零散诊断或扫阈值，本次按用户现状请求不发新训练号。
+目前核心问题：无源条件下仍没有可信的候选质量判断，硬合并同时改动保留/替换、背景及回归监督；原结果不能回答新增源真标签是否能帮助利用第二教师。核心问题解法：r005已提供可信MS-01负基线，不再等待它在HRSC涨分才进入MS-02。DOTA四类源复用；先恢复或明确新定义FAIR原图级源划分，独立训练真实四类教师，不用目标val挑教师，不把37类权重行相加冒充粗类。
 
-原“先建立MS-01可信基础，再比较MS-02，不等待MS-01新方法成功”的顺序保留。HRSC成功不是主实验门槛；MS-02仍须比较普通源监督与交换可见源，不能用本轮负结果代替。下一执行方案须在已有证据上说明新增信息/机制的必要性，同时闭合正式四类源及SODA评估条件。保护三项固定终点，不搬入通用权重库。
+第一组比较：FAIR单源适应、真实四类双教师基线、基线加DOTA监督、基线加FAIR监督，以及同DOTA监督但去掉FAIR教师的必要对照；输入与语义未变的旧DOTA学生复用。这样区分普通源监督的作用与隐藏源模型的增量。首批包含FAIR源共六项新训练，均实际两卡、单种子；预算及依据见来源文档，尚非已执行结果。
+
+研究候选是在可见源GT上学习候选类别/旋转IoU质量，跨源抑制前重排，保持原部署模型。共同ROI、软蒸馏和IoU头均有前作；只有超过普通源监督、等数量/有效权重控制及去第二教师对照，才支持候选特异多源机制。源外观偏差、共同误检及目标跨步反馈仍是反例，方法尚未实现验证，不登记成教训或成功。HRSC仅供开发，不以涨分作为SODA门槛；正式SODA在揭盲前冻结协议，成本另列。原科学目标、主数据路线和已有产物保护保持。
 
 ## 证据
 
-[完整结果](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/lab/result.md#r005)、[C独立复核](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/configs/r005.review.json)、[复核实现](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/src/review_student_adaptation.py)、[当前科学判断](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/lab/discussion.md)、[SERVER执行审计](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/configs/r005.audit.json)、[失败边界](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/lab/failed_methods.md)。
+[完整结果](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/lab/result.md#r005)、[C独立复核](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/configs/r005.review.json)、[复核实现](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/src/review_student_adaptation.py)、[当前科学判断与方案](https://github.com/ziyu24/cqc_P29/blob/066d6ffbbaf7312d87c76c23557ee9de25a78bf0/lab/discussion.md)、[SERVER执行审计](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/configs/r005.audit.json)、[失败边界](https://github.com/ziyu24/cqc_P29/blob/46b10fd7d63ac0dd2edc3cd06556e9a2cc2f29ef/lab/failed_methods.md)。
+
+[论文与代码核查](https://github.com/ziyu24/cqc_P29/blob/066d6ffbbaf7312d87c76c23557ee9de25a78bf0/doc/takeover-evidence.md)、[全部训练清单与预算](https://github.com/ziyu24/cqc_P29/blob/066d6ffbbaf7312d87c76c23557ee9de25a78bf0/doc/server-execution.md)。
