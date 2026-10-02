@@ -6,6 +6,8 @@
 
 ## 核心进展
 
+用户点名CLIP-Guided SFOD后，已补核其OBB闭集适应，以及遥感OSSOD的跨库类别不一致训练、SS-OWFormer的开放世界OBB。完整UniDA＋目标域OBB同条件工作本轮仍未找到，但创新主张须限定为既有Universal设定的旋转遥感任务/基准扩展，不能把普通DA-OBB或未知OBB称首次。原r013方法试验不变，方法收益仍待实际结果。
+
 用户已同意普通DA上的OpenDet式类别判别和拒识学习，C已实现并下发r013完整机制与同结构控制两臂。新增模块、背景/unknown映射、原生回归、双rank全局梯度和结果裁决的针对性检查已通过；有效性尚未验证，未观察到新训练启动。原核心目标未达成，已定位的语义混淆不是全部错误或已证明的OBB特有根因。
 
 固定DPA相对同结构普通对照总AP50高0.143个百分点，大车AP下降，整条共同可达大车TP范围内私有FP从未更少。严格IoU与相对旧基线的局部改善保留，源检测没有UniOT式崩塌；结束该固定配置的结论不变。
@@ -23,6 +25,8 @@ SERVER按其会话中用户最后明确选择在46完成r012，完整DPA及同�
 C于2026-10-01 17:24 PDT回读46正确仓库、Home及tmpfs产物映射、原生日志、模型和合法结果，观察时无相关残留进程。当前为科学完成且已复核，不是等待继续训练；本轮没有新GPU任务。
 
 ## 核验说明
+
+新增文献核验依据为原论文协议/实验和作者代码：CLIP SFOD的train/val/test同20类、Oriented R-CNN；OSSOD预印本Table IV和IV-C3评有标一侧，公开框头为四维HBB，未取得DOTA转换脚本；SS-OWFormer原文§3.4明确角度头与DOTA同库增量任务。期刊全文受限处与预印本/公开代码证据分开，不把使用CLIP或有unknown头等同Universal。此次未查询服务器新状态或修改科学任务。
 
 本轮新增部分已核：本地39项测试通过，缺原生库/Gloo的6项skip另在46现有mr以原始测试函数验证；四项原生CPU检查通过，真实Linux两rank完整/控制的损失、逐参数梯度、队列均匹配全局参考。曾发现原生递归初始化覆盖新增MLP，已修正并复测；source-only辅助、17维概率保留、采样/回归不变、双臂同初态及恢复有反例覆盖。尚未核实际双GPU首批和真实训练收益，CPU结果不代替GPU计算。数据沿已核manifest身份与覆盖，不重切或全量重审DOTA；保留SODA800/650 nomask自定义输入。
 
@@ -53,6 +57,8 @@ source背景不是真unknown，学出的边界可能不跨域、拒掉真大车�
 动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
 
 ## 证据
+
+[本轮范式新颖性补查及固定作者代码来源](https://github.com/ziyu24/cqc_P27/blob/a9c4675c0d54d5d151c832ef7af65939b2467282/doc/method_transfer_review.md)；[C判断与原任务不变边界](https://github.com/ziyu24/cqc_P27/blob/a9c4675c0d54d5d151c832ef7af65939b2467282/lab/discussion.md)。
 
 [已推送唯一任务](https://github.com/ziyu24/cqc_P27/blob/69b0d7e9100ddb7c1a3db123eb9ddbbf23b4e852/lab/sug.md)；[用户授权与科学取舍](https://github.com/ziyu24/cqc_P27/blob/69b0d7e9100ddb7c1a3db123eb9ddbbf23b4e852/lab/discussion.md)；[机制、作者偏离与执行入口](https://github.com/ziyu24/cqc_P27/blob/69b0d7e9100ddb7c1a3db123eb9ddbbf23b4e852/doc/opendet_execution.md)；[实际检查记录](https://github.com/ziyu24/cqc_P27/blob/69b0d7e9100ddb7c1a3db123eb9ddbbf23b4e852/doc/opendet_delivery_checks.json)；[冻结配置](https://github.com/ziyu24/cqc_P27/blob/69b0d7e9100ddb7c1a3db123eb9ddbbf23b4e852/configs/r013.json)。本轮准备不包含新训练、目标评测或GPU计算。
 
