@@ -10,15 +10,15 @@
 
 ## 服务器当前内容
 
-按用户指定在十五类DOTA上训练新完整方案的带噪、干净两臂；带噪臂已跑满120000步。干净臂在46使用物理GPU 2、3推进到96000步完整恢复点后，于2026-10-02 04:49 UTC收到SIGTERM并被运行器记为STOPPED；96000步评测尚未落盘，当前没有残留P23进程。本轮不自动补旧方案对照。
+按用户指定在十五类DOTA上训练新完整方案的带噪、干净两臂；带噪臂已跑满120000步。干净臂此前在96000步评测期间被SIGTERM停止；用户明确授权续跑并改用物理GPU 0、1后，SERVER于2026-10-02 09:58 UTC在46从96000步完整恢复点重新启动，补齐该步评测后继续训练。本轮不自动补旧方案对照。
 
 ## 核验说明
 
-旧结果和分配不可表示问题已有源码/真实增强反例；DOTA身份快检UNCHANGED，实际加载与13个原实例未映射边界已核。带噪臂38个既定评测点已生成；干净臂已有至92800步的29个完整评测点，92800步AP50/AP75为59.7722/23.0299，双rank、458原图/5297切片及产物哈希均已核。96000步恢复文件含优化器状态，但该步评测缺失；完整双臂结论仍须等干净臂到120000步，不能用中途指标或结构修正保证涨点。
+旧结果和分配不可表示问题已有源码/真实增强反例；DOTA身份快检UNCHANGED，实际加载与13个原实例未映射边界已核。带噪臂38个既定评测点已生成；干净臂已补齐至96000步的30个完整评测点，96000步AP50/AP75为60.0871/23.0918，双rank、458原图/5297切片及产物哈希均已核。续跑已回读物理GPU 0、1同一训练PID的MATCH及96050步增长；完整双臂结论仍须等干净臂到120000步，不能用中途指标或结构修正保证涨点。
 
 ## 执行阶段
 
-服务器执行异常结束；2026-10-02 04:49 UTC在46核到r030于96000/120000评测期间被SIGTERM终止并标记STOPPED。96000步完整恢复点有效、此前物理GPU 2、3绑定持续MATCH，但命令退出不是科学完成，尚缺24000步训练及96000步起的既定评测。
+服务器执行中；2026-10-02 10:15 UTC在46核到r030已从96000步完整状态恢复、补齐96000步评测并推进至96050/120000，物理GPU 0、1均有同一训练PID的实际计算记录。此前STOPPED尝试及退出码保留，续跑不改变科学任务和协议。
 
 记录者：B；初始化日期：2026-09-30。来源中的B/C核验与本次只读观察分开表述；未取得对端新回写，不称本轮共识。
 
@@ -30,4 +30,4 @@ SERVER分别汇报带噪和干净完成事实；B/C据完整结果说明核验�
 
 ## 证据
 
-[范围与最初立题](https://github.com/ziyu24/cqc_P23/blob/06c5b85d7c3d2d80f48fcd5dfafc073ac4dff52a/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P23/blob/06c5b85d7c3d2d80f48fcd5dfafc073ac4dff52a/lab/discussion.md)；[结果依据](https://github.com/ziyu24/cqc_P23/blob/06c5b85d7c3d2d80f48fcd5dfafc073ac4dff52a/lab/result.md)；[主线任务](https://github.com/ziyu24/cqc_P23/blob/06c5b85d7c3d2d80f48fcd5dfafc073ac4dff52a/lab/sug.md)；[恢复入口](https://github.com/ziyu24/cqc_P23/blob/06c5b85d7c3d2d80f48fcd5dfafc073ac4dff52a/configs/r030.recovery.json)。 [已登记教训](../lesson/cqc_P23.lessons.md)。
+[范围与最初立题](https://github.com/ziyu24/cqc_P23/blob/74d0ce5f5444974c22c3d4415aa2a28ec576e2a4/README.md)；[当前讨论](https://github.com/ziyu24/cqc_P23/blob/74d0ce5f5444974c22c3d4415aa2a28ec576e2a4/lab/discussion.md)；[结果依据](https://github.com/ziyu24/cqc_P23/blob/74d0ce5f5444974c22c3d4415aa2a28ec576e2a4/lab/result.md)；[主线任务](https://github.com/ziyu24/cqc_P23/blob/74d0ce5f5444974c22c3d4415aa2a28ec576e2a4/lab/sug.md)；[恢复入口](https://github.com/ziyu24/cqc_P23/blob/74d0ce5f5444974c22c3d4415aa2a28ec576e2a4/configs/r030.recovery.json)。 [已登记教训](../lesson/cqc_P23.lessons.md)。
