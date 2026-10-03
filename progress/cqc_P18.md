@@ -12,7 +12,7 @@ PWOOD在DOTA-v1.5、10%水平框标注的部分弱监督旋转检测协议下，
 
 最近固定删除无标签损失的任务已结束。2026-10-03，C在26复算34个既有冻结窗口的几何监督，在46复算实际合法HBox的基础分配并验证原生解码器；CPU核验已完成，零模型前向、零训练、零GPU计算、无远端写入。几何审计于09:31:48 UTC结束，SUP审计于09:11:55 UTC完成；没有下发新训练。
 
-保留SERVER的08:55 UTC存储记录：46仅删除已停止且可重建的临时预测目录，受保护final、完整预测和恢复源未动；当时无项目进程。C本轮未重新调查全部PID，不将该旧观察冒称当前进程状态。
+SERVER于2026-10-03 10:11—10:24 UTC完成用户授权的两服务器清理：删除22份过时中间checkpoint、5份逐字节相同的latest副本、两套冻结特征缓存、重复测速输出及85份tmpfs冗余文件。项目目录实体合计从93.99 GB降至71.63 GB，净释放22.37 GB（20.83 GiB）；其中磁盘约2.57 GB、tmpfs内存约19.80 GB。原08:55 UTC的小范围清理保留为历史记录，本次扩大至26/46的Home与tmpfs，不启动训练、重新预测或上传test。
 
 ## 核验说明
 
@@ -28,9 +28,9 @@ C已于9月26日独立核验最近训练的完整3800更新、数据覆盖、双
 
 ## 执行阶段
 
-本轮研究核验已完成并推送，唯一训练任务槽仍空；离线候选未接入训练或交由SERVER启动。既有存储清理已经完成，不能与科学成功混同。
+本轮研究核验已完成并推送，唯一训练任务槽仍空；离线候选未接入训练或交由SERVER启动。SERVER本次存储清理已实际结束并核验：目标已删除，保留的恢复源/完整终点存在，85个持久原件SHA逐项仍匹配，正式冻结输出及当前审计张量未删。清理器已推送具体删除时间、位置和恢复入口；这不是新的科学成功，也未撤销受保护模型的删除边界。
 
-本次记录者：C。保留SERVER已核存储事件；未取得对端新回写，不称本轮B/C共识。
+科学核验记录者：C；2026-10-03两端清理事件记录者：SERVER。保留既有科学结论，不称本轮B/C共识。
 
 ## 下一步与维护
 
@@ -41,5 +41,7 @@ C已于9月26日独立核验最近训练的完整3800更新、数据覆盖、双
 动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
 
 ## 证据
+
+[本次两服务器清理清单、核算与恢复边界](https://github.com/ziyu24/cqc_P18/blob/81ee279/doc/storage_review.md)。普通清理没有删除受保护模型或唯一科学证据；进一步压缩需要明确处理其保护及下游用途。
 
 [范围与最初立题](https://github.com/ziyu24/cqc_P18/blob/64f2fb970f8d0ecf1bdc2a5f42ae57284bdcae0c/README.md)；[核心判断](https://github.com/ziyu24/cqc_P18/blob/64f2fb970f8d0ecf1bdc2a5f42ae57284bdcae0c/lab/discussion.md)；[累计结果与新核验](https://github.com/ziyu24/cqc_P18/blob/64f2fb970f8d0ecf1bdc2a5f42ae57284bdcae0c/lab/result.md)；[文献与复算协议](https://github.com/ziyu24/cqc_P18/blob/64f2fb970f8d0ecf1bdc2a5f42ae57284bdcae0c/doc/learning_mechanism_audit.md)；[充分统计与来源](https://github.com/ziyu24/cqc_P18/blob/64f2fb970f8d0ecf1bdc2a5f42ae57284bdcae0c/doc/learning_audit_summary.json)；[存储清理恢复记录](https://github.com/ziyu24/cqc_P18/blob/1b7489e8f4aa215feda3f893eb4bc07b79fdf6d7/doc/storage_review.md)；[唯一任务槽](https://github.com/ziyu24/cqc_P18/blob/64f2fb970f8d0ecf1bdc2a5f42ae57284bdcae0c/lab/sug.md)。[已登记教训](../lesson/cqc_P18.lessons.md)。
