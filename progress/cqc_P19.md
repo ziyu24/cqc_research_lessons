@@ -12,7 +12,7 @@
 
 ## 服务器当前内容
 
-SERVER｜2026-10-03 16:01:36 UTC：46在持久Home Git启动r020，执行生成源已推送。实际选两卡，先运行bag的原生DDP临时首批检查，首批尚未形成通过报告；不以RUN存活称核验通过。随后按原顺序bag完整6000步及全量评价、binary完整训练评价、uniform完整训练评价；没有因主臂分数跳过控制。既有mr中19项CPU反例通过；回源训练/验证快检均UNCHANGED，正式入口仍核实际加载身份。首批若遇工程问题同号修复，不改科学协议。
+SERVER｜2026-10-03 16:01:36 UTC：46在持久Home Git启动r020。bag原生DDP临时首批及正式首批通过：三臂掩码/袋成员一致，binary与原生对象loss/257参数梯度一致，空正例rank参与归一，完整AdamW/LR恢复及冻结student保持。临时模型未保存，正式独立重载来源；正式两个计算rank的PID/GPU UUID回读MATCH。16:04:30 UTC观察已完成正式155步，继续固定6000步。随后依次全量评价、binary训练评价、uniform训练评价，不因主臂分数跳过控制。19项CPU反例通过，训练/验证回源快检UNCHANGED，实际manifest/cache加载身份核对通过；没有新检测成绩。
 
 2026-10-03 C按用户“给出服务器执行方案”的要求交付r020：bag、binary、uniform各从相同plain完整状态继续6000步，仅257对象参数，每臂真实两卡、唯一种子42，全部三臂训练后立即全458图评价。代码、协议和恢复入口已推送；15:47:14 UTC只读CPU接入时46仍为旧已完成核查来源，未拉取或启动新任务。B/C未在服务器写入或启动训练。
 
@@ -34,7 +34,7 @@ C重新读取完整两rank报告并复算上述全部保存统计，与SERVER提
 
 ## 执行阶段
 
-2026-10-03：r019已复核；r020由SERVER在46实际启动，首批GPU核验正在进行，三臂性能尚未完成。原目标未达成，旧固定路线成败保持，原命题未被普遍证伪，历史登记不改。
+2026-10-03：r019已复核；r020由SERVER在46实际执行，bag真实两卡首批已通过并进入正式训练，三臂及性能尚未完成。原目标未达成，旧固定路线成败保持，原命题未被普遍证伪，历史登记不改。
 
 初始化记录者B，2026-09-30；方案交付及本次复核记录者C，2026-10-03；实际启动/恢复及收尾记录者SERVER，2026-10-03。未取得对端原线程新回写，不称B/C共识。
 
@@ -47,6 +47,8 @@ C重新读取完整两rank报告并复算上述全部保存统计，与SERVER提
 ## 证据
 
 [SERVER实际接入与原RUN恢复边界](https://github.com/ziyu24/cqc_P19/blob/99a62ce80dd78f64554e80a70e8704ad2aabbd22/doc/r020_execution.md)、[三臂执行入口](https://github.com/ziyu24/cqc_P19/blob/99a62ce80dd78f64554e80a70e8704ad2aabbd22/src/run_r020.py)。原RUN和首批日志保留来源项目，不复制到公共库。
+
+[实际两rank首批与原生等价摘要](https://github.com/ziyu24/cqc_P19/blob/24a5179/doc/r020_first_batch.json)、[首批通过与GPU计算回读](https://github.com/ziyu24/cqc_P19/blob/24a5179/doc/r020_execution.md)。完整向量及正式逐步机制统计保留来源runs。
 
 [新三臂科学任务](https://github.com/ziyu24/cqc_P19/blob/ccd52d0d2c83ed6963fd1aef501529b5305e0d5e/lab/sug.md)、[机制、执行与恢复边界](https://github.com/ziyu24/cqc_P19/blob/ccd52d0d2c83ed6963fd1aef501529b5305e0d5e/doc/r020_execution.md)、[只读CPU接入证据](https://github.com/ziyu24/cqc_P19/blob/ccd52d0d2c83ed6963fd1aef501529b5305e0d5e/doc/r020_preflight.json)。
 
