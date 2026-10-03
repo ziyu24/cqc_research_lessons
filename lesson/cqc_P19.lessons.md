@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-来源主线为 `ziyu24/cqc_P19@eb2b61035b73fbba5e01eb9d9f1a0a6b3a432f4e`。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`和`runs/r013/artifacts/paired_summary.json`；固定known优先部署的完整记录复核见`doc/r014_review.json`、`src/read_r014_evidence.py`与`lab/result.md`；同一冻结学生完整解码到最终池的支持追踪见`doc/r015_review.json`、`src/read_r015_evidence.py`与`src/diagnose_r015.py`；固定学生对象性×原生centerness的质量读出见`configs/r016.json`、`src/r016_core.py`、`src/evaluate_r016.py`和`doc/r016_review.json`、`src/read_r016_evidence.py`。固定SAM伪框IoU质量目标的实际端点、完整保存匹配与覆盖复核见`doc/r017_review.json`、`src/read_r017_evidence.py`及`configs/r017.json`。固定PF-RPN＋SAM及两个控制的完整复核见`doc/r018_review.json`、`src/read_r018_evidence.py`和`runs/r018/artifacts/paired_summary.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
+来源主线为 `ziyu24/cqc_P19@4fa099d9ff42526806eec1bb1af6de34bd47798c`。固定监督核查的执行/复算与解释限制见 `doc/r019_review.json`、`doc/r019_c_review.json`；旧检测成绩保持。先读 `README.md`、`lab/result.md`、`lab/failed_methods.md`，再看 `lab/discussion.md`。实际指标、身份与配对回算依据为 `doc/r005_review.json`，科学协议和实现分别见 `configs/r005.json`、`src/analyze_r005.py`；早期候选证据见 `doc/r001_review.json`、`doc/r002_review.json`。独立对象性比较见`doc/r006_review.json`；冻结对象支持及完整阶段归因见`doc/r007_review.json`、`doc/r008_review.json`与`src/analyze_r008.py`；同源外部正监督三臂终点与比较见`configs/r009.json`、`src/train_r009.py`和`runs/r009/artifacts/summary_CAB.json`；固定候选的冻结对象性读出见`configs/r010.json`、`src/predict_r010.py`和`doc/r010_review.json`、`src/read_r010_evidence.py`；固定2×输入尺度对照见`configs/r011.json`、`src/run_r011.py`、`doc/r011_review.json`、`src/read_r011_evidence.py`和`runs/r011/artifacts/evaluation/summary/metrics.json`；固定SAM自动掩码见`configs/r012.json`、`configs/r012.recovery.json`、`src/run_r012.py`和`runs/r012/artifacts/evaluation/summary/metrics.json`；完整可训练SAM适配的配对结果见`configs/r013.json`、`configs/r013.recovery.json`、`src/run_r013.py`、`doc/r013_review.json`、`src/read_r013_evidence.py`和`runs/r013/artifacts/paired_summary.json`；固定known优先部署的完整记录复核见`doc/r014_review.json`、`src/read_r014_evidence.py`与`lab/result.md`；同一冻结学生完整解码到最终池的支持追踪见`doc/r015_review.json`、`src/read_r015_evidence.py`与`src/diagnose_r015.py`；固定学生对象性×原生centerness的质量读出见`configs/r016.json`、`src/r016_core.py`、`src/evaluate_r016.py`和`doc/r016_review.json`、`src/read_r016_evidence.py`。固定SAM伪框IoU质量目标的实际端点、完整保存匹配与覆盖复核见`doc/r017_review.json`、`src/read_r017_evidence.py`及`configs/r017.json`。固定PF-RPN＋SAM及两个控制的完整复核见`doc/r018_review.json`、`src/read_r018_evidence.py`和`runs/r018/artifacts/paired_summary.json`。已抓取来源全部远端分支，仅有main，无更新更晚的次线。
 
 ## 项目研究什么
 
@@ -15,6 +15,8 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 独立PF-RPN检测预训练接SAM OBB将10 FP/图unknown TP提高到303，但small从冻结部署的102降到3；因此不能把总量、类别广度或相对AMG控制的优势替代完整冻结参照条件，也尚未建立可继续投入的完整开放世界方法。
 
 ## 实际采用过的方法
+
+- 冻结既有端点，在合法可见known上只遮蔽对象目标标签，保持前向、特征、框及SAM缓存，真实两卡固定128批；追踪责任位置转移，复算分别归一后的对象头梯度及同批探针方向，零参数更新。仅诊断已见known缺标代理，不识别真实unknown污染率或训练因果。
 
 - DOTA1.0：1411训练原图，其中282图暴露18203个known对象的HBox，其余无标签；458验证原图，9 known/6 unknown。固定单训练种子42和ImageNet初态，未以见过未来unknown的DOTA检测权重初始化。
 - 原生PWOOD训练24k步；同一teacher比较known分数与centerness候选预筛，检查候选预算、逐类/尺度覆盖和完整未知发现PR，再作冻结阶段损失分解及固定配额融合。
@@ -160,10 +162,19 @@ PWOOD提供部分弱监督旋转检测基础；开放世界对象性、半监督
 - 边界：结果仅约束这组PF-RPN权重、SAM OBB转换、固定水平框/AMG控制和该DOTA开发协议；不证明PF-RPN或SAM一般无效，也不否定其他独立对象先验。PF＋SAM相对水平框的差异不隔离可迁移的SAM因果收益，更不能冒充项目内弱监督创新。两源分别在各自10-FP点的497个对象并集，只说明描述性互补，不是共同FP/框预算的部署召回、可达上界或融合已成功。完整保存匹配和汇总已核验，未重新前向或独立旋转IoU。分组AUC和分别操作点的互补不能代替融合性能；一维非降校准无法颠倒组内错误排序，即使使用更强标注，其失败也不否定利用图像/框特征的其他学习方式。未执行校准不登记为方法失败。
 - 证据：`ziyu24/cqc_P19@eb2b61035b73fbba5e01eb9d9f1a0a6b3a432f4e`；`doc/current_evidence_review.json`、`src/read_current_evidence.py`、`doc/research_reassessment.md`、`doc/r018_review.json`、`src/read_r018_evidence.py`、`lab/result.md`、`lab/failed_methods.md`、`configs/r018.json`、`configs/r018.recovery.json`、`src/run_r018.py`、`doc/r018_execution.md`、`runs/r018/artifacts/paired_summary.json`。
 
+## 教训十五：遮标后的局部梯度与弱几何不兼容不能直接识别污染主因
+
+- 失败命题：只要负例梯度与正探针反向，且弱水平框与伪旋转框重叠不足，就能判断错误负监督主导、外部正证据缺失，并据此删负项或换前端。
+- 失败原因：实际头使用ReLU非负特征，仿射BCE下正探针与负项梯度内积天然非正，即使负标签正确亦然。固定遮标使31.43%的原水平框正责任位置翻负，总方向仍为正而small转负；全体局部方向差量61.97%来自移除known正项、27.55%来自SAM项变化、10.49%来自负项变化，不能当作污染的训练因果占比。另40.68%对象未满足SAM OBB与弱HBox的IoU兼容阈值，并非无对象证据：不兼容发生组仍有57.91%的原责任位置成为SAM正例，完美100×10、45°旋转框与自身紧HBox的IoU也只有0.1653。
+- 后续做法：先检查梯度符号是否由特征/损失结构必然决定，再解释配对目标转移、总方向与分项差量；几何代理须检查其对合法对象的反例。把实例证据、位置标签与真实前景区分，实际干预需以检测性能而非局部探针裁决；不能从该诊断直接选择删除背景监督或替换正证据源。
+- 边界：数学反例否定上述诊断量足以识别唯一根因的推论，不否定缺标污染可能存在。具体统计限于已见known端点、单种子固定流和弱标签代理；不是未知对象错误标签率、SAM precision、历史训练重放或新检测结果。核查任务完成，不是一次新方法性能失败，也没有已验证修复。
+- 证据：`ziyu24/cqc_P19@4fa099d9ff42526806eec1bb1af6de34bd47798c`；`src/p19_sam_learning.py`、`src/audit_r019.py`、`src/read_r019_evidence.py`、`src/read_r019_c_review.py`、`doc/r019_review.json`、`doc/r019_c_review.json`、`lab/result.md`、`lab/discussion.md`。
+
 ## 方法族停止索引
 
 | 方法或解释 | 当前证据支持的停止边界 | 仍未裁决 |
 | --- | --- | --- |
+| 用局部反向梯度或弱HBox不兼容识别唯一根因 | 符号受损失/非负特征结构约束，弱几何代理有合法对象反例，不能据此认定污染主导或无正证据 | 真实unknown监督误差及有针对性干预的检测收益 |
 | 冻结known/centerness重排与固定配额融合 | 当前固定实现未解除覆盖与误报折衷，不再作为已成功方法扩展 | 其他训练型对象性机制 |
 | known质量头及短程质量/保护组合 | 当前实现未达预设整体收益，不能靠局部曲线波动宣称有效发现 | 独立对象性信号及其他合法方法 |
 | 强几何监督修复主条件误拒的解释 | 完整共同初态监督包实验未获主判据支持 | 校准效应、其他干预及完整弱标签增量目标 |
