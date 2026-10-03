@@ -6,7 +6,7 @@
 
 ## 核心进展
 
-C于2026-10-02 PDT按用户明确同意，已交付冻结DINOv2区域表征与旧ROI表征的相同源标签读出比较。两项轻量读出各12轮、一个固定种子、真实两卡；检测器不重训，原框/类别/NMS集合固定。新任务已下发，SERVER实际启动尚未观察；目前只有可执行候选，没有证明核心解法有效。OpenDet固定适配的完整执行和联合失败已经独立复核。
+C于2026-10-02 PDT按用户明确同意，已交付冻结DINOv2区域表征与旧ROI表征的相同源标签读出比较。两项轻量读出各12轮、一个固定种子、真实两卡；检测器不重训，原框/类别/NMS集合固定。SERVER已于2026-10-03 01:11 UTC在46实际启动r014并通过双卡首批；目前仍是执行中候选，没有证明核心解法有效。OpenDet固定适配的完整执行和联合失败已经独立复核。
 
 两臂各12源epoch、47,256步、固定单种子和真实双卡，源best为72.058%/74.152%。训练机制及关闭控制均实际生效；四份数据manifest、合法best/latest、576原图/20,549切片完整目标val、预测/配置/GT绑定和无test访问已由独立审计复核。两份epoch-12 best已登记保护。原核心目标仍未达成，失败原因及OBB专属性未知；该轮只结束OpenDet固定任务，项目保持运行；其原槽清空后现已换为获授权的新任务。
 
@@ -15,6 +15,8 @@ C于2026-10-02 PDT按用户明确同意，已交付冻结DINOv2区域表征与�
 累计事实：旧普通DA相对source-only有正迁移；IDSA有小幅正差但指定候选位置必要性未获支持。固定KLD提高AP50却降低严格IoU；源支持度与GT几何诊断未支持所提关键混淆解法。UniOT完整/去PCD适配的目标AP50为41.739%/43.409%，低于旧普通DA52.062%，源best也大幅下降；后续两份best各8批的冻结梯度检查不足以支持共同持续反向解释，不启动梯度保护支线。各项失败只限实际条件，原研究目标仍未达成。
 
 ## 服务器当前内容
+
+SERVER于2026-10-03 01:11 UTC在46实际启动r014，运行器选择物理GPU0/1；两个rank均完成source-train首批，各处理64个配对区域，原生捕获回放通过，首批显存峰值约2.7 GiB。运行器回读两个rank PID与两卡UUID为MATCH，当前继续完整源train/val提取、两项固定12轮读出、共享目标评分和三套完整评测；尚无新目标指标，进程存活不等于科学完成。
 
 C于2026-10-02 PDT已推送r014入口、配置、唯一任务和针对性检查，沿最近实际执行端46。任务为完整源train/val成对提取、两个源读出、共享目标评分与三套重新匹配的完整原生评测。C仅做只读服务器检查和CPU反例，未启动新GPU计算；SERVER实际开始与完成以其后续执行证据为准。
 
@@ -56,9 +58,9 @@ C复算现有审计的训练终点、12次源验证、best/latest、配置/权�
 
 ## 执行阶段
 
-2026-10-02 PDT，C完成r013独立复核后，用户明确授权外部冻结表征路线；r014已实现、检查并下发，尚未观察到SERVER实际启动。原目标未达成、固定OpenDet路线失败、新候选待检验，三者分开。项目保持运行，不登记整体结束。
+2026-10-03 01:11 UTC，SERVER已在46实际启动r014并核实双rank首批与物理GPU0/1绑定；任务执行中，完整两臂训练、冻结目标输出和评测尚未完成。原目标未达成、固定OpenDet路线失败、新候选待检验，三者分开。项目保持运行，不登记整体结束。
 
-记录者：C；更新日期：2026-10-02 PDT。保留SERVER的实际执行事实，不冒充SERVER启动或B/C共识。
+记录者：SERVER；更新日期：2026-10-03 UTC。保留C的交付与复核事实，不冒充B/C共识。
 
 ## 下一步与维护
 
@@ -72,7 +74,7 @@ C复算现有审计的训练终点、12次源验证、best/latest、配置/权�
 
 ## 证据
 
-[用户授权及当前判断](https://github.com/ziyu24/cqc_P27/blob/52471c69902b161a1e4cb0b38a500f45519b5033/lab/discussion.md)；[唯一已下发任务](https://github.com/ziyu24/cqc_P27/blob/52471c69902b161a1e4cb0b38a500f45519b5033/lab/sug.md)；[固定实现、入口与未核边界](https://github.com/ziyu24/cqc_P27/blob/52471c69902b161a1e4cb0b38a500f45519b5033/doc/frozen_readout_execution.md)；[实际交付检查](https://github.com/ziyu24/cqc_P27/blob/52471c69902b161a1e4cb0b38a500f45519b5033/doc/frozen_readout_delivery_checks.json)；[冻结配置](https://github.com/ziyu24/cqc_P27/blob/52471c69902b161a1e4cb0b38a500f45519b5033/configs/r014.json)。这些是C交付证据，不能冒称SERVER实际训练结果。
+[用户授权及当前判断](https://github.com/ziyu24/cqc_P27/blob/52471c69902b161a1e4cb0b38a500f45519b5033/lab/discussion.md)；[唯一任务与冻结协议](https://github.com/ziyu24/cqc_P27/blob/30bbb723ab7b3e163462977918403301bf3330fc/lab/sug.md)；[固定实现、入口与未核边界](https://github.com/ziyu24/cqc_P27/blob/52471c69902b161a1e4cb0b38a500f45519b5033/doc/frozen_readout_execution.md)；[实际交付检查](https://github.com/ziyu24/cqc_P27/blob/52471c69902b161a1e4cb0b38a500f45519b5033/doc/frozen_readout_delivery_checks.json)；[恢复入口](https://github.com/ziyu24/cqc_P27/blob/06228dadb6ee7970ad732f3536238c7e3da72d1f/configs/r014.recovery.json)。首批与GPU绑定原始日志留在46运行根；本页只登记观察事实，不能冒称完整科学结果。
 
 [C完成复核与完整边界](https://github.com/ziyu24/cqc_P27/blob/165db8440644768e77ffc8f97629e64a45ec9f90/lab/result.md)；[可重放完成证据](https://github.com/ziyu24/cqc_P27/blob/165db8440644768e77ffc8f97629e64a45ec9f90/doc/r013_completion_review.json)；[当前问题与未执行候选](https://github.com/ziyu24/cqc_P27/blob/165db8440644768e77ffc8f97629e64a45ec9f90/doc/method_transfer_review.md)。
 
