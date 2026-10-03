@@ -6,7 +6,7 @@
 
 ## 核心进展
 
-项目已有FAIR1M单域有效底座，首次FAIR1M→SODA-A连续换域已于2026-10-03 08:43 UTC起由B完成充分复核。完整执行及收益与保持联合条件失败可信，但新增收益近零、已见面板部分指标下降的根因仍未知；优先复用现有状态做有界冻结端点检查，不新增训练。原始长期CTTA目标仍未达成。
+项目已有可信FAIR1M单域收益，但首次连续换域的收益与保持联合条件失败。B于2026-10-03完成已有A船类PR补核：AP50降幅主要由一个TP使召回跨过离散插值点放大，不能称大面积遗忘；真实PR仍有小幅代价。已交付一次零训练端点检查，区分学生学习与EMA响应，尚未观察SERVER实际启动；原始长期CTTA目标仍未达成。
 
 FAIR1M单域的条件前景加adapter相对同监督控制，单视图AP50/AP75提高2.241/0.519点，背景FP减少2,136，源正确大车多保留925个；这是可信的单域机制阳性。固定LPLD遗漏候选规则则相对同量置信度少补216个唯一GT并多177个明确背景，未进入训练。
 
@@ -14,7 +14,7 @@ FAIR1M单域的条件前景加adapter相对同监督控制，单视图AP50/AP75�
 
 ## 服务器当前内容
 
-r014于2026-10-03 00:05:46至08:16:41 UTC在46物理GPU 0、1完成，B于08:43 UTC起只读复核确认科学任务结束。四个SODA-A B臂各完整覆盖576原图/20,549切片，A前后各覆盖同一256图面板；六臂预测ID、评分身份、双rank完整游标及实际GPU记录闭合。carry/reset各完成466更新、110跳过、127,288伪框；当前无P28任务进程，唯一任务槽为空，无新训练下发。
+r014于2026-10-03 00:05:46至08:16:41 UTC在46物理GPU 0、1完成，B于08:43 UTC起只读复核确认科学任务结束。四个SODA-A B臂各完整覆盖576原图/20,549切片，A前后各覆盖同一256图面板；六臂预测ID、评分身份、双rank完整游标及实际GPU记录闭合。carry/reset各完成466更新、110跳过、127,288伪框；08:43 UTC复核时没有P28任务进程。B本轮只读CPU补核和本地交付零训练r015，没有启动服务器GPU任务；SERVER是否已启动新评测尚未观察，不从任务已下发反推实际运行。
 
 carry/reset终点分别位于46 `runs/r014/artifacts/carry/latest.pth`与`runs/r014/artifacts/reset/latest.pth`，SHA-256为`243f7b272f03aa58d87600fe3f1c78e60136664adee6d70f6fd26edd91c157f5`和`f7575a2e18916391b37b8701b30f5aaae36b134aee96f5fc7f5aa42a81fba14f`。两者均含student/teacher、64项optimizer状态、双rank RNG和cursor=576，实体长度、SHA与保护配置已回核。源best、A终态及两B终态均继续受保护，删除须用户明确授权。08:43 UTC起观察的46工作区提交为`cfd1615`且干净；B复核证据已在来源`d78cf4862c4af581cb5a8bd3afbe740586c6650a`发布。
 
@@ -26,18 +26,24 @@ carry完整继承A的student、EMA、SGD动量与两rank RNG；reset从源状态
 
 当前裁决核验充分；复用未变的评分实现及已核数据报告，没有重复全量评分、读像素或GPU前向。CPU状态核验确认A学生与EMA不等，B学生与A学生也已变化；466次、动量0.999的EMA递推中，旧EMA系数为0.62736。这些状态和算术证据足以提出冻结端点检查，但参数差及EMA系数不能证明性能根因，尚未检验“只让EMA追赶冻结A学生”的输出。
 
+新增核验足以解释A船类AP幅度：船AP50 47.545%→44.950%，TP251→250、FP690→695；召回从60.192%降至59.952%跌破VOC07 0.6插值点，该项贡献跌幅94.56%。积分AP50下降0.214点，真实PR代价保留。AP75的131个TP身份全部保留、FP增加4，积分AP75仍下降0.082点。只复算这256图的船类，四类GT覆盖及原生AP精确复得，0训练/0前向/0 GPU小时，没有重扫无关全流。
+
+真实受保护A/B权重上的CPU端点载入与原生EMA反例检查通过：原348项与源逐张量相等，固定S_A递推466次的T_noB重复构造一致、输入不变，非法步数/改变原状态被拒绝。闭式仅核数值误差，GPU递推和首批/吞吐尚未核。四份端点配置的真实初态历史和子集合同也已只读通过。B面板在新前向前固定原流前32图全部1187块，飞机/船/大车/小车GT为743/17/169/7251，含12张四类空图；船仅17 GT限制外推，不因GT稀少追加挑图。
+
 本页只记录一次换域的真实点估计。A保持面板是已见256张单切片图，不是未观察A2、第三段在线回域或全域遗忘率；单种子不支持显著性或稳定性。历史状态差同时包含权重、EMA、动量和RNG，不能唯一归因其中一项。
 
 ## 执行阶段
 
-r014已科学结束，B于2026-10-03 08:43 UTC起完成覆盖、实际双卡、权重/恢复、源状态逐张量和统计复核；联合条件失败，根因仍未知。项目继续，唯一任务槽为空；后续有界冻结检查尚未下发或执行。r011阳性保留，r012仍后置未执行。
+r014已科学结束，B于2026-10-03 08:43 UTC起完成覆盖、实际双卡、权重/恢复、源状态逐张量和统计复核；联合条件失败，根因仍未知。项目继续。B于2026-10-0309:07 UTC起推送r015唯一零训练任务和可续接入口，最新来源为87c9f9e；7项真实双rank冻结评测已交付，尚未观察SERVER实际执行。r011阳性保留，r012仍后置未执行。
 
 ## 下一步与维护
 
-目前核心问题是学生是否学到了有益变化，以及预测EMA是否及时反映这些变化，可靠解法尚未证实。优先复用A船类已保存预测做PR分解，再用已有A/B学生与EMA做一次有界冻结端点比较；必要对照为固定A学生、按原生EMA递推466次的“无B学习EMA”。这能区分新学习影响与旧学生追赶的可能影响，无须先重训。
+目前核心问题是学生是否学到了有益变化，以及预测EMA是否及时反映这些变化，可靠解法尚未证实。船类已存预测的PR分解已完成，下一步用已有A/B学生与EMA做一次有界冻结端点比较；必要对照为固定A学生、按原生EMA递推466次的“无B学习EMA”。这能区分新学习影响与旧学生追赶的可能影响，无须先重训。
 
-检查前固定同图面板，禁止按GT或结果选图；B在线过程预测不能冒充终点预测，面板结果不当作新在线AP或独立盲测。学生改善但EMA未体现、冻结旧学生追赶已复现下降、或学生与实际EMA均恶化，会改变后续机制选择；变化小不证明加步数会涨点。以上尚为待核验计划，不是已证根因或新SERVER任务，不扫EMA、阈值、步数或种子，不立即叠加回放/恢复模块。
+检查前固定同图面板，禁止按GT或结果选图；B在线过程预测不能冒充终点预测，面板结果不当作新在线AP或独立盲测。S_B相对S_A改善而T_B相对T_noB未体现，冻结旧学生追赶已复现下降，或学生与实际EMA相对各自控制都恶化，会改变后续机制选择；仅学生高于教师可能继承A已有差，不足以定位B响应滞后；变化小不证明加步数会涨点。r015现已实现、检查并正式交付：A新评测S_A/S_B/T_noB三项，已有T_A/T_B预测复用；B新评测四个端点，已有T_A冻结预测复用。不是已证根因，不扫EMA、阈值、步数或种子，不立即叠加回放/恢复模块。
 
 ## 证据
 
-[r014完整结果与B独立复核](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/lab/result.md)；[核心问题与原项目交接](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/lab/discussion.md)；[主要失败边界](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/lab/failed_methods.md)；[已清空任务槽](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/lab/sug.md)；[固定配置与保护](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/configs/r014.json)；[恢复入口](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/configs/r014.recovery.json)。
+[r014完整结果与B独立复核](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/lab/result.md)；[核心问题与原项目交接](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/lab/discussion.md)；[主要失败边界](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/lab/failed_methods.md)；[固定配置与保护](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/configs/r014.json)；[恢复入口](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/configs/r014.recovery.json)。
+
+[本轮PR证据与解释边界](https://github.com/ziyu24/cqc_P28/blob/81ca09acb290a76acaab095296387cb14f38f8b0/lab/result.md)；[唯一零训练任务](https://github.com/ziyu24/cqc_P28/blob/87c9f9e9779ceea2e529ac5f3dd982dde768a697/lab/sug.md)；[冻结端点执行入口](https://github.com/ziyu24/cqc_P28/blob/87c9f9e9779ceea2e529ac5f3dd982dde768a697/src/run_frozen_endpoints.py)；[CPU关键反例报告](https://github.com/ziyu24/cqc_P28/blob/81ca09acb290a76acaab095296387cb14f38f8b0/doc/r015_endpoint_cpu_check.json)。
