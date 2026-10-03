@@ -16,7 +16,9 @@
 
 ## 核验说明
 
-SERVER清理前的恢复配置、下游入口及零进程引用检查记录保留；本轮没有再次清理。
+SERVER清理前的恢复配置、下游入口及零进程引用检查记录保留；C交付方案时没有再次清理。
+
+2026-10-03 13:39:43 UTC，SERVER按用户新清理请求回读确认：26上的39个无下游引用、非固定评测/非最新恢复的中间模型及3219个已完成质量探针的可重建特征文件已由清理器删除，合计3258文件、20.613 GB。真实各臂历史代码、配置和重建命令先推送，逐对象删除记录后回写推送；六项CPU计划/安全检查通过，没有重训或冻结前向。9个历史固定/恢复端点、两头固定完整状态、原RUN/日志和逐图结果保留，46三受保护端点及r019的SAM缓存/manifest/prepared输入保持。tmpfs是Home链接的唯一产物实体而非重复副本，没有删除。清理不改变科研结论或r019执行阶段，本轮没有启动该科学核查。
 
 累计性能结论复用10月1日的定向复核：当时916份冻结末池文件与旧摘要逐份一致，完整数据、真实双rank和保存匹配沿用9月26日未变证据。本轮没有重做这些性能评测。新增接入已核plain实体完整SHA、源目标源码/模型/采样配置、1411训练原图、282有标原图、18203暴露对象、3219/12530加载窗口和15749缓存身份，并实际加载三个训练窗口。17项CPU核心和集成反例通过；尚未验证GPU原生前向、旋转几何、跨rank计算或128批完成，不能称科学核查已结束。
 
@@ -35,5 +37,7 @@ SERVER清理前的恢复配置、下游入口及零进程引用检查记录保�
 动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
 
 ## 证据
+
+[本次精确清理清单、保留依赖及重建说明](https://github.com/ziyu24/cqc_P19/blob/4201863/doc/storage_review.md)、[清理完成回读与既有科研结果](https://github.com/ziyu24/cqc_P19/blob/4201863/lab/result.md)。
 
 [当前唯一任务](https://github.com/ziyu24/cqc_P19/blob/22f38c04774dd927c1cbc8ec6087d08ebccee057/lab/sug.md)、[执行方案和解释边界](https://github.com/ziyu24/cqc_P19/blob/22f38c04774dd927c1cbc8ec6087d08ebccee057/doc/r019_execution.md)、[CPU接入证据](https://github.com/ziyu24/cqc_P19/blob/22f38c04774dd927c1cbc8ec6087d08ebccee057/doc/r019_preflight.json)、[累计结果](https://github.com/ziyu24/cqc_P19/blob/22f38c04774dd927c1cbc8ec6087d08ebccee057/lab/result.md)、[既有操作点复核](https://github.com/ziyu24/cqc_P19/blob/eb2b61035b73fbba5e01eb9d9f1a0a6b3a432f4e/doc/current_evidence_review.json)。[已登记教训](../lesson/cqc_P19.lessons.md)。
