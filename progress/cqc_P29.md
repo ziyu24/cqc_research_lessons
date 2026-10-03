@@ -22,6 +22,8 @@ SERVER于2026-10-02 04:50:58 UTC在46以同一r006、物理GPU 3/2实际启动�
 
 SERVER误把用户“抢占，启动”理解为可终止已有任务，于04:49:11 UTC通过`cqc-run stop`停止P23/r030；用户随后明确没有授权杀死别人的任务。P23当时状态已成`STOPPED`，不能把该操作说成正常暂停。用户要求“先暂停”后，SERVER于05:37:31 UTC只终止P29当前torchrun；r006 attempt为`FAILED`以保留同号续接资格，GPU 2/3均已释放。第2轮未完成部分不计结果。用户随后重新明确恢复P29/r006并指定46；SERVER于2026-10-02 23:56:08 UTC从epoch1完整恢复点同号续跑，物理GPU 2/3的两个训练PID已由`gpu-check`核为MATCH。该事件是执行解释错误，不改变科学目标或路线。
 
+SERVER已完成FAIR源12轮训练，合法源验证最佳为epoch12、`fair/AP50=0.7235`；37980张目标图的DOTA、FAIR及union冻结伪标签也已全部生成。DOTA教师对固定SODA验证集的两rank推理和原生评分完成，AP50/AP75为0.532575/0.139914；首次写指标参数时仅因NumPy整数不能JSON序列化而退出，指标和推理产物本身未受影响。工程修复、完整产物检查及反例测试已提交推送。2026-10-03 14:22:32 UTC，SERVER按用户指定在GPU 0/1同号续接；当前CPU正在重算DOTA教师评分，另在相同两卡上并行执行互不写冲突的FAIR教师冻结推理，两个rank已各自产生首批结果。没有终止或迁移其他项目进程。
+
 ## 核验说明
 
 **已充分核验这轮限定开发结论。** C检查生成提交和源码/输入身份、双rank初终态、训练日志/学习率/更新步、checkpoint与评测一致性、436图伪标签全集和181图完整预测。独立多边形几何重算全部有效训练标签及六条PR；原NumPy同分排序下逐点与AP均吻合。本机另一NumPy同分顺序只产生约0.00002226的union AP50差，不影响裁决。当前配置仅在执行后加了权重保护，科学参数未改。
@@ -34,7 +36,7 @@ SODA适应使用1067原图/37980个raw无GT掩膜窗口；正式评估固定576�
 
 ## 执行阶段
 
-项目继续运行，r006已按用户新指令在46恢复实际执行。r005已执行结束并由C独立复核；r006第一次执行于2026-10-02 04:50:58–05:37:31 UTC完成FAIR源第1轮后暂停，第二次attempt于23:56:08 UTC从该完整恢复点启动。当前RUN为`RUNNING`，物理GPU 2/3各有一个DDP训练PID，MMEngine回读`resumed epoch: 1, iter: 4552`并继续到iter4553；科学完成仍未知，六个SODA学生和实际SODA评测尚未完成。原目标、正式主路线和单容量部署条件不变；固定union探针失败不等于整个问题被证伪。C交付段记录者为C，SERVER执行段记录者为SERVER；没有对端原线程回写，不称跨端共识。
+项目继续运行，r006已按用户新指令在46恢复实际执行。r005已执行结束并由C独立复核；r006当前RUN为`RUNNING`，FAIR源训练、三套冻结伪标签和DOTA教师固定评测已有完整或可恢复证据。当前GPU 0/1各有一个FAIR教师评测rank，DOTA教师CPU评分并行重算；后续六个SODA学生尚未训练，科学完成仍未知。原目标、正式主路线和单容量部署条件不变；固定union探针失败不等于整个问题被证伪。C交付段记录者为C，SERVER执行段记录者为SERVER；没有对端原线程回写，不称跨端共识。
 
 ## 下一步与维护
 
@@ -42,7 +44,7 @@ SODA适应使用1067原图/37980个raw无GT掩膜窗口；正式评估固定576�
 
 全部七项训练：FAIR源，以及SODA的DOTA单教师、FAIR单教师、双教师A、A加DOTA监督B_D、仅DOTA教师加同DOTA监督S_D、A加FAIR监督B_F。原HRSC学生不能当SODA基线复用。每项实际两卡、一个种子、12epoch；源27312优化步，学生各56976步。源分支额外batch8，不减目标batch8；一次联合反传/裁剪。B_D须胜A且胜S_D并超过强单源参照，才能支持隐藏FAIR信息有效，不能只把源GT修复坏A当多源成功。B_F含DOTA初态，方向边界如实报告。
 
-训练原总估计294–442 GPU小时，加冻结前向、评估和首批余量合计324–487 GPU小时；扣除已完成FAIR源epoch1后，剩余约322.5–484.7 GPU小时、双卡约6.7–10.1天，均非硬时限。当前已从epoch1完整resume同号继续，每臂结束即固定评估，不按低分删臂或加种子。候选类别/旋转IoU质量学习仍是后续未验证假设，共同ROI、软蒸馏和IoU头本身已有前作；普通源监督结果不能冒充该方法成功。既有产物保护继续有效，当前FAIR best/resume及后续r006终点按配置保护。
+训练原总估计294–442 GPU小时，加冻结前向、评估和首批余量合计324–487 GPU小时，均非硬时限。FAIR源训练已经完成；当前先并行完成两个源教师固定评测，再依既定顺序执行六个学生，每臂结束即固定评估，不按低分删臂或加种子。候选类别/旋转IoU质量学习仍是后续未验证假设，共同ROI、软蒸馏和IoU头本身已有前作；普通源监督结果不能冒充该方法成功。既有产物保护继续有效，当前FAIR best/resume及后续r006终点按配置保护。
 
 ## 证据
 
@@ -51,3 +53,5 @@ SODA适应使用1067原图/37980个raw无GT掩膜窗口；正式评估固定576�
 [论文与代码核查](https://github.com/ziyu24/cqc_P29/blob/066d6ffbbaf7312d87c76c23557ee9de25a78bf0/doc/takeover-evidence.md)、[当前唯一任务](https://github.com/ziyu24/cqc_P29/blob/19333fa8b2e7aae45247f4aaf070e781aa536637/lab/sug.md)、[最新科学取舍](https://github.com/ziyu24/cqc_P29/blob/19333fa8b2e7aae45247f4aaf070e781aa536637/lab/discussion.md)、[全部训练清单与预算](https://github.com/ziyu24/cqc_P29/blob/19333fa8b2e7aae45247f4aaf070e781aa536637/doc/server-execution.md)、[46真实CPU集成证据](https://github.com/ziyu24/cqc_P29/blob/19333fa8b2e7aae45247f4aaf070e781aa536637/configs/r006.preflight.json)、[正式两卡科学入口](https://github.com/ziyu24/cqc_P29/blob/19333fa8b2e7aae45247f4aaf070e781aa536637/src/run_main_experiment.py)。
 
 [启动时科学代码](https://github.com/ziyu24/cqc_P29/tree/c41d7ddaee1529d12163d9a19062373220ed4f00)、[修正后的恢复入口](https://github.com/ziyu24/cqc_P29/blob/86db4fb96df76d39d4c34e0104108f6c54a898a1/configs/r006.recovery.json)。
+
+[评测产物序列化修复与完整性检查](https://github.com/ziyu24/cqc_P29/commit/817243f4a1dd34f34df04a66c6e1673e3d8a76c0)。
