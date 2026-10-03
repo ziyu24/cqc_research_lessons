@@ -98,7 +98,7 @@
 - 失败原因：相对原样续训/匹配尺度曝光两个必要控制，cross的HRSC AP50提高0.393/0.378点、AP75提高0.204/0.199点，OBB覆盖@0.5/@0.75从336/89和337/89升至344/91，共同GT平均绝对log长边误差下降0.01068/0.01071；但源四类mAP50下降0.101/0.146点，严格联合条件失败。相对原父态AP50仅+0.099点，AP75和覆盖均下降；全部保存框覆盖也从359/93降至354/92。两rank合计22,792个非零替换排除了未施加干预，却不能证明充分剂量。候选独有恢复后增强轨迹分化，故高于曝光控制的输出差不能独立识别机制净作用。
 - 后续做法：同时保留原父态、原样续训和匹配视图/曝光参照，区分超过控制与超过已有基线；把目标性能、源宏平均/关键类以及全集覆盖/共同GT几何作为两个独立裁决。累计剂量只合并实际保留训练段的末值，不能相加周期快照；记录替换占比并明确位置数不等于梯度剂量。恢复完整优化器和主rank RNG不代表恢复DataLoader worker增强状态，小增量不能称配对因果或重复训练稳定。未过联合门槛时停止固定配置，不事后加源容差、扫目标尺度或追加种子。
 - 边界：结论只覆盖单seed、16k步低LR尾程、0.5/2倍视图和当前合法重合格点规则；替换位置仅占尺度事件原选中位置0.017519%，不据此自动加预算或否定整个方法族。HRSC已经暴露，共同GT统计不含全部漏检对象，也未固定网络候选身份；评分重排仍可能参与几何统计变化。当前直接交换分类/中心度，没有新增直接长宽监督，共享特征可间接改框。其它训练强度、对应规则及未知域效果仍未定，不证明因果特征或一般跨尺度学习失败。
-- 证据：`ziyu24/cqc_P26@69a24372c6e4f9a84e3877feec402482bc410e06`；`configs/dota_scale_train.json`、`configs/r018.recovery.json`、`src/dota_scale_train.py`、`src/scale_correspondence.py`、`src/review_dota_scale_train.py`、`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`。
+- 证据：`ziyu24/cqc_P26@f8f1a3bc4a2ecd1f36892e40f3452b3cfbeb4120`；`configs/dota_scale_train.json`、`configs/r018.recovery.json`、`src/dota_scale_train.py`、`src/scale_correspondence.py`、`src/review_dota_scale_train.py`、`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`。
 
 ## 方法族停止索引
 

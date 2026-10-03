@@ -22,7 +22,7 @@ C于18:29–18:36 PDT完成r017独立复核，并原生CPU重放20组指标、10
 
 新实现复用原生循环、教师学生及第二视图，保留AdamW/EMA/RNG、两流各15,749片及绝对LR日程，仅在本图预算内可见HBB的同实例、缩放后精确重合格点间交换分类/中心度目标，未覆盖位置保持原MCL。17项针对性检查及26原生CPU三臂集成通过；错位中心度反例被排除。最终三个final均含179项step196000优化器状态和两rank RNG；六份报告的全集分母、预测SHA、两rank/两UUID及前向次数均通过。cross两rank合计22,792个位置发生非零替换，证明机制真实生效。相对baseline/matched，HRSC AP50为+0.393/+0.378点、AP75为+0.204/+0.199点，范围恢复判据通过；源四类mAP50为−0.101/−0.146点，故无容差联合判据失败。该结论只限制固定低LR尾程候选，不否定整个方向。
 
-2026-10-03 10:34–10:42 PDT，C独立核三final实体/完整状态、真实双rank、输入与保护；train/val快检UNCHANGED，无重新图像扫描。原生CPU重放15组新指标、10份完整配对和摘要全部一致，无新前向/训练/服务器写入。HRSC父态→cross覆盖348/92→344/91，全部保存框359/93→354/92，共同GT长边仅微小改善；这未建立超越原基线的完整检测能力。实际替换仅占尺度事件原选中位置0.017519%，不是梯度占比；cross独有恢复后worker增强状态未配对，约0.38点差不能独立认领为新机制收益。执行与固定裁决已充分核验，跨种子稳定性、唯一根因及未知域均未验证。 本轮原生评测没有另存逐rank配置快照，1024口径由固定入口、原生配置路径和报告绑定源码核验，未冒称读取不存在的文件；没有重复GPU前向。
+2026-10-03 10:34–10:42 PDT，C独立核三final实体/完整状态、真实双rank、输入与保护；train/val快检UNCHANGED，无重新图像扫描。原生CPU重放15组新指标、10份完整配对和摘要全部一致，无新前向/训练/服务器写入。HRSC父态→cross覆盖348/92→344/91，全部保存框359/93→354/92，共同GT长边仅微小改善；这未建立超越原基线的完整检测能力。实际替换仅占尺度事件原选中位置0.017519%，不是梯度占比；cross独有恢复后worker增强状态未配对，约0.38点差不能独立认领为新机制收益。执行与固定裁决已充分核验，跨种子稳定性、唯一根因及未知域均未验证。 全部8份训练消费配置独立AST比较通过。原生评测没有另存逐rank配置快照，1024口径由固定入口、原生配置路径和报告绑定源码核验，未冒称读取不存在的文件；没有重复GPU前向。
 
 ## 执行阶段
 
@@ -38,4 +38,4 @@ C于18:29–18:36 PDT完成r017独立复核，并原生CPU重放20组指标、10
 
 ## 证据
 
-[范围与最初立题](https://github.com/ziyu24/cqc_P26/blob/69a24372c6e4f9a84e3877feec402482bc410e06/README.md)；[授权、裁决与创新边界](https://github.com/ziyu24/cqc_P26/blob/69a24372c6e4f9a84e3877feec402482bc410e06/lab/discussion.md)；[已核结果与充分统计](https://github.com/ziyu24/cqc_P26/blob/69a24372c6e4f9a84e3877feec402482bc410e06/lab/result.md)；[空任务槽](https://github.com/ziyu24/cqc_P26/blob/69a24372c6e4f9a84e3877feec402482bc410e06/lab/sug.md)；[三臂续训入口](https://github.com/ziyu24/cqc_P26/blob/69a24372c6e4f9a84e3877feec402482bc410e06/src/dota_scale_train.py)；[原生对应机制](https://github.com/ziyu24/cqc_P26/blob/69a24372c6e4f9a84e3877feec402482bc410e06/src/scale_correspondence.py)。[已登记教训](../lesson/cqc_P26.lessons.md)。
+[范围与最初立题](https://github.com/ziyu24/cqc_P26/blob/f8f1a3bc4a2ecd1f36892e40f3452b3cfbeb4120/README.md)；[授权、裁决与创新边界](https://github.com/ziyu24/cqc_P26/blob/f8f1a3bc4a2ecd1f36892e40f3452b3cfbeb4120/lab/discussion.md)；[已核结果与充分统计](https://github.com/ziyu24/cqc_P26/blob/f8f1a3bc4a2ecd1f36892e40f3452b3cfbeb4120/lab/result.md)；[空任务槽](https://github.com/ziyu24/cqc_P26/blob/f8f1a3bc4a2ecd1f36892e40f3452b3cfbeb4120/lab/sug.md)；[三臂续训入口](https://github.com/ziyu24/cqc_P26/blob/f8f1a3bc4a2ecd1f36892e40f3452b3cfbeb4120/src/dota_scale_train.py)；[原生对应机制](https://github.com/ziyu24/cqc_P26/blob/f8f1a3bc4a2ecd1f36892e40f3452b3cfbeb4120/src/scale_correspondence.py)。[已登记教训](../lesson/cqc_P26.lessons.md)。
