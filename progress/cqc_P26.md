@@ -10,7 +10,7 @@
 
 ## 服务器当前内容
 
-26已完成两个180k固定终点及四份正式评测。C独立核实权重完整状态、实际双rank、配置公平性，并重放全部十个类别/域条件的原生指标；两个final受保护。新r017仅交付零训练的固定半尺度对照：两冻结模型分别在DOTA val与既有HRSC做512输入评测，共四次双卡前向，原1024报告保留为正式基线，不挑最优尺度。C未启动该GPU任务，实际启动情况待SERVER记录。
+26已完成两个180k固定终点及四份正式评测。C独立核实权重完整状态、实际双rank、配置公平性，并重放全部十个类别/域条件的原生指标；两个final受保护。r017零训练固定半尺度对照已由SERVER在物理GPU 2、3实际启动，当前按稀疏DOTA、完整DOTA、稀疏HRSC、完整HRSC顺序执行四次双卡前向；原1024报告保留为正式基线，不挑最优尺度。
 
 ## 核验说明
 
@@ -20,9 +20,9 @@
 
 ## 执行阶段
 
-全源任务执行结束且C已复核；2026-10-02 PDT已交付r017，实际启动尚未观察，不以交付推定在跑。
+全源任务执行结束且C已复核；2026-10-02 17:57 PDT，SERVER在26实际启动r017首项稀疏DOTA评测，双rank PID到物理GPU 2、3映射为MATCH。
 
-记录者：B初始化（2026-09-30）；SERVER记录全源执行结束（2026-10-02）；C本次独立复核并交付冻结尺度对照（2026-10-02 PDT）。角色证据分开，未取得对端新回写，不称B/C共识。
+记录者：B初始化（2026-09-30）；SERVER记录全源执行结束及r017实际启动（2026-10-02）；C本次独立复核并交付冻结尺度对照（2026-10-02 PDT）。角色证据分开，未取得对端新回写，不称B/C共识。
 
 ## 下一步与维护
 
@@ -32,4 +32,4 @@
 
 ## 证据
 
-[范围与最初立题](https://github.com/ziyu24/cqc_P26/blob/0d3f85d74e01a351b43c7ca37b2dd3a8075d315c/README.md)；[核心问题与创新边界](https://github.com/ziyu24/cqc_P26/blob/0d3f85d74e01a351b43c7ca37b2dd3a8075d315c/lab/discussion.md)；[独立复核和充分统计](https://github.com/ziyu24/cqc_P26/blob/0d3f85d74e01a351b43c7ca37b2dd3a8075d315c/lab/result.md)；[唯一任务](https://github.com/ziyu24/cqc_P26/blob/0d3f85d74e01a351b43c7ca37b2dd3a8075d315c/lab/sug.md)；[冻结对照实现](https://github.com/ziyu24/cqc_P26/blob/0d3f85d74e01a351b43c7ca37b2dd3a8075d315c/src/dota_scale_probe.py)。[已登记教训](../lesson/cqc_P26.lessons.md)。
+[范围与最初立题](https://github.com/ziyu24/cqc_P26/blob/31ed846c01c7a9fe64197bbda2a91885c3f92e69/README.md)；[核心问题与创新边界](https://github.com/ziyu24/cqc_P26/blob/31ed846c01c7a9fe64197bbda2a91885c3f92e69/lab/discussion.md)；[独立复核和充分统计](https://github.com/ziyu24/cqc_P26/blob/31ed846c01c7a9fe64197bbda2a91885c3f92e69/lab/result.md)；[唯一任务](https://github.com/ziyu24/cqc_P26/blob/31ed846c01c7a9fe64197bbda2a91885c3f92e69/lab/sug.md)；[冻结对照实现](https://github.com/ziyu24/cqc_P26/blob/31ed846c01c7a9fe64197bbda2a91885c3f92e69/src/dota_scale_probe.py)。[已登记教训](../lesson/cqc_P26.lessons.md)。
