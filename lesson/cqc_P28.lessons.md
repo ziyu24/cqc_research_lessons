@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_roi_targets.py`、`src/online_geometry.py`、`src/online_adapter.py`、`src/run_continual_transition.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、更新参数范围、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；固定遗漏候选证据见`src/probe_candidate_evidence.py`与`src/analyze_candidate_evidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`，严格IoU的PR分解见 `src/analyze_small_vehicle_ranking.py`。当前审计来源为 `ziyu24/cqc_P28@87c9f9e9779ceea2e529ac5f3dd982dde768a697`；已检查全部远端分支，仅 main，没有更新更晚的次线。
+先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_roi_targets.py`、`src/online_geometry.py`、`src/online_adapter.py`、`src/run_continual_transition.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、更新参数范围、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；固定遗漏候选证据见`src/probe_candidate_evidence.py`与`src/analyze_candidate_evidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`，严格IoU的PR分解见 `src/analyze_small_vehicle_ranking.py`。当前审计来源为 `ziyu24/cqc_P28@71cf24b64e7a29754c07cd1a7c16083ad5695281`；已检查全部远端分支，仅 main，没有更新更晚的次线。
 
 ## 项目研究什么
 
@@ -149,13 +149,13 @@
 - 边界：仅一个种子、固定顺序、一次FAIR1M→SODA-A转移和已见256图面板，不否定adapter的单域阳性、全部CTTA方法或多域长期可行性。完整历史差同时包含student、EMA、动量和RNG，不能从终点比较唯一归因某一状态成分。
 - 证据：`ziyu24/cqc_P28@d78cf4862c4af581cb5a8bd3afbe740586c6650a` 的 `lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r014.json`、`configs/r014.recovery.json`、`src/run_continual_transition.py` 和 `src/evaluate_online.py`；实际运行时来源提交为同库`601cb82bbed877a8dab3dcb44b3764e43fdece0e`。
 
-- 已见面板指标边界：船类AP50下降2.595点，但TP仅251→250、同GT丢失1且没有新增，召回从60.192%降至59.952%；VOC07的0.6插值项贡献跌幅94.56%。积分AP50仍低0.214点，FP增加5，不能称完全无真实代价；严格IoU的131个TP身份全部保留，积分AP75仍低0.082点。故AP降幅不等于大面积遗忘，PR/同GT分解应先于追加几何训练或归因学习。预测来自EMA，仍须用固定旧学生的EMA追赶控制区分教师响应与新学习；这个控制的性能尚未验证，不登记成败。
+- 已见面板指标边界：船类AP50下降2.595点，但TP仅251→250、同GT丢失1且没有新增，召回从60.192%降至59.952%；VOC07的0.6插值项贡献跌幅94.56%。积分AP50仍低0.214点，FP增加5，不能称完全无真实代价；严格IoU的131个TP身份全部保留，积分AP75仍低0.082点。故AP降幅不等于大面积遗忘，PR/同GT分解应先于追加几何训练或归因学习。预测来自EMA，当时尚需固定旧学生的EMA追赶控制区分教师响应与新学习；该控制随后已验证，结果与归因边界见教训十二。
 - 补充证据：`ziyu24/cqc_P28@81ca09acb290a76acaab095296387cb14f38f8b0` 的 `lab/result.md`、`lab/discussion.md`、`src/analyze_continual_ship.py` 和 `doc/r014_ship_retention_audit.json`。仅复用256图已有预测和合法离线标注，无模型前向或训练；保持原联合裁决与单域阳性。
 
 ## 教训十二：EMA端点变化不能直接归因新域学习，须有固定旧学生的追赶控制
 
-- 易错归因：连续换域后旧域EMA预测下降，不能直接归因新域学生学坏，也不能只因学生端点高于教师就称EMA响应滞后；学生与教师在进入新域前可能已有性能差，EMA即使面对固定旧学生也会继续变化。
-- 反例证据：固定A学生、只让A教师按原生动量0.999递推466次时，A面板单视图AP50/AP75相对原A教师下降`0.622231/0.079548`点，几乎复现真实B后教师下降`0.628304/0.095606`点；真实B教师相对该无B学习控制只再降`0.006074/0.016057`点。因此本次保持代价无需B学生继续学习也能出现，不能全部归因新域学习。
+- 失败命题：仅凭连续换域后旧域EMA预测下降就能直接归因新域学生学坏，或只因学生端点高于教师就能认定EMA响应滞后。
+- 失败原因：学生与教师在进入新域前可能已有性能差，EMA即使面对固定旧学生也会继续变化。固定A学生、只让A教师按原生动量0.999递推466次时，A面板单视图AP50/AP75相对原A教师下降`0.622231/0.079548`点，几乎复现真实B后教师下降`0.628304/0.095606`点；真实B教师相对该无B学习控制只再降`0.006074/0.016057`点。因此本次保持代价无需B学生继续学习也能出现，不能全部归因新域学习。
 - 判别结果：B学生相对A学生为`-0.086701/-0.082955`点，并非“学生先改善”；真实B教师相对无B学习教师为`+0.004351/+0.413047`点，亦不符合学生改善而教师未反映。A学生前后异号，预定的响应滞后和学生学习损害两个联合解释均不获支持。
 - 后续做法：比较连续教师端点时，至少同时报告`S_B-S_A`、`T_B-T_noB`和继承差`S_A-T_A`；`T_noB`必须从旧教师重新开始，以固定旧学生和原生浮点EMA递推相同步数，不能递归接着已追赶状态。混合或微小变化只说明当前控制下未定位，不据此扫EMA、延长训练或增加回放。
 - 边界：这是已见FAIR1M 256图面板及SODA-A固定前32原图/1187切片、单种子的冻结端点诊断，不是在线过程AP、独立盲测或长期多域证据；B面板仅17个船GT。它不改变连续联合条件失败或单域适配器阳性，也不否定其他响应机制。
