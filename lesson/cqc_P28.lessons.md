@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_roi_targets.py`、`src/online_geometry.py`、`src/online_adapter.py`、`src/run_continual_transition.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、更新参数范围、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；固定遗漏候选证据见`src/probe_candidate_evidence.py`与`src/analyze_candidate_evidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`，严格IoU的PR分解见 `src/analyze_small_vehicle_ranking.py`。当前审计来源为 `ziyu24/cqc_P28@cfd1615ebdc00d0492f062a3dbbe9568a4b79822`；已检查全部远端分支，仅 main，没有更新更晚的次线。
+先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_roi_targets.py`、`src/online_geometry.py`、`src/online_adapter.py`、`src/run_continual_transition.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、更新参数范围、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；固定遗漏候选证据见`src/probe_candidate_evidence.py`与`src/analyze_candidate_evidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`，严格IoU的PR分解见 `src/analyze_small_vehicle_ranking.py`。当前审计来源为 `ziyu24/cqc_P28@d78cf4862c4af581cb5a8bd3afbe740586c6650a`；已检查全部远端分支，仅 main，没有更新更晚的次线。
 
 ## 项目研究什么
 
@@ -144,10 +144,10 @@
 ## 教训十一：连续换域必须拆开直接迁移、当前更新、历史状态与旧域保持
 
 - 失败命题：若A域学到的完整状态能可靠延续到B，则carry应在AP50/AP75都超过源冻结与A冻结，并且旧A面板前后双指标不降。
-- 失败原因：FAIR1M→SODA-A一次固定转移中，A冻结减源冻结为`+0.01445/-0.00478`，carry减A冻结为`+0.00025/+0.00031`，carry减reset为`+0.01493/-0.00433`；前后两项历史比较均在双IoU异号。已见A面板后减前为`-0.00628/-0.00096`，联合收益与保持条件失败。carry和reset使用相同B顺序，各自更新/跳过/伪框数完全相同，首个更新前预测相等，故这些比较不是覆盖或更新次数差造成的表面结果。
+- 失败原因：FAIR1M→SODA-A一次固定转移中，A冻结减源冻结为`+0.01445/-0.00478`，carry减A冻结为`+0.00025/+0.00031`，carry减reset为`+0.01493/-0.00433`；前后两项历史比较均在双IoU异号。已见A面板后减前为`-0.00628/-0.00096`，联合收益与保持条件失败。carry和reset使用相同B顺序，各自更新/跳过/伪框数完全相同；首个更新前，carry与A冻结、reset与源冻结分别逐值相等，并非carry与reset相等，故这些比较不是覆盖或更新次数差造成的表面结果。
 - 后续做法：连续检测适应至少同时保留源冻结、历史终点冻结、历史继续和同法重置四个B结果，并用固定A面板前后测保持；当前更新只和自身冻结初态比较，历史状态只用carry与reset比较。双IoU异号必须报取舍，近零点估计不称稳定或显著；已见面板下降也不冒充未观察回域或全域遗忘率。
 - 边界：仅一个种子、固定顺序、一次FAIR1M→SODA-A转移和已见256图面板，不否定adapter的单域阳性、全部CTTA方法或多域长期可行性。完整历史差同时包含student、EMA、动量和RNG，不能从终点比较唯一归因某一状态成分。
-- 证据：`ziyu24/cqc_P28@cfd1615ebdc00d0492f062a3dbbe9568a4b79822` 的 `lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r014.json`、`configs/r014.recovery.json`、`src/run_continual_transition.py` 和 `src/evaluate_online.py`；实际运行时来源提交为同库`601cb82bbed877a8dab3dcb44b3764e43fdece0e`。
+- 证据：`ziyu24/cqc_P28@d78cf4862c4af581cb5a8bd3afbe740586c6650a` 的 `lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r014.json`、`configs/r014.recovery.json`、`src/run_continual_transition.py` 和 `src/evaluate_online.py`；实际运行时来源提交为同库`601cb82bbed877a8dab3dcb44b3764e43fdece0e`。
 
 ## 方法族停止索引
 
