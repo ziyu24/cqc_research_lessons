@@ -2,7 +2,7 @@
 
 ## 快速阅读路径
 
-先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_roi_targets.py`、`src/online_geometry.py`、`src/online_adapter.py`、`src/run_continual_transition.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、更新参数范围、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；固定遗漏候选证据见`src/probe_candidate_evidence.py`与`src/analyze_candidate_evidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`，严格IoU的PR分解见 `src/analyze_small_vehicle_ranking.py`。当前审计来源为 `ziyu24/cqc_P28@71cf24b64e7a29754c07cd1a7c16083ad5695281`；已检查全部远端分支，仅 main，没有更新更晚的次线。
+先读来源 `README.md` 的原始科学问题，再读 `lab/result.md` 的源初态与真实跨域对照，结合 `src/online_entry.py`、`src/online_loss.py`、`src/online_regression_gate.py`、`src/online_supervision.py`、`src/online_roi_targets.py`、`src/online_geometry.py`、`src/online_adapter.py`、`src/run_continual_transition.py`、`src/run_supervision_transition.py` 和 `src/evaluate_online.py` 核对信息权限、损失干预、更新参数范围、原图因果顺序与评价口径。固定状态及预测诊断见 `src/probe_supervision.py`、`src/summarize_supervision_probe.py`、`src/analyze_high_confidence.py`；固定遗漏候选证据见`src/probe_candidate_evidence.py`与`src/analyze_candidate_evidence.py`；完整 AP 输出反事实见 `src/analyze_ap_errors.py`、`src/summarize_ap_errors.py`，严格IoU的PR分解见 `src/analyze_small_vehicle_ranking.py`。当前审计来源为 `ziyu24/cqc_P28@f182ce346be0b7eb8255883bd55f0bcf4a51fce0` 的 main。
 
 ## 项目研究什么
 
@@ -43,6 +43,7 @@
 - 受限更新干预保持固定源伪框、条件前景目标、原生损失/采样、优化器和EMA协议不变，在ResNet-50的16个bottleneck加入比例32的零输出残差适配器；原检测器参数和缓冲逐张量冻结，优化器及EMA只处理64个adapter张量、211,702个参数。完整一遍执行14,644次更新，双rank终点和恢复状态闭合。
 - 固定候选核验取历史流前256张单切片图，以源弱视图原生RPN的至多2,000个旋转候选作为唯一公共池，在源与适配器student、两个亮度视图上查询同一RoI；GPU阶段不读标签、不训练，CPU阶段才按原生ignore比较固定LPLD规则与同图同数量前景置信度，并比较`1-cos`与同总量均匀权重。两个rank候选身份、冻结摘要、零更新和完整256图均闭合。
 - 连续换域以SODA-A官方val的576原图、20,549个800/650切片为B，保留200张四类空图及官方ignore遮罩；分别做源冻结、A终点冻结、A完整状态继续在线和源状态重置在线，并在同一历史256图FAIR面板上做A前后冻结保持。两个在线臂各完成466更新、110跳过、127,288伪框；目标标签只用于独立评分，SODA test未读取。
+- 监督来源替换从同一A完整状态分别固定A教师或使用更新前在线EMA，同时用该提供者产生伪框与同RoI条件后验；两臂均完整执行576图B流并各做256图A保持。冻结A臂完成484更新/92跳过，在线EMA臂486更新/90跳过；首更新前预测和监督相同，冻结提供者不漂移、在线提供者实际演进。
 
 ## 教训一：置信筛选和 EMA 不能替代同视图的在线性能证据
 
@@ -161,6 +162,14 @@
 - 边界：这是已见FAIR1M 256图面板及SODA-A固定前32原图/1187切片、单种子的冻结端点诊断，不是在线过程AP、独立盲测或长期多域证据；B面板仅17个船GT。它不改变连续联合条件失败或单域适配器阳性，也不否定其他响应机制。
 - 证据：`ziyu24/cqc_P28@d1c04f7234eea48f13b93a59ae66b6559bac37d1` 的`lab/result.md`、`lab/discussion.md`、`configs/r015.json`、`configs/r015.recovery.json`、`src/frozen_endpoint.py`和`src/run_frozen_endpoints.py`；实际执行来源为同库`87c9f9e9779ceea2e529ac5f3dd982dde768a697`。
 
+## 教训十三：历史教师或在线EMA进入监督，不等于能改善已有连续轨迹
+
+- 失败命题：在受限adapter底座和同一A完整状态上，冻结A教师相对固定源carry应同时提高B的AP50/AP75；在线EMA教师又应相对冻结A教师提供双指标增量，同时保持A面板不降。
+- 失败原因：冻结A教师相对固定源carry的B单视图AP50/AP75为`-0.025952/-0.039154`个百分点；在线EMA相对冻结A为`-0.008708/+0.005792`点，异号。两臂A保持面板双AP均不降，但B均未同时超过源冻结与A冻结，故历史监督、反馈增量及原联合条件都失败。双视图online相对fixedA的`+0.007176/+0.004330`只属辅助点估计，不能替代预定单视图判据。
+- 干预证据与做法：首图更新前两臂预测、伪框和同RoI后验摘要一致；冻结提供者初末摘要相同，在线提供者实际改变，提供者无梯度，原检测器348项不变。故负结果不是因为两种实现退化成同一提供者。后续更新/跳过/伪框轨迹允许分化，终点差不能当逐RoI可加因果份额。后续不在已见流扫描同类EMA、阈值、步数或种子；若继续，必须引入能改变判别信息条件的机制，而不是仅替换教师身份。
+- 边界：只约束当前FAIR1M→SODA-A固定顺序、单种子、完整一遍、现有adapter/优化器与已见A保持面板；不否定r011单域adapter阳性、所有稳定教师或整个连续适应方向，也不提供OBB独有性和长期多域结论。
+- 证据：`ziyu24/cqc_P28@f182ce346be0b7eb8255883bd55f0bcf4a51fce0` 的`lab/result.md`、`lab/failed_methods.md`、`lab/discussion.md`、`configs/r016.json`、`configs/r016.recovery.json`、`src/run_supervision_transition.py`和`src/online_entry.py`；实际执行来源为同库`bfbfa87d3df32686c09596daef883d209a572c2c`。
+
 ## 方法族停止索引
 
 - 已测固定朴素配方：本次没有总体收益，保留负结果，不通过反复调目标分数掩盖。
@@ -174,4 +183,5 @@
 - 固定位置与比例的adapter-only条件监督：已完成；相对同监督原生可训练参数臂的双AP、高分背景FP和大车保持均改善，但AP75未超过固定源硬监督，机制正信号与更强联合条件分别为是/否。停止该固定配方的位置、比例、宽度和学习率扫描，不外推为全部受限更新结构无效。
 - 固定LPLD遗漏候选选择与`1-cos`权重：共同候选池能覆盖遗漏GT，但选择器相对同量置信度少补唯一GT且增加明确背景，特征权重也同步增加背景代价。停止当前阈值/权重及同类探针，不外推为全部低置信候选方法无效。
 - 固定FAIR1M→SODA-A一次连续换域联合条件：carry没有双AP同时超过两个冻结参照，且已见A面板双AP下降；停止把本次点估计包装成收益与保持同时成立，不外推为全部连续适应路线失败。
+- 冻结A教师与在线EMA监督替换：历史教师相对固定源carry双AP下降，在线EMA相对冻结A教师异号，二者原联合条件均失败；停止在已见流扫描同类教师、EMA、阈值或步数，不外推为全部反馈机制无效。
 - 其他语义/几何可靠更新及强检测 TTA 对照：尚无可裁决性能，不根据思路或局部诊断登记成败。
