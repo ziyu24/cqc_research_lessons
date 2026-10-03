@@ -6,7 +6,7 @@
 
 ## 核心进展
 
-项目已有可信FAIR1M单域收益，但首次连续换域的收益与保持联合条件失败。B于2026-10-03完成已有A船类PR补核：AP50降幅主要由一个TP使召回跨过离散插值点放大，不能称大面积遗忘；真实PR仍有小幅代价。已交付一次零训练端点检查，区分学生学习与EMA响应，尚未观察SERVER实际启动；原始长期CTTA目标仍未达成。
+项目已有可信FAIR1M单域收益，但首次连续换域的收益与保持联合条件失败。B于2026-10-03完成已有A船类PR补核：AP50降幅主要由一个TP使召回跨过离散插值点放大，不能称大面积遗忘；真实PR仍有小幅代价。SERVER已于2026-10-03 09:44 UTC在46实际启动零训练端点检查，以区分学生学习与EMA响应；结果尚未形成，原始长期CTTA目标仍未达成。
 
 FAIR1M单域的条件前景加adapter相对同监督控制，单视图AP50/AP75提高2.241/0.519点，背景FP减少2,136，源正确大车多保留925个；这是可信的单域机制阳性。固定LPLD遗漏候选规则则相对同量置信度少补216个唯一GT并多177个明确背景，未进入训练。
 
@@ -14,7 +14,7 @@ FAIR1M单域的条件前景加adapter相对同监督控制，单视图AP50/AP75�
 
 ## 服务器当前内容
 
-r014于2026-10-03 00:05:46至08:16:41 UTC在46物理GPU 0、1完成，B于08:43 UTC起只读复核确认科学任务结束。四个SODA-A B臂各完整覆盖576原图/20,549切片，A前后各覆盖同一256图面板；六臂预测ID、评分身份、双rank完整游标及实际GPU记录闭合。carry/reset各完成466更新、110跳过、127,288伪框；08:43 UTC复核时没有P28任务进程。B本轮只读CPU补核和本地交付零训练r015，没有启动服务器GPU任务；SERVER是否已启动新评测尚未观察，不从任务已下发反推实际运行。
+r014于2026-10-03 00:05:46至08:16:41 UTC在46物理GPU 0、1完成，B于08:43 UTC起只读复核确认科学任务结束。四个SODA-A B臂各完整覆盖576原图/20,549切片，A前后各覆盖同一256图面板；六臂预测ID、评分身份、双rank完整游标及实际GPU记录闭合。carry/reset各完成466更新、110跳过、127,288伪框；08:43 UTC复核时没有P28任务进程。SERVER于09:44 UTC在46物理GPU 0、1启动r015，RUN已进入RUNNING；七项冻结前向按固定顺序执行，0训练/0优化步，尚未形成科学结果。
 
 carry/reset终点分别位于46 `runs/r014/artifacts/carry/latest.pth`与`runs/r014/artifacts/reset/latest.pth`，SHA-256为`243f7b272f03aa58d87600fe3f1c78e60136664adee6d70f6fd26edd91c157f5`和`f7575a2e18916391b37b8701b30f5aaae36b134aee96f5fc7f5aa42a81fba14f`。两者均含student/teacher、64项optimizer状态、双rank RNG和cursor=576，实体长度、SHA与保护配置已回核。源best、A终态及两B终态均继续受保护，删除须用户明确授权。08:43 UTC起观察的46工作区提交为`cfd1615`且干净；B复核证据已在来源`d78cf4862c4af581cb5a8bd3afbe740586c6650a`发布。
 
@@ -34,7 +34,7 @@ carry完整继承A的student、EMA、SGD动量与两rank RNG；reset从源状态
 
 ## 执行阶段
 
-r014已科学结束，B于2026-10-03 08:43 UTC起完成覆盖、实际双卡、权重/恢复、源状态逐张量和统计复核；联合条件失败，根因仍未知。项目继续。B于2026-10-0309:07 UTC起推送r015唯一零训练任务和可续接入口，最新来源为87c9f9e；7项真实双rank冻结评测已交付，尚未观察SERVER实际执行。r011阳性保留，r012仍后置未执行。
+r014已科学结束，B于2026-10-03 08:43 UTC起完成覆盖、实际双卡、权重/恢复、源状态逐张量和统计复核；联合条件失败，根因仍未知。项目继续。B于2026-10-03 09:07 UTC起推送r015唯一零训练任务和可续接入口；SERVER于09:44 UTC在46物理GPU 0、1实际启动7项双rank冻结评测，FAIR1M与SODA-A报告均为UNCHANGED/PASS，真实权重哈希与CPU端点反例检查通过。当前为执行中，r011阳性保留，r012仍后置未执行。
 
 ## 下一步与维护
 
@@ -46,4 +46,4 @@ r014已科学结束，B于2026-10-03 08:43 UTC起完成覆盖、实际双卡、�
 
 [r014完整结果与B独立复核](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/lab/result.md)；[核心问题与原项目交接](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/lab/discussion.md)；[主要失败边界](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/lab/failed_methods.md)；[固定配置与保护](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/configs/r014.json)；[恢复入口](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/configs/r014.recovery.json)。
 
-[本轮PR证据与解释边界](https://github.com/ziyu24/cqc_P28/blob/81ca09acb290a76acaab095296387cb14f38f8b0/lab/result.md)；[唯一零训练任务](https://github.com/ziyu24/cqc_P28/blob/87c9f9e9779ceea2e529ac5f3dd982dde768a697/lab/sug.md)；[冻结端点执行入口](https://github.com/ziyu24/cqc_P28/blob/87c9f9e9779ceea2e529ac5f3dd982dde768a697/src/run_frozen_endpoints.py)；[CPU关键反例报告](https://github.com/ziyu24/cqc_P28/blob/81ca09acb290a76acaab095296387cb14f38f8b0/doc/r015_endpoint_cpu_check.json)。
+[本轮PR证据与解释边界](https://github.com/ziyu24/cqc_P28/blob/81ca09acb290a76acaab095296387cb14f38f8b0/lab/result.md)；[唯一零训练任务](https://github.com/ziyu24/cqc_P28/blob/87c9f9e9779ceea2e529ac5f3dd982dde768a697/lab/sug.md)；[冻结端点执行入口](https://github.com/ziyu24/cqc_P28/blob/87c9f9e9779ceea2e529ac5f3dd982dde768a697/src/run_frozen_endpoints.py)；[CPU关键反例报告](https://github.com/ziyu24/cqc_P28/blob/81ca09acb290a76acaab095296387cb14f38f8b0/doc/r015_endpoint_cpu_check.json)；[r015恢复入口](https://github.com/ziyu24/cqc_P28/blob/204c150c819cb597b773c2c8ad95265cbf0845fc/configs/r015.recovery.json)。
