@@ -6,94 +6,42 @@
 
 ## 核心进展
 
-SERVER于2026-10-03 UTC在46完成冻结DINOv2区域表征与旧ROI表征的相同源标签读出比较，用户要求迁卡后最终有效执行使用物理GPU2/3。DINO把总体AP50从52.062%提高到52.656%，但大车AP50降至14.537%；在原基线95%实际TP处，全共享/大车私有FP分别增加328/204。ROI控制也在两点增加72/26个私有FP。固定框、类别和NMS集合完全相同，因此两臂均未满足预定“保召回降私有误报”联合条件，固定候选已结束；正的总体AP增量保留，原项目目标仍未达成。
+冻结DINO区域特征加源类别读出已完整执行并经C独立复核：总体AP50从52.062%升至52.656%，但大车从16.138%降至14.537%，保住同样真检出时私有误报增加。固定候选失败，原创新目标仍未达成；不是服务器没跑完，也不等于所有外部表征方法被否定。
 
-两臂各12源epoch、47,256步、固定单种子和真实双卡，源best为72.058%/74.152%。训练机制及关闭控制均实际生效；四份数据manifest、合法best/latest、576原图/20,549切片完整目标val、预测/配置/GT绑定和无test访问已由独立审计复核。两份epoch-12 best已登记保护。原核心目标仍未达成，失败原因及OBB专属性未知；该轮只结束OpenDet固定任务，项目保持运行；其原槽清空后现已换为获授权的新任务。
+新增缓存诊断将问题收紧：固定原检测身份的大车TP/私有误报上，DINO接受分数自身AUC仅0.47903，私有误报的接受度中位数反而更高；没有证据仅靠改乘法或阈值挽回。源val读出有效，但源其他类/背景与目标已被检测器接受的私有难例不同，不能据AUC差唯一识别域移位。可靠解法尚未找到。
 
-固定DPA相对同结构普通对照总AP50高0.143个百分点，大车AP下降，整条共同可达大车TP范围内私有FP从未更少。严格IoU与相对旧基线的局部改善保留，源检测没有UniOT式崩塌；结束该固定配置的结论不变。
-
-累计事实：旧普通DA相对source-only有正迁移；IDSA有小幅正差但指定候选位置必要性未获支持。固定KLD提高AP50却降低严格IoU；源支持度与GT几何诊断未支持所提关键混淆解法。UniOT完整/去PCD适配的目标AP50为41.739%/43.409%，低于旧普通DA52.062%，源best也大幅下降；后续两份best各8批的冻结梯度检查不足以支持共同持续反向解释，不启动梯度保护支线。各项失败只限实际条件，原研究目标仍未达成。
+累计正结果保留：普通DA相对source-only有正迁移，IDSA有小幅正差但指定候选位置必要性未获支持；固定KLD提高AP50却降低严格IoU。UniOT固定适配连源检测都明显下降，终点梯度复算不支持共同持续冲突；DPA有总体AP和聚合曲线局部正差，但大车未改善；OpenDet固定适配的性能与拒识联合条件也失败。各结论只约束实际配置，项目仍运行。
 
 ## 服务器当前内容
 
-SERVER于2026-10-03 07:01 UTC完成r014最终有效尝试：46物理GPU2/3、双rank、源提交`d8830817d340a427a19966f9632ba4e377fa2a86`。完整覆盖源train 15,749、源val 5,297、目标val 20,549切片；两个读出各12轮/2,304步，随后完成冻结评分和完整目标val评测。任务槽已清空，两份final已登记保护，当前无本任务继续训练；这是执行结束待B/C后续独立复核，不冒充整个项目完成。
+SERVER已在46完成r014两项固定读出，各12轮、2,304步、单种子、真实两rank；完整目标val为576原图/20,549切片。用户指定迁卡后，源train合法复用了修复后旧卡生成的11,900切片，同绑定新增3,849切片；源val、两读出及目标val在迁卡后完成。最终命令2026-10-03 07:01 UTC结束，含失败与迁卡前尝试累计约11.497 GPU小时。
 
-用户在执行中明确要求不再使用GPU0/1，SERVER终止迁卡前计算子进程并沿同一任务续接；最终结果仅来自GPU2/3有效尝试。GPU0/1上的首轮工程失败和被迁卡终止尝试保留在RUN历史，不作为科学结果。
+C于2026-10-03 07:49—08:04 UTC只读核验正确仓库、实际产物、训练/前向进度与日志；观察时原训练worker已退出。当前是科学执行结束且已复核，唯一任务槽为空，没有新任务下发。旧普通DA best与两个读出final实体和保护配置有效，均受保护，删除须用户明确授权；大型缓存和模型仍在原项目运行根。
 
-SERVER于2026-10-03 01:17 UTC观察到首轮在400个source-train切片后因原生RPN非正宽/高的退化parent退出。该parent仍参与旧ROI特征和最终检测，故未删框或膨胀；同号修复为保留候选、DINO显式零特征并单独计数，44项相关测试通过。旧绑定的4个分块已完整移入同运行号失败尝试目录、不再复用；01:21 UTC恢复后GPU0/1双rank首批与UUID再次MATCH，任务继续执行。
-
-SERVER于2026-10-03 01:11 UTC在46实际启动r014，运行器选择物理GPU0/1；两个rank均完成source-train首批，各处理64个配对区域，原生捕获回放通过，首批显存峰值约2.7 GiB。运行器回读两个rank PID与两卡UUID为MATCH，当前继续完整源train/val提取、两项固定12轮读出、共享目标评分和三套完整评测；尚无新目标指标，进程存活不等于科学完成。
-
-C于2026-10-02 PDT已推送r014入口、配置、唯一任务和针对性检查，沿最近实际执行端46。任务为完整源train/val成对提取、两个源读出、共享目标评分与三套重新匹配的完整原生评测。C仅做只读服务器检查和CPU反例，未启动新GPU计算；SERVER实际开始与完成以其后续执行证据为准。
-
-此前C于2026-10-02 17:01 PDT只读核实46正确仓库、运行根、实际日志和完整产物；原worker已退出，未发现本项目训练残留。OpenDet两份best实体及保护配置有效，该固定任务已完成复核。
-
-SERVER于2026-10-02 05:39—18:32 UTC在46物理GPU2/3完成r013完整CFL+UPL与同结构控制两臂、合法源选优、完整目标val和语义曲线，RUN为`COMPLETE/exit 0`，结束后worker及rank均退出。完整/控制AP50为51.422%/51.492%；匹配控制95%实际TP时，完整臂全部共享私有FP为9,798对9,098，大车为10,497对9,135。两份best和latest、预测、诊断与完整曲线留在46项目运行根；best已受保护，删除须用户明确授权。OpenDet完成当时唯一任务槽已清空、无该任务残留；这段历史观察不代表新任务的实时状态。
-
-2026-10-01 PDT，C交付r013两臂可执行入口，按最近实际执行端指定46；各12源epoch、47,256步、单种子、实际两卡，完整臂完成立即评完整val后继续控制臂。C当时只读核46项目及主机配置并以CPU内存测试核验接口，未启动训练；后续实际完成事实以上方SERVER记录为准。
-
-此前已完成的有效执行事实保留：
-
-SERVER按其会话中用户最后明确选择在46完成r012，完整DPA及同结构普通对照均12源epoch、47,256步、固定种子20260926和真实两rank；每臂以源best评完整目标val。中途只因缺少已有诊断数组退出，补回并校验后复用已完成训练/评测、继续剩余工作。完成时间按SERVER报告为2026-10-01 17:01 PDT；完整/普通源best为74.854%/75.023%，目标AP50为52.461%/52.317%，大车AP为17.206%/18.722%。两份best已登记保护，完成时唯一槽已清空。
-
-C于2026-10-01 17:24 PDT回读46正确仓库、Home及tmpfs产物映射、原生日志、模型和合法结果，观察时无相关残留进程。当前为科学完成且已复核，不是等待继续训练；本轮没有新GPU任务。
+首轮退化parent修复保留候选及原几何，仅显式置零DINO特征；不同旧绑定缓存未混用。源train最后一次退化计数1仅涵盖新增部分，不是全量；完整源train/val零特征347/95全部是源背景，但零特征不等于退化几何。此更正不改变候选失败。
 
 ## 核验说明
 
-SERVER收尾审计已通过：`src/review_r014.py`逐项复核RUN、双rank覆盖、三个manifest的原图/切片全集、绑定、同初态与每rank 2,304次非零更新、目标GT禁读阶段、固定框/类别身份、三套完整指标和无test访问；摘要为`doc/r014_evidence.json`。三套结果各重新匹配且都保留83,560个原TP、无新增或丢失TP。原生CPU指标累计发生在实际双GPU目标前向之后，不把CPU评测误写成训练或推理少卡。现有证据足以裁决固定候选失败，但尚未由B/C独立重复全部前向；这不授权为元数据缺口重训。
+充分核验执行完整和固定裁决：全源缓存的tile/parent/label身份、两臂特征哈希、类数及加载覆盖与训练报告完全一致；读出完整更新、优化器及双rank RNG、五个末次阶段的PID—双GPU UUID匹配已核。目标分数乘积、语义数组全部裁决和拒识曲线重算一致，复用哈希绑定的原生AP及一对一匹配输出。没有重复图像前向、全量IoU或test，也没有新训练。
 
-新交付本地54项反例通过，3项因本机原生库或Gloo缺失跳过：其中新两进程AdamW和原生NMS/重新匹配已在46原Torch1.12.1环境以CPU补测通过；旧捕获接口复用已核证据，并安排实际图像首批回放。另在46对合法source-val原图GT恢复及原生指派正例验证通过。修复了新实现会把无tile标签的源验证候选全当背景的问题，未改变旧实验结论。两臂同parent/标签/初态、末批零权、重排序重新匹配及完整并列的召回公平性均有反例覆盖。
+固定79,382共享TP处，原分数/ROI/DINO私有FP为7,607/7,679/7,935；固定1,396大车TP处为7,667/7,693/7,871。各评分保留原命中83,560个GT身份，但ROI/DINO各有2个TP检测布尔值变化，不能把GT身份不变说成TP框身份不变。完整大车曲线仍有7个同TP点DINO私有FP更少，保留局部正差而不改预定高召回裁决。
 
-当前检查足以交付科学机制和入口，尚不等于全流程GPU通过：官方权重实际准备、原生双GPU首批、PID→设备、真实有限更新、显存及吞吐由SERVER验证后直接继续授权终点，不另等C。尚无新目标性能结果。现有旧分数缺少DINO信息和源背景读出，不能复算得到新假设答案；因此新增计算有明确判别作用，未将所有旧负结果扩大成禁止整个方法族。
-
-C的新增复核脚本已在46现有环境只读执行通过：完整审计输出与SERVER提交证据一致，重算曲线与保存数组逐项相等，训练/评测的四次双PID—双UUID MATCH与两rank记录吻合。四份manifest哈希未变，复用已核身份和加载覆盖，不重扫数据；保护best及完整resume已核。没有重跑全部图像前向或原图IoU匹配，复用已绑定原生评测。核验足以确认固定实验执行完整及原联合条件失败，不能解释唯一训练因果。
-
-曲线边界补充：OpenDet完整臂在大车共同1—1,494 TP的763点私有FP更少、4点相同、727点更多，不能沿用此前DPA的全范围无优势结论；预定1,430 TP处仍多1,362个私有FP，全共享指定点仍多700。源best低2.094点，严格IoU及大车AP正差保留，不事后改判据。
-
-本轮充分核验依据为来源项目`src/review_r013.py`和`doc/r013_evidence.json`：RUN终态、物理GPU2/3与两rank记录、四份manifest身份/覆盖、每臂12次源验证和936个有限训练区间、best/latest完整优化器状态、配置/权重/GT/预测绑定、语义观测及冻结比较均通过只读复算；审计重放与落盘证据一致。完整臂CFL/UPL及队列实际激活，控制臂对应量恒为0。目标train框数为0，无target test配置或产物。SODA仍是800/650 nomask项目自定义输入，不是官方遮罩预处理。
-
-r013交付时新增部分已核：本地39项测试通过，缺原生库/Gloo的6项skip另在46现有mr以原始测试函数验证；四项原生CPU检查通过，真实Linux两rank完整/控制的损失、逐参数梯度、队列均匹配全局参考。曾发现原生递归初始化覆盖新增MLP，已修正并复测；source-only辅助、17维概率保留、采样/回归不变、双臂同初态及恢复有反例覆盖。SERVER随后完成实际双GPU全训练与完整评测，收益和拒识判据均失败；数据沿已核manifest身份与覆盖，不重切或全量重审DOTA，保留SODA800/650 nomask自定义输入。
-
-旧结果的充分核验依据继续有效：
-
-执行配置逐字段核对模型、损失、SGD/Adam及学习率计划、原生候选采样/数据pipeline和源验证规则，与交付一致。四份换端manifest与原件只差路径前缀，ID/标注/加载覆盖不变；源train/val为1,411/458原图与15,749/5,297切片，目标train/val为1,067/576原图与37,980/20,549切片，目标train框数0。保持项目800/650 nomask输入，未重切或全量重扫DOTA，没有target test。
-
-C复算现有审计的训练终点、12次源验证、best/latest、配置/权重/GT绑定、语义数组和比较，与SERVER证据一致。另用独立累计代码复算整条共同可达曲线：完整DPA相对同结构控制在大车1—1,144 TP中0点私有FP更少、41点相同、1,103点更多；同1,087 TP为4,532对4,149。因此原关键混淆失败不取决于95%点。
-
-正信号及限制保留：相对旧普通DA，同1,087 TP为4,532对5,495，多数共同点仍有改善；但新普通控制更好，不能把旧新变化全部归因DPA。完整臂AP75/AP50:95为15.537%/23.238%，相对同结构控制高0.528/0.156个百分点。历史参考TP不可达只针对既定输出截断协议；曲线点不独立，不能当显著性或跨种子稳定性。未重跑图像前向/全部IoU匹配，复用已绑定原生输出及AP回放。
-
-元数据限制：Home RUN仍显示PLANNED，完成判断依据实际日志、权重及评测；两rank及完整计算记录已核，SERVER所述物理GPU3/2的历史UUID快照本次未独立取得。该缺口不抹去实际科学输出，也不成为重训理由。原生模型/损失没有被SERVER修改；新旧对照的结构差异已由必要同结构臂控制。
+未核部分及理由：没有下一候选的语言区域特征，不能判断新路线有效；目标现存缓存不含完整DINO向量，不能证明特征空间不可分。唯一根因、OBB专属性及跨种子稳定仍未知。现有产物已足够停止固定候选，继续扩大同分数诊断不会改变本轮取舍。
 
 ## 执行阶段
 
-2026-10-03 07:01 UTC，SERVER已在46物理GPU2/3完成固定DINO/ROI两臂训练、冻结目标输出、完整评测和收尾审计；来源结果已推送。固定候选失败、普遍外部表征命题未被证伪、P27原目标未达成，三者分开。当前为执行结束待B/C复核，项目保持运行，不登记整体结束。
-
-记录者：SERVER；更新日期：2026-10-03 UTC。保留C的交付与复核事实，不冒充B/C共识。
+执行结束且已充分复核：C于2026-10-03 07:49—08:04 UTC核实r014完整训练、合法评测、全部曲线与保护产物；固定候选失败，任务槽为空。下一语言语义路线仅为建议，尚未授权、下发或执行；项目保持运行。
 
 ## 下一步与维护
 
-目前核心问题仍是保住共享检测并减少相近私有误报；它不是全部检测错误，也未证明OBB独有。冻结DINO结果说明外部表征能改变总体排序，却没有在预定关键类别和同TP误报条件上兑现。现有证据足够停止本固定池化/线性读出，不追加骨干、层、池化、阈值、优化参数或种子；后续是否形成新任务须由B/C基于累计证据另行判断，SERVER不自行换路线。
+目前核心问题是源类高接受度未能排除相似私有对象。核心问题解法尚未确立；C建议讨论通用语言词汇与无标target train发现的替代语义，先验证固定区域的共享/私有排序，再决定是否进入检测评分或适应训练。已查TASC原论文及固定作者代码：搜索可不依赖目标真类数，但作者入口物理读取target test/标签及真实目标类名，不能原样搬用。
 
-固定r013结束，不追加拆模块、阈值、参数或种子；本候选不是恢复旧5-NN模型扫描。原目标、数据及评测边界不变，不以当前方法失败登记整个项目结束。
+这条建议增加语言语义信息，属于核心路线变化，尚未取得执行授权；微小OBB区域编码、无标区域采样与未知分数到检测评分的接口仍需落实。它不是已找到的方法或可直接下发的入口。原目标、DOTA→SODA无遮罩输入和AP50主指标不变，不新增unknown输出、不自动开新训练、不扫描词表/模型/阈值。当前完成的是独立复核和有依据的下一步建议。
 
-动作执行者按[主动更新约定](README.md)在真实事件发生时更新本页并发布总览。
+记录者：C；更新日期：2026-10-03 PDT。保留SERVER执行事实及此前有效复核，不冒充跨端共识。动作执行者按[主动更新约定](README.md)在真实事件发生时维护本页。
 
 ## 证据
 
-[r014结果、失败边界与保护权重](https://github.com/ziyu24/cqc_P27/blob/4daba29f7bf996ef013042a04e1787171409325a/lab/result.md)；[可重放收尾审计](https://github.com/ziyu24/cqc_P27/blob/4daba29f7bf996ef013042a04e1787171409325a/src/review_r014.py)；[证据摘要](https://github.com/ziyu24/cqc_P27/blob/4daba29f7bf996ef013042a04e1787171409325a/doc/r014_evidence.json)；[完成讨论与空任务槽](https://github.com/ziyu24/cqc_P27/blob/4daba29f7bf996ef013042a04e1787171409325a/lab/discussion.md)。GPU绑定、原始日志、缓存、预测和权重留在46项目运行根。
+[本次结果、纠正与保护产物](https://github.com/ziyu24/cqc_P27/blob/f8c185198e9b1fb29ad55319977382307d900e24/lab/result.md)；[完整完成复算](https://github.com/ziyu24/cqc_P27/blob/f8c185198e9b1fb29ad55319977382307d900e24/doc/r014_completion_review.json)；[接受信号及全曲线诊断](https://github.com/ziyu24/cqc_P27/blob/f8c185198e9b1fb29ad55319977382307d900e24/doc/r014_signal_review.json)；[原始论文、代码及下一路线边界](https://github.com/ziyu24/cqc_P27/blob/f8c185198e9b1fb29ad55319977382307d900e24/doc/method_transfer_review.md)；[当前讨论与授权范围](https://github.com/ziyu24/cqc_P27/blob/f8c185198e9b1fb29ad55319977382307d900e24/lab/discussion.md)。
 
-[用户授权及当前判断](https://github.com/ziyu24/cqc_P27/blob/52471c69902b161a1e4cb0b38a500f45519b5033/lab/discussion.md)；[唯一任务与冻结协议](https://github.com/ziyu24/cqc_P27/blob/30bbb723ab7b3e163462977918403301bf3330fc/lab/sug.md)；[固定实现、入口与未核边界](https://github.com/ziyu24/cqc_P27/blob/52471c69902b161a1e4cb0b38a500f45519b5033/doc/frozen_readout_execution.md)；[实际交付检查](https://github.com/ziyu24/cqc_P27/blob/52471c69902b161a1e4cb0b38a500f45519b5033/doc/frozen_readout_delivery_checks.json)；[恢复入口](https://github.com/ziyu24/cqc_P27/blob/06228dadb6ee7970ad732f3536238c7e3da72d1f/configs/r014.recovery.json)。首批与GPU绑定原始日志留在46运行根；本页只登记观察事实，不能冒称完整科学结果。
-
-[C完成复核与完整边界](https://github.com/ziyu24/cqc_P27/blob/165db8440644768e77ffc8f97629e64a45ec9f90/lab/result.md)；[可重放完成证据](https://github.com/ziyu24/cqc_P27/blob/165db8440644768e77ffc8f97629e64a45ec9f90/doc/r013_completion_review.json)；[当前问题与未执行候选](https://github.com/ziyu24/cqc_P27/blob/165db8440644768e77ffc8f97629e64a45ec9f90/doc/method_transfer_review.md)。
-
-[r013结果、主要失败与保护权重](https://github.com/ziyu24/cqc_P27/blob/bc40d5d3816281246cd3d0e76ca0269bae89f5b2/lab/result.md)；[充分审计证据](https://github.com/ziyu24/cqc_P27/blob/bc40d5d3816281246cd3d0e76ca0269bae89f5b2/doc/r013_evidence.json)；[完成讨论与任务槽清空](https://github.com/ziyu24/cqc_P27/blob/bc40d5d3816281246cd3d0e76ca0269bae89f5b2/lab/discussion.md)；[恢复与产物入口](https://github.com/ziyu24/cqc_P27/blob/bc40d5d3816281246cd3d0e76ca0269bae89f5b2/configs/r013.recovery.json)。
-
-[本轮范式新颖性补查及固定作者代码来源](https://github.com/ziyu24/cqc_P27/blob/a9c4675c0d54d5d151c832ef7af65939b2467282/doc/method_transfer_review.md)；[C判断与原任务不变边界](https://github.com/ziyu24/cqc_P27/blob/a9c4675c0d54d5d151c832ef7af65939b2467282/lab/discussion.md)。
-
-[已推送唯一任务](https://github.com/ziyu24/cqc_P27/blob/69b0d7e9100ddb7c1a3db123eb9ddbbf23b4e852/lab/sug.md)；[用户授权与科学取舍](https://github.com/ziyu24/cqc_P27/blob/69b0d7e9100ddb7c1a3db123eb9ddbbf23b4e852/lab/discussion.md)；[机制、作者偏离与执行入口](https://github.com/ziyu24/cqc_P27/blob/69b0d7e9100ddb7c1a3db123eb9ddbbf23b4e852/doc/opendet_execution.md)；[实际检查记录](https://github.com/ziyu24/cqc_P27/blob/69b0d7e9100ddb7c1a3db123eb9ddbbf23b4e852/doc/opendet_delivery_checks.json)；[冻结配置](https://github.com/ziyu24/cqc_P27/blob/69b0d7e9100ddb7c1a3db123eb9ddbbf23b4e852/configs/r013.json)。本轮准备不包含新训练、目标评测或GPU计算。
-
-[本轮独立研究取舍、原论文与代码来源](https://github.com/ziyu24/cqc_P27/blob/dce35d692144f078a5a47c086d55e023ad9e5e92/doc/method_transfer_review.md)；[当前判断与建议边界](https://github.com/ziyu24/cqc_P27/blob/dce35d692144f078a5a47c086d55e023ad9e5e92/lab/discussion.md)。该独立调研阶段未另做服务器观察；本轮交付的只读核验和CPU检查见上方新来源，不覆盖此前有效科学证据。
-
-[当前科学讨论](https://github.com/ziyu24/cqc_P27/blob/a6b9499da2c074f4e53aaa3aecda8a025005264d/lab/discussion.md)；[完整累计结果和受保护权重](https://github.com/ziyu24/cqc_P27/blob/a6b9499da2c074f4e53aaa3aecda8a025005264d/lab/result.md)；[C独立复核及共同范围统计](https://github.com/ziyu24/cqc_P27/blob/a6b9499da2c074f4e53aaa3aecda8a025005264d/doc/r012_completion_review.json)；[SERVER充分证据](https://github.com/ziyu24/cqc_P27/blob/84fa2a17b1fb6e3976a93dc22f13be713330b9bd/doc/r012_evidence.json)；[科学适配与差异](https://github.com/ziyu24/cqc_P27/blob/a6b9499da2c074f4e53aaa3aecda8a025005264d/doc/dpa_execution.md)；[恢复入口](https://github.com/ziyu24/cqc_P27/blob/a6b9499da2c074f4e53aaa3aecda8a025005264d/configs/r012.recovery.json)。[已登记教训](../lesson/cqc_P27.lessons.md)。
-
-[此前交付及历史证据入口](https://github.com/ziyu24/cqc_research_lessons/blob/66c940b/progress/cqc_P27.md)保留旧UniOT、梯度诊断和数据复核事实；这里只更新当前判断，不覆盖原研究问题。
+[SERVER完成证据及恢复入口](https://github.com/ziyu24/cqc_P27/tree/4daba29f7bf996ef013042a04e1787171409325a)；[此前交付、实际启动、工程修复及旧路线复核历史](https://github.com/ziyu24/cqc_research_lessons/blob/c425c63/progress/cqc_P27.md)；[已登记科学教训](../lesson/cqc_P27.lessons.md)。原始数据、模型和日志留在来源项目，不复制至公共进展页。
