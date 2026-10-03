@@ -10,7 +10,7 @@ PWOOD在DOTA-v1.5、10%水平框标注的部分弱监督旋转检测协议下，
 
 ## 服务器当前内容
 
-最近固定删除无标签损失的任务已结束。C最后一次服务器观察为2026-10-02 05:51:29 UTC：46无本项目进程，任务槽无任务，结果摘要与完整核验时一致。此次只澄清科学问题与解法边界，未新增服务器观察、下发或启动任务。
+最近固定删除无标签损失的任务已结束。2026-10-03 08:55 UTC，SERVER在46完成用户授权的存储清理：仅删除r033已停止且可重建的live临时预测目录；r031取消test产物、r032完整结果、受保护final、预测和恢复源未动。删除后无本项目进程，任务槽无任务，未新增训练、评测或科学结论。
 
 ## 核验说明
 
@@ -22,9 +22,9 @@ C于2026-10-02（洛杉矶）按已核来源澄清：188654个可诊断唯一TRA
 
 ## 执行阶段
 
-执行结束且C已复核；2026-10-02 05:51 UTC在46无任务、未观察到本项目进程，无新增实验结果。
+无当前科学任务。SERVER于2026-10-03 08:55 UTC结束精确清理并核验r033 live目录已不存在，context与输入审计仍在；删除记录和重建入口已写回来源项目恢复配置并推送。该事件是存储整理，不是科学执行成功。
 
-本次记录者：C。B于2026-09-30初始化时的无任务观察与C最近服务器观察一致；此次复用既有科学审计和文献核对，仅修正问题层级与方案优先级。未取得对端新回写，不称本轮共识。
+本次记录者：SERVER。B于2026-09-30初始化时的无任务观察与C最近服务器观察一致；本次复用既有科学审计，仅完成经清理器预演的精确存储删除。未取得对端新回写，不称本轮共识。
 
 ## 下一步与维护
 
@@ -36,4 +36,4 @@ C于2026-10-02（洛杉矶）按已核来源澄清：188654个可诊断唯一TRA
 
 ## 证据
 
-[范围与最初立题](https://github.com/ziyu24/cqc_P18/blob/e58f6441c81f4863787cfcf7e524cea9efcfa92e/README.md)；[科学问题、瓶颈与解法澄清](https://github.com/ziyu24/cqc_P18/blob/e58f6441c81f4863787cfcf7e524cea9efcfa92e/lab/discussion.md)；[累计结果与审计依据](https://github.com/ziyu24/cqc_P18/blob/e58f6441c81f4863787cfcf7e524cea9efcfa92e/lab/result.md)；[唯一任务槽](https://github.com/ziyu24/cqc_P18/blob/e58f6441c81f4863787cfcf7e524cea9efcfa92e/lab/sug.md)。[已登记教训](../lesson/cqc_P18.lessons.md)。
+[范围与最初立题](https://github.com/ziyu24/cqc_P18/blob/e58f6441c81f4863787cfcf7e524cea9efcfa92e/README.md)；[科学问题、瓶颈与解法澄清](https://github.com/ziyu24/cqc_P18/blob/e58f6441c81f4863787cfcf7e524cea9efcfa92e/lab/discussion.md)；[累计结果与审计依据](https://github.com/ziyu24/cqc_P18/blob/e58f6441c81f4863787cfcf7e524cea9efcfa92e/lab/result.md)；[r033清理清单与恢复记录](https://github.com/ziyu24/cqc_P18/blob/1b7489e8f4aa215feda3f893eb4bc07b79fdf6d7/doc/storage_review.md)；[唯一任务槽](https://github.com/ziyu24/cqc_P18/blob/e58f6441c81f4863787cfcf7e524cea9efcfa92e/lab/sug.md)。[已登记教训](../lesson/cqc_P18.lessons.md)。
