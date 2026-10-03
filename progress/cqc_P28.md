@@ -6,7 +6,7 @@
 
 ## 核心进展
 
-单域适配器收益可信，首次连续换域的收益与保持联合条件仍失败。B已充分核验零训练端点结果：B学生没有先改善，不支持“只是EMA太慢”；固定旧学生、只让EMA追赶又几乎复现A下降，不能全归因于B学习。原长期CTTA目标未达成。现已交付两个监督来源替换臂，检验历史知识与在线反馈各自是否带来增益；尚未实际启动。
+单域适配器收益可信，首次连续换域的收益与保持联合条件仍失败。B已充分核验零训练端点结果：B学生没有先改善，不支持“只是EMA太慢”；固定旧学生、只让EMA追赶又几乎复现A下降，不能全归因于B学习。原长期CTTA目标未达成。两个监督来源替换臂用于检验历史知识与在线反馈各自是否带来增益；r016现已在26实际启动。
 
 保留累计阳性：FAIR1M条件前景加adapter相对同监督控制提高单视图AP50/AP75 2.241/0.519点，背景FP减少2,136，源正确大车多保留925个。它不等于跨域稳定、完整WHW复现或OBB独有创新。固定LPLD遗漏候选规则比同量置信度少补216个唯一GT、多177个明确背景，已停止该固定移植。
 
@@ -14,7 +14,7 @@
 
 ## 服务器当前内容
 
-r014六臂已完成并复核。r015于2026-10-03 10:27 UTC在46完成七项真实双rank冻结前向；B于11:32 UTC只读确认同仓库实际产物和当时无P28任务进程，11:33 UTC完成新机制的真实权重CPU反例，没有启动GPU工作。r016两臂及保持评测已实现、检查并提交推送；此为已下发入口，实际启动时间未知，不能写成在跑。最近实际执行端仍为46。
+r014六臂已完成并复核。r015于2026-10-03 10:27 UTC在46完成七项真实双rank冻结前向；B于11:32 UTC只读确认同仓库实际产物和当时无P28任务进程，11:33 UTC完成新机制的真实权重CPU反例。r016输入已定向归回26并核哈希，SODA-A与FAIR1M报告均为UNCHANGED/PASS；2026-10-03 12:56 UTC在26以GPU 0、1实际启动，当前正在执行fixedA臂。一次启动前路径断言失败未进入模型，修复后沿同一r016续跑并保留attempt记录。
 
 ## 核验说明
 
@@ -26,7 +26,7 @@ r015已充分核验：RUN、七组历史两个计算PID的物理GPU匹配、完�
 
 ## 执行阶段
 
-r015科学任务完成且B复核充分；原CTTA联合条件失败与单域阳性同时保留。r016已下发，未观察到实际启动。项目继续，r012仍后置，不新增种子或参数扫描；项目状态表不变。
+r015科学任务完成且B复核充分；原CTTA联合条件失败与单域阳性同时保留。r016已在26实际运行，执行结束后待复核；项目继续，r012仍后置，不新增种子或参数扫描；项目状态表不变。
 
 ## 下一步与维护
 
@@ -38,4 +38,4 @@ r015科学任务完成且B复核充分；原CTTA联合条件失败与单域阳�
 
 [r014累计结果及原联合裁决](https://github.com/ziyu24/cqc_P28/blob/d78cf4862c4af581cb5a8bd3afbe740586c6650a/lab/result.md)；[r015结果与B独立核验](https://github.com/ziyu24/cqc_P28/blob/71cf24b64e7a29754c07cd1a7c16083ad5695281/lab/result.md)；[只读完成核验报告](https://github.com/ziyu24/cqc_P28/blob/71cf24b64e7a29754c07cd1a7c16083ad5695281/doc/r015_B_completion_audit.json)。
 
-[监督替换依据与边界](https://github.com/ziyu24/cqc_P28/blob/71cf24b64e7a29754c07cd1a7c16083ad5695281/lab/discussion.md)；[唯一当前任务](https://github.com/ziyu24/cqc_P28/blob/71cf24b64e7a29754c07cd1a7c16083ad5695281/lab/sug.md)；[两臂入口](https://github.com/ziyu24/cqc_P28/blob/71cf24b64e7a29754c07cd1a7c16083ad5695281/src/run_supervision_transition.py)；[实际权重CPU检查](https://github.com/ziyu24/cqc_P28/blob/71cf24b64e7a29754c07cd1a7c16083ad5695281/doc/r016_provider_cpu_check.json)。
+[监督替换依据与边界](https://github.com/ziyu24/cqc_P28/blob/71cf24b64e7a29754c07cd1a7c16083ad5695281/lab/discussion.md)；[唯一当前任务](https://github.com/ziyu24/cqc_P28/blob/71cf24b64e7a29754c07cd1a7c16083ad5695281/lab/sug.md)；[26执行入口及恢复材料](https://github.com/ziyu24/cqc_P28/blob/bfbfa87d3df32686c09596daef883d209a572c2c/src/run_supervision_transition.py)；[实际权重CPU检查](https://github.com/ziyu24/cqc_P28/blob/71cf24b64e7a29754c07cd1a7c16083ad5695281/doc/r016_provider_cpu_check.json)。
